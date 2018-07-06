@@ -20,7 +20,7 @@ The application will be divided in 2 parts: and administration page (accessible 
 
 links
 
-```json
+```javascript
 {
     companyId: string,
     edition: string,
@@ -38,7 +38,7 @@ links
 
 venues
 
-```json
+```javascript
 {
     edition: string,
     image: string,
@@ -58,7 +58,7 @@ venues
 
 reservations
 
-```json
+```javascript
 {
     companyId: string,
     edition: string,
@@ -72,7 +72,7 @@ reservations
 
 data
 
-```json
+```javascript
 {
     companyId: string
     edition: string,
