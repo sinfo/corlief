@@ -1,0 +1,46 @@
+{
+  "name": "corlief",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "watch": "./node_modules/.bin/nodemon",
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "./node_modules/.bin/eslint --ext .js ."
+  },
+  "pre-commit": [
+    "lint",
+    "test"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sinfo/corlief.git"
+  },
+  "author": "SINFO",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sinfo/corlief/issues"
+  },
+  "homepage": "https://github.com/sinfo/corlief#readme",
+  "devDependencies": {
+    "eslint": "^5.1.0",
+    "eslint-config-standard": "^12.0.0-alpha.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0",
+    "nodemon": "^1.18.1",
+    "pre-commit": "^1.2.2"
+  },
+  "dependencies": {
+    "good": "^8.1.1",
+    "good-winston": "^4.0.0",
+    "hapi": "^17.5.2",
+    "hapi-router": "^4.0.0",
+    "hapi-swagger": "^9.1.1",
+    "inert": "^5.1.0",
+    "logger": "git+https://github.com/sinfo/logger.git",
+    "vision": "^5.3.3"
+  }
+}
