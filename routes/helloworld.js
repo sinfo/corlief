@@ -3,14 +3,13 @@ const logger = require('logger').getLogger()
 module.exports = [
   {
     method: 'GET',
-    path: '/hello',
+    path: '/helloworld',
     config: {
       tags: ['api'],
       description: 'Hello world documentation',
       notes: 'Hello world notes',
-      handler: function (request, h) {
-        logger.info('this is my thing')
-        logger.error('error')
+      handler: async (request, h) => {
+        logger.info('This is me logging')
         return 'hello world'
       }
     }

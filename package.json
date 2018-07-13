@@ -7,7 +7,8 @@
     "start": "node index.js",
     "watch": "./node_modules/.bin/nodemon",
     "test": "echo \"No tests specified\" && exit 0",
-    "lint": "./node_modules/.bin/eslint --ext .js ."
+    "lint": "./node_modules/.bin/eslint --ext .js .",
+    "gen-keys": "ssh-keygen -t rsa -b 4096 -f ./keys/jwtRS256.key -q -N \"\"; openssl rsa -in ./keys/jwtRS256.key -pubout -outform PEM -out ./keys/jwtRS256.key.pub"
   },
   "pre-commit": [
     "lint",
@@ -38,6 +39,8 @@
     "hapi-router": "^4.0.0",
     "hapi-swagger": "^9.1.1",
     "inert": "^5.1.0",
+    "joi": "^13.4.0",
+    "jsonwebtoken": "^8.3.0",
     "logger": "git+https://github.com/sinfo/logger.git",
     "vision": "^5.3.3"
   }
