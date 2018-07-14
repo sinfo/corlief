@@ -4,6 +4,37 @@ const Joi = require('joi')
 
 module.exports = [
   {
+    // link?companyId=...&edition=...
+    method: 'GET',
+    path: '/link',
+    config: {
+      tags: ['api'],
+      description: 'Gets a link or list of links',
+      notes: 'based on the company id and/or edition and/or token in the query',
+      handler: async (request, h) => {
+        try {
+          let link = await request.server.methods.link.find(request.query)
+          return link === null ? Boom.badData('No link associated') : link
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        query: {
+          companyId: Joi.string().min(1)
+            .max(30)
+            .description('ID of company'),
+          edition: Joi.string().min(1)
+            .max(30)
+            .description('Edition Number'),
+          token: Joi.string()
+            .description('Token')
+        }
+      }
+    }
+  },
+  {
     method: 'DELETE',
     path: '/link/company/{companyId}/edition/{edition}',
     config: {
