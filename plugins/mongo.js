@@ -22,5 +22,6 @@ module.exports = {
     })
 
     server.method('link.delete', mongoMethods.link.delete)
+    server.method('link.find', mongoMethods.link.find)
   }
 }

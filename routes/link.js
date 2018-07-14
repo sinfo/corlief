@@ -9,14 +9,11 @@ module.exports = [
     path: '/link',
     config: {
       tags: ['api'],
-      description: 'Gets a company link based on the company id and edition',
-      notes: 'Returns the link',
+      description: 'Gets a link or list of links',
+      notes: 'based on the company id and/or edition and/or token in the query',
       handler: async (request, h) => {
-        let companyId = request.query.companyId
-        let edition = request.query.edition
-
         try {
-          let link = await request.server.methods.link.get(companyId, edition)
+          let link = await request.server.methods.link.find(request.query)
           return link === null ? Boom.badData('No link associated') : link
         } catch (err) {
           logger.error(err)
@@ -25,14 +22,16 @@ module.exports = [
       },
       validate: {
         query: {
-          company: Joi.string().min(1)
-          .max(30).required()
-          .description('ID of company'),
+          companyId: Joi.string().min(1)
+            .max(30)
+            .description('ID of company'),
           edition: Joi.string().min(1)
-            .max(30).required()
-            .description('Edition Number')
-        },
-      },
+            .max(30)
+            .description('Edition Number'),
+          token: Joi.string()
+            .description('Token')
+        }
+      }
     }
   },
   {
