@@ -6,12 +6,12 @@ module.exports = {
   version: '1.0.0',
   register: async (server, options) => {
     if (process.env.NODE_ENV === 'production' &&
-      config.CORLIEF_LOGENTRIES_TOKEN === undefined) {
+      config.LOGENTRIES_TOKEN === undefined) {
       console.error('Missing env var CORLIEF_LOGENTRIES_TOKEN')
       process.exit(1)
     }
 
-    let logger = loggerGenerator.getLogger(config.CORLIEF_LOGENTRIES_TOKEN)
+    let logger = loggerGenerator.getLogger(config.LOGENTRIES_TOKEN)
 
     server.events.on('response', (request) => {
       if (request.url.path.indexOf('/swagger') === -1) {
