@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "watch": "./node_modules/.bin/nodemon",
-    "test": "echo \"No tests specified\" && exit 0",
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha",
     "lint": "./node_modules/.bin/eslint --ext .js .",
     "gen-keys": "ssh-keygen -t rsa -b 4096 -f ./keys/jwtRS256.key -q -N \"\"; openssl rsa -in ./keys/jwtRS256.key -pubout -outform PEM -out ./keys/jwtRS256.key.pub"
   },
