@@ -16,6 +16,5 @@ describe('link', function () {
 
   after('Stopping server', function () {
     server.stop()
-    process.exit(0)
   })
 })
