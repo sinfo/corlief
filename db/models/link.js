@@ -14,6 +14,7 @@ let linkSchema = mongoose.Schema({
     type: String,
     unique: true
   },
+  valid: Boolean,
   participationDays: Number,
   activities: [{
     kind: String,
@@ -22,4 +23,4 @@ let linkSchema = mongoose.Schema({
   advertisementKind: String
 })
 
-module.exports = mongoose.Model('link', linkSchema)
+module.exports = mongoose.model('Link', linkSchema)
