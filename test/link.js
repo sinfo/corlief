@@ -14,7 +14,7 @@ describe('link', function () {
     })
   })
 
-  describe('delete', function () {
+  describe('delete', async function () {
     const newLinkData = {
       companyId: 'someCompany',
       edition: 'someEdition',
@@ -28,7 +28,6 @@ describe('link', function () {
 
     before('adding link to db', async function () {
       let newLink = new Link(newLinkData)
-
       await newLink.save()
     })
 
