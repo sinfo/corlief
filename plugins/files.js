@@ -111,17 +111,13 @@ module.exports = {
   name: 'files',
   version: '1.0.0',
   register: async (server, options) => {
-    try {
-      let setup = await checkSetup()
-      if (!setup) {
-        await setUp()
-      }
-
-      server.method('files.uploadLogo', uploadLogo)
-      server.method('files.downloadLogo', downloadLogo)
-      server.method('files.removeLogo', removeLogo)
-    } catch (err) {
-      throw err
+    let setup = await checkSetup()
+    if (!setup) {
+      await setUp()
     }
+
+    server.method('files.uploadLogo', uploadLogo)
+    server.method('files.downloadLogo', downloadLogo)
+    server.method('files.removeLogo', removeLogo)
   }
 }
