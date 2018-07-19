@@ -1,16 +1,8 @@
-// const rp = require('request-promise')
 const moment = require('moment')
 const crypto = require('crypto')
 const strictUriEncode = require('strict-uri-encode')
 const path = require('path')
-const config = require(path.join(__dirname, '..', 'config'))
-
-// const HOST = `${config.STORAGE.NAME}.${config.STORAGE.REGION}.${config.STORAGE.DOMAIN}`
-// const ROOT = process.env.NODE_ENV === 'test' ? config.STORAGE.TEST : config.STORAGE.PATH
-
-// const VENUES_DIRNAME = 'venues'
-// const LOGOS_DIRNAME = 'logos'
-// const INVOICES_DIRNAME = 'invoices'
+const config = require(path.join(__dirname, '..', '..', 'config'))
 
 function hash (data) {
   const h = crypto.createHash('sha256')
@@ -66,9 +58,9 @@ function getCanonicalHeaders (headers) {
   return headersString
 }
 
-function generateHeaders (method, path, query, payload, isPublic) {
+module.exports.generateHeaders = (method, path, query, payload, isPublic) => {
   let date = moment().format('YYMMDD')
-  let dateISO = moment().format('YMMDDTHHmmssZ')
+  let dateISO = moment().format('YMMDDTHHmmss') + 'Z'
 
   let authHeaders = {
     Authorization: 'AWS4-HMAC-SHA256',
@@ -102,25 +94,4 @@ function generateHeaders (method, path, query, payload, isPublic) {
   authHeaders.Signature = getSignature(date, data)
 
   return Object.assign(authHeaders, awsHeaders)
-}
-
-async function uploadLogo (edition, companyId, file, filename) {
-}
-
-async function downloadLogo (edition, companyId, filename) {
-}
-
-async function removeLogo (edition, companyId, filename) {
-
-}
-
-module.exports = {
-  name: 'files',
-  version: '1.0.0',
-  register: async (server, options) => {
-    console.log(JSON.stringify(generateHeaders('GET', '/', { 'acl': '' }), null, 2))
-    server.method('files.uploadLogo', uploadLogo)
-    server.method('files.downloadLogo', downloadLogo)
-    server.method('files.removeLogo', removeLogo)
-  }
 }
