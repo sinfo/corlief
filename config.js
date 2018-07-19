@@ -10,12 +10,14 @@ module.exports = {
 
   LOGENTRIES_TOKEN: process.env.CORLIEF_LOGENTRIES_TOKEN,
 
-  FTP: {
-    HOST: process.env.CORLIEF_FTP_HOST,
-    USER: process.env.CORLIEF_FTP_USER,
-    PASS: process.env.CORLIEF_FTP_PASS,
-    PATH: process.env.CORLIEF_FTP_PATH || '/home/sinfo/corlief/dev',
-    TEST: process.env.CORLIEF_FTP_PATH || '/home/sinfo/corlief/test'
+  STORAGE: {
+    NAME: process.env.CORLIEF_STORAGE_NAME,
+    KEY: process.env.CORLIEF_STORAGE_KEY,
+    SECRET: process.env.CORLIEF_STORAGE_SECRET,
+    REGION: process.env.CORLIEF_STORAGE_REGION,
+    DOMAIN: process.env.CORLIEF_STORAGE_DOMAIN,
+    PATH: process.env.CORLIEF_STORAGE_PATH || '/',
+    TEST: process.env.CORLIEF_STORAGE_TEST || '/test/'
   },
 
   DECK: {
