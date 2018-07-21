@@ -30,7 +30,6 @@ module.exports = {
     server.method('link.find', mongoMethods.link.find)
 
     server.method('venue.find', mongoMethods.venue.find)
-    server.method('venue.create', mongoMethods.venue.create)
     server.method('venue.updateImage', mongoMethods.venue.updateImage)
   }
 }

@@ -54,15 +54,9 @@ module.exports = [
             return Boom.expectationFailed('Could not upload image')
           }
 
-          let venue = await request.server.methods.venue.find({ edition: edition })
+          let venue = await request.server.methods.venue.updateImage(edition, imageLocation)
 
-          if (venue === null || venue === []) {
-            venue = await request.server.methods.venue.create(edition)
-          }
-
-          let updatedVenue = await request.server.methods.venue.updateImage(edition, imageLocation)
-
-          return updatedVenue === null ? Boom.badData('Invalid data for the venue') : updatedVenue
+          return venue === null ? Boom.badData('Invalid data for the venue') : venue
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
