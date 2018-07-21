@@ -2,7 +2,7 @@ const logger = require('logger').getLogger()
 const Boom = require('boom')
 const Joi = require('joi')
 const path = require('path')
-const pre = require(path.join(__dirname, '..', 'pre'))
+const helpers = require(path.join(__dirname, '..', 'helpers'))
 
 module.exports = [
   {
@@ -10,11 +10,31 @@ module.exports = [
     path: '/venue',
     config: {
       tags: ['api'],
+      description: 'Gets all venues',
+      handler: async (request, h) => {
+        try {
+          let venues = await request.server.methods.venue.find()
+          return venues
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
+        }
+      },
+      response: {
+        schema: helpers.responses.venues
+      }
+    }
+  },
+  {
+    method: 'GET',
+    path: '/venue/{edition}',
+    config: {
+      tags: ['api'],
       description: 'Gets a venue or all editions\' venues',
       notes: 'based on the edition and/or token in the query',
       handler: async (request, h) => {
         try {
-          let venue = await request.server.methods.venue.find(request.query)
+          let venue = await request.server.methods.venue.find(request.params)
           return venue === null ? Boom.notFound('No venue associated') : venue
         } catch (err) {
           logger.error(err)
@@ -22,11 +42,14 @@ module.exports = [
         }
       },
       validate: {
-        query: {
+        params: {
           edition: Joi.string().min(1)
             .max(30)
             .description('Edition Number')
         }
+      },
+      response: {
+        schema: helpers.responses.venue
       }
     }
   },
@@ -37,8 +60,8 @@ module.exports = [
       tags: ['api'],
       description: 'Uploads a venue\'s image to the latest edition',
       pre: [
-        pre.edition,
-        pre.file
+        helpers.pre.edition,
+        helpers.pre.file
       ],
       handler: async (request, h) => {
         try {
@@ -80,6 +103,9 @@ module.exports = [
         parse: true,
         output: 'stream',
         allow: 'multipart/form-data'
+      },
+      response: {
+        schema: helpers.responses.venue
       }
     }
   }
