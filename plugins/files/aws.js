@@ -6,7 +6,7 @@ function promiseWrapper (s3, key, params, returnData) {
   return new Promise((resolve, reject) => {
     s3[key](params, (err, data) => {
       if (err) {
-        reject(err)
+        resolve(null)
       }
 
       resolve(returnData || data)

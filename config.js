@@ -16,7 +16,7 @@ module.exports = {
     SECRET: process.env.CORLIEF_STORAGE_SECRET,
     REGION: process.env.CORLIEF_STORAGE_REGION,
     DOMAIN: process.env.CORLIEF_STORAGE_DOMAIN,
-    PATH: process.env.CORLIEF_STORAGE_PATH || '/',
+    PATH: process.env.CORLIEF_STORAGE_PATH || '/dev/',
     TEST: process.env.CORLIEF_STORAGE_TEST || '/test/'
   },
 
