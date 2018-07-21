@@ -2,5 +2,6 @@ module.exports = [
   require('./logger'),
   require('./jwt'),
   require('./mongo'),
-  require('./deck')
+  require('./deck'),
+  require('./files')
 ]

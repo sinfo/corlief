@@ -2,6 +2,7 @@ const path = require('path')
 const { before, after, it, describe } = require('mocha')
 const {expect} = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
+const mocks = require('./mocks')
 let server
 
 describe('link', function () {
@@ -15,34 +16,23 @@ describe('link', function () {
   })
 
   describe('delete', async function () {
-    const newLinkData = {
-      companyId: 'someCompany',
-      edition: 'someEdition',
-      created: new Date(),
-      token: 'someToken',
-      valid: true,
-      participationDays: 3,
-      activities: [],
-      advertisementKind: 'someAdv'
-    }
-
     before('adding link to db', async function () {
-      let newLink = new Link(newLinkData)
+      let newLink = new Link(mocks.LINK)
       await newLink.save()
     })
 
     it('should be able to delete an existing link', async function () {
       let response = await server.inject({
         method: 'DELETE',
-        url: `/link/company/${newLinkData.companyId}/edition/${newLinkData.edition}`
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`
       })
 
-      let link = await Link.findOne(newLinkData)
+      let link = await Link.findOne(mocks.LINK)
 
       expect(response.statusCode).to.eql(200)
 
-      Object.keys(newLinkData).forEach(key => {
-        expect(response.result[key]).to.eql(newLinkData[key])
+      Object.keys(mocks.LINK).forEach(key => {
+        expect(response.result[key]).to.eql(mocks.LINK[key])
       })
 
       expect(link).to.be.null
@@ -51,14 +41,14 @@ describe('link', function () {
     it('should give an error when trying to delete a nonexisting link', async function () {
       let response = await server.inject({
         method: 'DELETE',
-        url: `/link/company/${newLinkData.companyId}_nonexistent/edition/${newLinkData.edition}`
+        url: `/link/company/${mocks.LINK.companyId}_nonexistent/edition/${mocks.LINK.edition}`
       })
 
       expect(response.statusCode).to.eql(422)
     })
 
     after('removing link to db', async function () {
-      await Link.findOneAndRemove(newLinkData)
+      await Link.findOneAndRemove(mocks.LINK)
     })
   })
 
