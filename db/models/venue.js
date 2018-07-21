@@ -9,27 +9,42 @@ let venueSchema = mongoose.Schema({
     type: String,
     unique: true
   },
-  stands: [{
-    id: {
-      type: Number,
-      min: 0,
-      required: true
-    },
-    pos1: {
-      type: {
-        x: Number,
-        y: Number
+  stands: {
+    type: [{
+      id: {
+        type: Number,
+        min: 0,
+        required: true
       },
-      required: true
-    },
-    pos2: {
-      type: {
-        x: Number,
-        y: Number
+      pos1: {
+        type: {
+          x: {
+            type: Number,
+            min: 0
+          },
+          y: {
+            type: Number,
+            min: 0
+          }
+        },
+        required: true
       },
-      required: true
-    }
-  }]
+      pos2: {
+        type: {
+          x: {
+            type: Number,
+            min: 0
+          },
+          y: {
+            type: Number,
+            min: 0
+          }
+        },
+        required: true
+      }
+    }],
+    default: []
+  }
 })
 
 module.exports = mongoose.model('Venue', venueSchema)

@@ -1,4 +1,3 @@
-
 let path = require('path')
 let Link = require(path.join(__dirname, '..', 'models', 'link'))
 
