@@ -5,7 +5,7 @@ const config = require(path.join(__dirname, '..', '..', 'config'))
 const ROOT = process.env.NODE_ENV === 'test' ? config.STORAGE.TEST : config.STORAGE.PATH
 
 function upload (dir, isPublic) {
-  return (edition, companyId, file, filename) => {
+  return (file, filename, edition, companyId) => {
     const path = dir === 'venue'
       ? `${ROOT}${edition}/venue`
       : `${ROOT}${edition}/${companyId}/${dir}`
@@ -14,7 +14,7 @@ function upload (dir, isPublic) {
 }
 
 function download (dir) {
-  return (edition, companyId, filename) => {
+  return (filename, edition, companyId) => {
     const path = dir === 'venue'
       ? `${ROOT}${edition}/venue`
       : `${ROOT}${edition}/${companyId}/${dir}`
@@ -23,7 +23,7 @@ function download (dir) {
 }
 
 function remove (dir) {
-  return (edition, companyId, filename) => {
+  return (filename, edition, companyId) => {
     const path = dir === 'venue'
       ? `${ROOT}${edition}/venue`
       : `${ROOT}${edition}/${companyId}/${dir}`

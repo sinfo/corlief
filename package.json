@@ -48,6 +48,7 @@
     "joi": "^13.4.0",
     "jsonwebtoken": "^8.3.0",
     "logger": "git+https://github.com/sinfo/logger.git",
+    "mime-types": "^2.1.19",
     "mongoose": "^5.2.3",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",

@@ -3,7 +3,8 @@ let mongoose = require('mongoose')
 let venueSchema = mongoose.Schema({
   edition: {
     type: String,
-    unique: true
+    unique: true,
+    required: true
   },
   image: {
     type: String,

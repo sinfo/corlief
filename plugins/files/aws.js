@@ -1,6 +1,7 @@
 const aws = require('aws-sdk')
 const path = require('path')
 const config = require(path.join(__dirname, '..', '..', 'config'))
+const mime = require('mime-types')
 
 function promiseWrapper (s3, key, params, returnData) {
   return new Promise((resolve, reject) => {
@@ -38,7 +39,8 @@ module.exports.upload = (path, buffer, filename, isPublic) => {
     ACL: isPublic !== undefined && isPublic ? 'public-read' : 'authenticated-read',
     Body: buffer,
     Bucket: config.STORAGE.NAME,
-    Key: filename
+    Key: filename,
+    ContentType: mime.lookup(filename)
   }, `https://${config.STORAGE.NAME}.${config.STORAGE.REGION}.${config.STORAGE.DOMAIN}${path}/${filename}`)
 }
 
