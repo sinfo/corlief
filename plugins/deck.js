@@ -12,11 +12,9 @@ async function validateToken (user, token) {
       json: true
     })
 
-    console.log(true)
     return true
   } catch (err) {
     if (err.statusCode === 404 || err.statusCode === 401) {
-      console.log(false)
       return false
     }
 

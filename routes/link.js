@@ -1,6 +1,8 @@
 const logger = require('logger').getLogger()
 const Boom = require('boom')
 const Joi = require('joi')
+const path = require('path')
+const helpers = require(path.join(__dirname, '..', 'helpers'))
 
 module.exports = [
   {
@@ -31,6 +33,9 @@ module.exports = [
           token: Joi.string()
             .description('Token')
         }
+      },
+      response: {
+        schema: helpers.responses.links
       }
     }
   },
@@ -62,6 +67,9 @@ module.exports = [
             .required().min(1).max(30)
             .description('Edition identifier')
         }
+      },
+      response: {
+        schema: helpers.responses.link
       }
     }
   }
