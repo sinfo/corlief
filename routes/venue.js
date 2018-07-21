@@ -1,6 +1,8 @@
 const logger = require('logger').getLogger()
 const Boom = require('boom')
 const Joi = require('joi')
+const path = require('path')
+const pre = require(path.join(__dirname, '..', 'pre'))
 
 module.exports = [
   {
@@ -34,24 +36,31 @@ module.exports = [
     config: {
       tags: ['api'],
       description: 'Uploads a venue\'s image to the latest edition',
+      pre: [
+        pre.edition,
+        pre.file
+      ],
       handler: async (request, h) => {
         try {
-          let edition = await request.server.methods.deck.getLatestEdition()
+          let edition = request.pre.edition
+          let file = request.pre.file
 
-          let file = request.payload.file
-          let imageLocation = await request.server.methods.files.venue.upload(file, 'venue.png', edition.id)
+          let imageLocation = await request.server.methods.files.venue.upload(
+            file.data,
+            `venue${file.extension}`,
+            edition)
 
           if (imageLocation === null) {
             return Boom.expectationFailed('Could not upload image')
           }
 
-          let venue = await request.server.methods.venue.find({ edition: edition.id })
+          let venue = await request.server.methods.venue.find({ edition: edition })
 
           if (venue === null || venue === []) {
-            venue = await request.server.methods.venue.create(edition.id)
+            venue = await request.server.methods.venue.create(edition)
           }
 
-          let updatedVenue = await request.server.methods.venue.updateImage(edition.id, imageLocation)
+          let updatedVenue = await request.server.methods.venue.updateImage(edition, imageLocation)
 
           return updatedVenue === null ? Boom.badData('Invalid data for the venue') : updatedVenue
         } catch (err) {
@@ -75,7 +84,7 @@ module.exports = [
       payload: {
         maxBytes: 1024 * 1024 * 100, // 100MB
         parse: true,
-        output: 'data',
+        output: 'stream',
         allow: 'multipart/form-data'
       }
     }
