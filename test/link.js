@@ -38,8 +38,8 @@ describe('link', async function () {
       expect(response.statusCode).to.eql(422)
     })
 
-    after('removing link to db', async function () {
-      await Link.findOneAndRemove(mocks.LINK)
+    after('removing link from db', async function () {
+      await Link.collection.drop()
     })
   })
 })
