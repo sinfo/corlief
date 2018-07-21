@@ -5,8 +5,8 @@ const config = require(path.join(__dirname, '..', 'config'))
 const mongoMethods = require(path.join(__dirname, '..', 'db'))
 
 const MONGO_URL = process.env.NODE_ENV === 'test'
-  ? `mongodb://localhost:${config.MONGO_PORT}/${config.MONGO_DB_TEST}`
-  : `mongodb://localhost:${config.MONGO_PORT}/${config.MONGO_DB}`
+  ? `mongodb://localhost:${config.MONGO.PORT}/${config.MONGO.TEST}`
+  : `mongodb://localhost:${config.MONGO.PORT}/${config.MONGO.DB}`
 
 module.exports = {
   name: 'mongo',
