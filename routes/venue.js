@@ -69,7 +69,7 @@ module.exports = [
           file: Joi.any()
             .meta({ swaggerType: 'file' })
             .required()
-            .description('png file')
+            .description('image file')
         }
       },
       payload: {
