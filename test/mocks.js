@@ -8,5 +8,13 @@ module.exports = {
     participationDays: 3,
     activities: [],
     advertisementKind: 'someAdv'
+  },
+  VENUE1: {
+    edition: 'someEdition',
+    image: 'someImageUrl'
+  },
+  VENUE2: {
+    edition: 'someOtherEdition',
+    image: 'someOtherImageUrl'
   }
 }
