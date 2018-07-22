@@ -21,6 +21,13 @@ let linkSchema = mongoose.Schema({
     date: Date
   }],
   advertisementKind: String
+}, {
+  toJSON: {
+    transform: function (doc, ret) {
+      delete ret._id
+      delete ret.__v
+    }
+  }
 })
 
 module.exports = mongoose.model('Link', linkSchema)

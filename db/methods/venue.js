@@ -1,10 +1,12 @@
 let path = require('path')
 let Venue = require(path.join(__dirname, '..', 'models', 'venue'))
 
-const ommit = { _id: 0, __v: 0 }
+module.exports.arrayToJSON = (venues) => {
+  return venues.map(venue => venue.toJSON())
+}
 
 module.exports.find = async (filter) => {
-  return filter ? Venue.findOne(filter, ommit).lean() : Venue.find({}, ommit).lean()
+  return filter ? Venue.findOne(filter) : Venue.find()
 }
 
 module.exports.updateImage = async (edition, image) => {
@@ -19,8 +21,7 @@ module.exports.updateImage = async (edition, image) => {
     },
     {
       new: true,
-      upsert: true,
-      projection: ommit
+      upsert: true
     }
-  ).lean()
+  )
 }

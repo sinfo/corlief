@@ -16,7 +16,10 @@ module.exports = [
       handler: async (request, h) => {
         try {
           let link = await request.server.methods.link.find(request.query)
-          return link === null ? Boom.badData('No link associated') : link
+          let result = link.length !== undefined
+            ? await request.server.methods.link.arrayToJSON(link)
+            : link.toJSON()
+          return result === null ? Boom.badData('No link associated') : result
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
@@ -52,7 +55,7 @@ module.exports = [
 
         try {
           let link = await request.server.methods.link.delete(companyId, edition)
-          return link === null ? Boom.badData('No link associated') : link
+          return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)

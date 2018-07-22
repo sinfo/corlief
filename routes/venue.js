@@ -14,7 +14,8 @@ module.exports = [
       handler: async (request, h) => {
         try {
           let venues = await request.server.methods.venue.find()
-          return venues
+          let result = await request.server.methods.venue.arrayToJSON(venues)
+          return result
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
@@ -35,7 +36,7 @@ module.exports = [
       handler: async (request, h) => {
         try {
           let venue = await request.server.methods.venue.find(request.params)
-          return venue === null ? Boom.notFound('No venue associated') : venue
+          return venue === null ? Boom.notFound('No venue associated') : venue.toJSON()
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
@@ -79,8 +80,9 @@ module.exports = [
 
           let venue = await request.server.methods.venue.updateImage(edition, imageLocation)
 
-          return venue === null ? Boom.badData('Invalid data for the venue') : venue
+          return venue === null ? Boom.badData('Invalid data for the venue') : venue.toJSON()
         } catch (err) {
+          console.error(err)
           logger.error(err)
           return Boom.boomify(err)
         }
