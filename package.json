@@ -9,7 +9,7 @@
     "test": "./node_modules/.bin/mocha --exit --timeout 5000 --slow 1000",
     "lint": "./node_modules/.bin/eslint --ext .js .",
     "gen-keys": "ssh-keygen -t rsa -b 4096 -f ./keys/jwtRS256.key -q -N \"\"; openssl rsa -in ./keys/jwtRS256.key -pubout -outform PEM -out ./keys/jwtRS256.key.pub",
-    "production": "NODE_ENV=production node index.js"
+    "production": "node index.js production"
   },
   "pre-commit": [
     "lint",
