@@ -13,8 +13,8 @@ module.exports = [
       notes: 'based on the company id and/or edition and/or token in the query',
       handler: async (request, h) => {
         try {
-          let link = await request.server.methods.link.find(request.query)
-          return link === null ? Boom.badData('No link associated') : link
+          let links = await request.server.methods.link.find(request.query)
+          return links
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)

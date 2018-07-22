@@ -2,12 +2,10 @@ let mongoose = require('mongoose')
 
 let linkSchema = mongoose.Schema({
   companyId: {
-    type: String,
-    unique: true
+    type: String
   },
   edition: {
-    type: String,
-    unique: true
+    type: String
   },
   created: Date,
   token: {

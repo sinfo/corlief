@@ -7,5 +7,5 @@ module.exports.delete = async (companyId, edition) => {
 }
 
 module.exports.find = async (filter) => {
-  return Link.find(filter)
+  return Link.find(filter).lean()
 }
