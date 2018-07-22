@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "watch": "./node_modules/.bin/nodemon",
-    "test": "./node_modules/.bin/mocha --exit --timeout 5000 --slow 1000",
+    "test": "./node_modules/.bin/mocha --file ./test/prepareServer ./test/* --exit --timeout 5000 --slow 1000",
     "lint": "./node_modules/.bin/eslint --ext .js .",
     "gen-keys": "ssh-keygen -t rsa -b 4096 -f ./keys/jwtRS256.key -q -N \"\"; openssl rsa -in ./keys/jwtRS256.key -pubout -outform PEM -out ./keys/jwtRS256.key.pub",
     "production": "node index.js production"
@@ -34,11 +34,14 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
     "eslint-plugin-standard": "^3.1.0",
+    "form-data": "^2.3.2",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.1",
-    "pre-commit": "^1.2.2"
+    "pre-commit": "^1.2.2",
+    "stream-to-promise": "^2.2.0"
   },
   "dependencies": {
+    "aws-sdk": "^2.278.1",
     "boom": "^7.2.0",
     "hapi": "^17.5.2",
     "hapi-router": "^4.0.0",
@@ -47,6 +50,7 @@
     "joi": "^13.4.0",
     "jsonwebtoken": "^8.3.0",
     "logger": "git+https://github.com/sinfo/logger.git",
+    "mime-types": "^2.1.19",
     "mongoose": "^5.2.3",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
