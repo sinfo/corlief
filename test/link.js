@@ -7,41 +7,10 @@ const server = require(path.join(__dirname, '..', 'app')).server
 
 describe('link', async function () {
   describe('get', async function () {
-    const linkData11 = new Link({
-      companyId: 'oneCompany',
-      edition: 'oneEdition',
-      created: new Date(),
-      token: 'oneToken',
-      valid: true,
-      participationDays: 1,
-      activities: [],
-      advertisementKind: 'oneAdv'
-    })
-    const linkData12 = new Link({
-      companyId: 'oneCompany',
-      edition: 'twoEdition',
-      created: new Date(),
-      token: 'twoToken',
-      valid: true,
-      participationDays: 2,
-      activities: [],
-      advertisementKind: 'twoAdv'
-    })
-    const linkData21 = new Link({
-      companyId: 'twoCompany',
-      edition: 'oneEdition',
-      created: new Date(),
-      token: 'threeToken',
-      valid: true,
-      participationDays: 2,
-      activities: [],
-      advertisementKind: 'twoAdv'
-    })
-
     before('adding link to db', async function () {
-      await linkData11.save()
-      await linkData12.save()
-      await linkData21.save()
+      await new Link(mocks.LINK11).save()
+      await new Link(mocks.LINK12).save()
+      await new Link(mocks.LINK21).save()
     })
 
     it('should get a list of all links if no parameters are given', async function () {
@@ -52,64 +21,64 @@ describe('link', async function () {
 
       expect(response.statusCode).to.eql(200)
       expect(response.result.length).to.eql(3)
-      expectToContain(response.result, linkData11)
-      expectToContain(response.result, linkData12)
-      expectToContain(response.result, linkData21)
+      expectToContain(response.result, mocks.LINK11)
+      expectToContain(response.result, mocks.LINK12)
+      expectToContain(response.result, mocks.LINK21)
     })
 
     it('should give a list of links when one parameter is given', async function () {
       // companyId
       let response = await server.inject({
         method: 'GET',
-        url: `/link?companyId=${linkData11.companyId}`
+        url: `/link?companyId=${mocks.LINK11.companyId}`
       })
 
       expect(response.statusCode).to.eql(200)
       expect(response.result.length).to.eql(2)
-      expectToContain(response.result, linkData11)
-      expectToContain(response.result, linkData12)
+      expectToContain(response.result, mocks.LINK11)
+      expectToContain(response.result, mocks.LINK12)
 
       // edition
       response = await server.inject({
         method: 'GET',
-        url: `/link?edition=${linkData11.edition}`
+        url: `/link?edition=${mocks.LINK11.edition}`
       })
 
       expect(response.statusCode).to.eql(200)
       expect(response.result.length).to.eql(2)
-      expectToContain(response.result, linkData11)
-      expectToContain(response.result, linkData21)
+      expectToContain(response.result, mocks.LINK11)
+      expectToContain(response.result, mocks.LINK21)
 
       // token
       response = await server.inject({
         method: 'GET',
-        url: `/link?token=${linkData11.token}`
+        url: `/link?token=${mocks.LINK11.token}`
       })
 
       expect(response.statusCode).to.eql(200)
       expect(response.result.length).to.eql(1)
-      expectToContain(response.result, linkData11)
+      expectToContain(response.result, mocks.LINK11)
     })
 
     it('should give a list of links when all parameters are given', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/link?companyId=${linkData21.companyId}&edition=${linkData21.edition}&token=${linkData21.token}`
+        url: `/link?companyId=${mocks.LINK21.companyId}&edition=${mocks.LINK21.edition}&token=${mocks.LINK21.token}`
       })
 
       expect(response.statusCode).to.eql(200)
       expect(response.result.length).to.eql(1)
-      expectToContain(response.result, linkData21)
+      expectToContain(response.result, mocks.LINK21)
 
       // different order
       response = await server.inject({
         method: 'GET',
-        url: `/link?token=${linkData12.token}&edition=${linkData12.edition}&companyId=${linkData12.companyId}`
+        url: `/link?token=${mocks.LINK12.token}&edition=${mocks.LINK12.edition}&companyId=${mocks.LINK12.companyId}`
       })
 
       expect(response.statusCode).to.eql(200)
       expect(response.result.length).to.eql(1)
-      expectToContain(response.result, linkData12)
+      expectToContain(response.result, mocks.LINK12)
     })
 
     it('should give an empty list if no match is found', async function () {
@@ -129,8 +98,7 @@ describe('link', async function () {
 
   describe('delete', async function () {
     before('adding link to db', async function () {
-      let newLink = new Link(mocks.LINK)
-      await newLink.save()
+      await new Link(mocks.LINK).save()
     })
 
     it('should be able to delete an existing link', async function () {
