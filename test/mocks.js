@@ -38,5 +38,13 @@ module.exports = {
     participationDays: 2,
     activities: [],
     advertisementKind: 'twoAdv'
+  },
+  VENUE1: {
+    edition: 'someEdition',
+    image: 'someImageUrl'
+  },
+  VENUE2: {
+    edition: 'someOtherEdition',
+    image: 'someOtherImageUrl'
   }
 }
