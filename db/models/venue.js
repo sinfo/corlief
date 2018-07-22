@@ -55,4 +55,12 @@ let venueSchema = mongoose.Schema({
   }
 })
 
+venueSchema.options.toJSON = {
+  transform: function (doc, ret, options) {
+    delete ret._id
+    delete ret.__v
+    return ret
+  }
+}
+
 module.exports = mongoose.model('Venue', venueSchema)
