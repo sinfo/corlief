@@ -75,5 +75,47 @@ module.exports = [
         schema: helpers.responses.link
       }
     }
+  },
+  {
+    method: 'PUT',
+    path: '/link/company/{company}/edition/{edition}',
+    config: {
+      tags: ['api'],
+      description: 'Updates a link\'s information',
+      notes: 'Returns the updated link',
+      handler: async (request, h) => {
+        let companyId = request.params.companyId
+        let edition = request.params.edition
+        let participationDays = request.payload.participationDays !== undefined
+          ? request.payload.participationDays : 0
+        let advertisementKind = request.payload.advertisementKind !== undefined
+          ? request.payload.advertisementKind : 'none'
+
+        try {
+          let link = await request.server.methods.link.update(
+            companyId, edition, participationDays, advertisementKind)
+          return link === null ? Boom.badData('No link associated') : link.toJSON()
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        params: {
+          companyId: Joi.string()
+            .required().min(1).max(50)
+            .description('Company identifier'),
+          edition: Joi.string()
+            .required().min(1).max(30)
+            .description('Edition identifier')
+        },
+        payload: {
+          participationDays: Joi.number().integer().min(1)
+            .description('Number of days company is participating'),
+          advertisementKind: Joi.string().min(1).max(20)
+            .description('Type of package')
+        }
+      }
+    }
   }
 ]
