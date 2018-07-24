@@ -22,7 +22,7 @@ module.exports = [
         }
       },
       response: {
-        schema: helpers.responses.venues
+        schema: helpers.joi.venues
       }
     }
   },
@@ -50,7 +50,7 @@ module.exports = [
         }
       },
       response: {
-        schema: helpers.responses.venue
+        schema: helpers.joi.venue
       }
     }
   },
@@ -82,7 +82,6 @@ module.exports = [
 
           return venue === null ? Boom.badData('Invalid data for the venue') : venue.toJSON()
         } catch (err) {
-          console.error(err)
           logger.error(err)
           return Boom.boomify(err)
         }
@@ -107,7 +106,36 @@ module.exports = [
         allow: 'multipart/form-data'
       },
       response: {
-        schema: helpers.responses.venue
+        schema: helpers.joi.venue
+      }
+    }
+  },
+  {
+    method: 'POST',
+    path: '/venue/stand',
+    config: {
+      tags: ['api'],
+      description: 'Adds a stand to the venue corresponding to the latest edition',
+      pre: [
+        helpers.pre.edition
+      ],
+      handler: async (request, h) => {
+        try {
+          let topLeft = request.payload.topLeft
+          let bottomRight = request.payload.bottomRight
+          let venue = await request.server.methods.venue.addStand(request.pre.edition, topLeft, bottomRight)
+          return venue === null ? Boom.badData('invalid data') : venue.toJSON()
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        payload: helpers.joi.standPayload
+          .description('Stand')
+      },
+      response: {
+        schema: helpers.joi.venue
       }
     }
   }

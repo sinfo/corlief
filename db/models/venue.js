@@ -15,9 +15,10 @@ let venueSchema = mongoose.Schema({
       id: {
         type: Number,
         min: 0,
-        required: true
+        required: true,
+        unique: true
       },
-      pos1: {
+      topLeft: {
         type: {
           x: {
             type: Number,
@@ -30,7 +31,7 @@ let venueSchema = mongoose.Schema({
         },
         required: true
       },
-      pos2: {
+      bottomRight: {
         type: {
           x: {
             type: Number,
@@ -51,6 +52,10 @@ let venueSchema = mongoose.Schema({
     transform: function (doc, ret) {
       delete ret._id
       delete ret.__v
+      ret.stands.forEach(stand => {
+        delete stand._id
+        delete stand.__v
+      })
     }
   }
 })

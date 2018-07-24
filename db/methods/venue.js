@@ -1,15 +1,15 @@
 let path = require('path')
 let Venue = require(path.join(__dirname, '..', 'models', 'venue'))
 
-module.exports.arrayToJSON = (venues) => {
+function arrayToJSON (venues) {
   return venues.map(venue => venue.toJSON())
 }
 
-module.exports.find = async (filter) => {
+async function find (filter) {
   return filter ? Venue.findOne(filter) : Venue.find()
 }
 
-module.exports.updateImage = async (edition, image) => {
+async function updateImage (edition, image) {
   return Venue.findOneAndUpdate(
     {
       edition: edition
@@ -25,3 +25,34 @@ module.exports.updateImage = async (edition, image) => {
     }
   )
 }
+
+async function addStand (edition, topLeft, bottomRight) {
+  let venue = await find({ edition: edition })
+  let standsId = venue.stands.map(stand => stand.id).sort()
+  let newId
+
+  for (newId = 0; newId < standsId.length; newId++) {
+    if (newId < standsId[newId].id) {
+      break
+    }
+  }
+
+  venue.stands.push({
+    id: newId,
+    topLeft: {
+      x: topLeft.x,
+      y: topLeft.y
+    },
+    bottomRight: {
+      x: bottomRight.x,
+      y: bottomRight.y
+    }
+  })
+
+  return venue.save()
+}
+
+module.exports.arrayToJSON = arrayToJSON
+module.exports.find = find
+module.exports.updateImage = updateImage
+module.exports.addStand = addStand
