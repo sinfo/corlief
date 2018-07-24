@@ -28,11 +28,16 @@ async function updateImage (edition, image) {
 
 async function addStand (edition, topLeft, bottomRight) {
   let venue = await find({ edition: edition })
+
+  if (venue === null || venue.image.length === 0) {
+    return null
+  }
+
   let standsId = venue.stands.map(stand => stand.id).sort()
   let newId
 
   for (newId = 0; newId < standsId.length; newId++) {
-    if (newId < standsId[newId].id) {
+    if (newId < standsId[newId]) {
       break
     }
   }

@@ -123,8 +123,19 @@ module.exports = [
         try {
           let topLeft = request.payload.topLeft
           let bottomRight = request.payload.bottomRight
+
+          if (topLeft.x > bottomRight.x) {
+            return Boom.badData('topLeft should have an \'x value lower than bottomRight\'s')
+          }
+
+          if (topLeft.y < bottomRight.y) {
+            return Boom.badData('topLeft should have an \'y value lower than bottomRight\'s')
+          }
+
           let venue = await request.server.methods.venue.addStand(request.pre.edition, topLeft, bottomRight)
-          return venue === null ? Boom.badData('invalid data') : venue.toJSON()
+          return venue === null
+            ? Boom.badData('No venue associated with this event or with image')
+            : venue.toJSON()
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
