@@ -131,6 +131,9 @@ module.exports = [
 
           return Boom.boomify(err)
         }
+      },
+      response: {
+        schema: helpers.responses.link
       }
     }
   }
