@@ -133,7 +133,7 @@ module.exports = [
         }
       },
       response: {
-        schema: helpers.responses.link
+        schema: helpers.joi.link
       }
     }
   }
