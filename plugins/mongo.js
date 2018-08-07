@@ -34,5 +34,6 @@ module.exports = {
     server.method('venue.find', mongoMethods.venue.find)
     server.method('venue.updateImage', mongoMethods.venue.updateImage)
     server.method('venue.addStand', mongoMethods.venue.addStand)
+    server.method('venue.replaceStands', mongoMethods.venue.replaceStands)
   }
 }
