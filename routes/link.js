@@ -123,12 +123,12 @@ module.exports = [
             return Boom.badData('CompanyId does not exist')
           }
 
-          let link = await request.server.methods.link.create(companyId, edition, token, participationDays, activities, advertisementKind)
+          let link = await request.server.methods.link.create(
+            companyId, edition, token, participationDays, activities, advertisementKind)
 
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
           logger.error(err)
-
           return Boom.boomify(err)
         }
       },

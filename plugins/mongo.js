@@ -26,6 +26,7 @@ module.exports = {
       })
     }
 
+    server.method('link.create', mongoMethods.link.create)
     server.method('link.delete', mongoMethods.link.delete)
     server.method('link.find', mongoMethods.link.find)
     server.method('link.arrayToJSON', mongoMethods.venue.arrayToJSON)
