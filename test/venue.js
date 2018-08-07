@@ -313,4 +313,93 @@ describe('venue', function () {
       )
     })
   })
+
+  describe('replace stands in venue', async function () {
+    let venue
+
+    before('create venue with image and add a stand', async function () {
+      let form = new FormData()
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js')))
+
+      let payload = await streamToPromise(form)
+      let headers = form.getHeaders()
+
+      await server.inject({
+        method: 'POST',
+        url: `/venue/image`,
+        headers: headers,
+        payload: payload
+      })
+
+      let res = await server.inject({
+        method: 'POST',
+        url: '/venue/stand',
+        headers: headers,
+        payload: mocks.STAND1
+      })
+
+      venue = res.result
+    })
+
+    it('should replace the stand with the new stands', async function () {
+      let stands = [
+        mocks.STAND1,
+        mocks.STAND2,
+        mocks.STAND3,
+        mocks.STAND4
+      ]
+
+      let res = await server.inject({
+        method: 'PUT',
+        url: '/venue/stand',
+        payload: stands
+      })
+
+      let result = res.result
+
+      expect(res.statusCode).to.eql(200)
+      expect(result.stands.length).to.eql(4)
+
+      expect(result.stands.map(stand => {
+        delete stand.id
+        return stand
+      })).to.eql(stands)
+    })
+
+    it('should give an error if one of the stands has topleft.x > bottomRight.x', async function () {
+      let stands = [
+        mocks.STAND1,
+        {
+          topLeft: {
+            x: 1,
+            y: 1
+          },
+          bottomRight: {
+            x: 0,
+            y: 0
+          }
+        },
+        mocks.STAND2
+      ]
+
+      let res = await server.inject({
+        method: 'PUT',
+        url: `/venue/stand`,
+        payload: stands
+      })
+
+      expect(res.statusCode).to.eql(422)
+    })
+
+    after('cleaning up venues', async function () {
+      await Venue.collection.drop()
+    })
+
+    afterEach('delete stands from venue', async function () {
+      await Venue.findOneAndUpdate(
+        { edition: venue.edition },
+        { $set: { stands: [] } }
+      )
+    })
+  })
 })
