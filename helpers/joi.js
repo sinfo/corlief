@@ -65,3 +65,14 @@ let links = Joi.array().items(link).min(0)
 
 module.exports.link = link
 module.exports.links = links
+
+let config = Joi.object().keys({
+  edition: Joi.string().required(),
+  mandatory_info_before_reservations: Joi.boolean().required(),
+  consecutive_days_reservations: Joi.boolean().required()
+}).label('config')
+
+let configs = Joi.array().items(config).min(0)
+
+module.exports.config = config
+module.exports.configs = configs
