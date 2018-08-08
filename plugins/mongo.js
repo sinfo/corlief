@@ -35,5 +35,9 @@ module.exports = {
     server.method('venue.updateImage', mongoMethods.venue.updateImage)
     server.method('venue.addStand', mongoMethods.venue.addStand)
     server.method('venue.replaceStands', mongoMethods.venue.replaceStands)
+
+    server.method('config.find', mongoMethods.config.find)
+    server.method('config.findByEdition', mongoMethods.config.findByEdition)
+    server.method('config.arrayToJSON', mongoMethods.config.arrayToJSON)
   }
 }
