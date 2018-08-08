@@ -7,7 +7,7 @@ async function create (edition) {
 }
 
 module.exports.find = async () => {
-  return Config.find()
+  return Config.find({})
 }
 
 module.exports.findByEdition = async (edition) => {
