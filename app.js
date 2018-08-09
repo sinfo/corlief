@@ -6,6 +6,7 @@ const HapiSwagger = require('hapi-swagger')
 const Pack = require('./package')
 const plugins = require('./plugins')
 const config = require('./config')
+const auth = require('./auth')
 
 // Create a server with a host and port
 const server = Hapi.server({
@@ -14,6 +15,8 @@ const server = Hapi.server({
 })
 
 async function register () {
+  await server.register(plugins)
+  auth(server)
   await server.register([
     {
       plugin: hapiRouter,
@@ -32,7 +35,7 @@ async function register () {
         }
       }
     }
-  ].concat(plugins))
+  ])
 }
 
 // Start the server

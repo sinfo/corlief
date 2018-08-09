@@ -1,6 +1,6 @@
 module.exports = {
   LINK: {
-    companyId: 'someCompany',
+    companyId: 'accenture',
     edition: 'someEdition',
     created: new Date(),
     token: 'someToken',
