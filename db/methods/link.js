@@ -22,6 +22,10 @@ module.exports.find = async (filter) => {
   return Link.find(filter)
 }
 
+module.exports.findByToken = async (token) => {
+  return Link.findOne({ token: token })
+}
+
 module.exports.arrayToJSON = (venues) => {
   return venues.map(venue => venue.toJSON())
 }
