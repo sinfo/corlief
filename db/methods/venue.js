@@ -57,7 +57,25 @@ async function addStand (edition, topLeft, bottomRight) {
   return venue.save()
 }
 
+async function replaceStands (edition, stands) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null || venue.image.length === 0) {
+    return null
+  }
+
+  venue.stands = []
+
+  for (let id = 0; id < stands.length; id++) {
+    let standWithId = Object.assign(stands[id], { id: id })
+    venue.stands.push(standWithId)
+  }
+
+  return venue.save()
+}
+
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.updateImage = updateImage
 module.exports.addStand = addStand
+module.exports.replaceStands = replaceStands
