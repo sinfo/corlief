@@ -34,12 +34,13 @@ async function addStand (edition, topLeft, bottomRight) {
   }
 
   let standsId = venue.stands.map(stand => stand.id).sort()
-  let newId
+  let newId = 0
 
-  for (newId = 0; newId < standsId.length; newId++) {
-    if (newId < standsId[newId]) {
+  for (let standId of standsId) {
+    if (newId < standId) {
       break
     }
+    newId += 1
   }
 
   venue.stands.push({
@@ -65,10 +66,12 @@ async function replaceStands (edition, stands) {
   }
 
   venue.stands = []
+  let id = 0
 
-  for (let id = 0; id < stands.length; id++) {
-    let standWithId = Object.assign(stands[id], { id: id })
+  for (let stand of stands) {
+    let standWithId = Object.assign(stand, { id: id })
     venue.stands.push(standWithId)
+    id += 1
   }
 
   return venue.save()

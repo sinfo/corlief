@@ -16,7 +16,7 @@ describe('venue', function () {
 
     before('getting a file', async function () {
       let form = new FormData()
-      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js')))
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
       payload = await streamToPromise(form)
       headers = form.getHeaders()
     })
@@ -172,7 +172,7 @@ describe('venue', function () {
 
     before('create venue with image', async function () {
       let form = new FormData()
-      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js')))
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
 
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
@@ -319,7 +319,7 @@ describe('venue', function () {
 
     before('create venue with image and add a stand', async function () {
       let form = new FormData()
-      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js')))
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
 
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
