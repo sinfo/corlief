@@ -9,6 +9,26 @@ module.exports = {
     activities: [],
     advertisementKind: 'someAdv'
   },
+  LINK2: {
+    companyId: 'link',
+    edition: 'someEdition',
+    created: new Date(),
+    token: 'someToken',
+    valid: true,
+    participationDays: 3,
+    activities: [],
+    advertisementKind: 'someAdv'
+  },
+  INVALID_LINK: {
+    companyId: 'noesis',
+    edition: 'someEdition',
+    created: new Date(),
+    token: 'someToken',
+    valid: false,
+    participationDays: 3,
+    activities: [],
+    advertisementKind: 'someAdv'
+  },
   VENUE1: {
     edition: 'someEdition',
     image: 'someImageUrl'
