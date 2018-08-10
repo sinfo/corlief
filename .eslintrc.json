@@ -1,7 +1,11 @@
 {
-    "extends": "standard",
+    "extends": [
+        "standard",
+        "plugin:security/recommended"
+    ],
     "plugins": [
-        "chai-friendly"
+        "chai-friendly",
+        "security"
     ],
     "rules": {
         "no-unused-expressions": 0,
