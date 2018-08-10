@@ -76,3 +76,12 @@ let configs = Joi.array().items(config).min(0)
 
 module.exports.config = config
 module.exports.configs = configs
+
+let credentials = Joi.object().keys({
+  exp: Joi.number().required(),
+  company: Joi.string().required(),
+  edition: Joi.string().required(),
+  iat: Joi.number()
+})
+
+module.exports.credentials = credentials
