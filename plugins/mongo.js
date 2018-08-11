@@ -47,5 +47,7 @@ module.exports = {
     server.method('reservation.findOne', mongoMethods.reservation.findOne)
     server.method('reservation.addStands', mongoMethods.reservation.addStands)
     server.method('reservation.isConfirmed', mongoMethods.reservation.isConfirmed)
+    server.method('reservation.isStandAvailable', mongoMethods.reservation.isStandAvailable)
+    server.method('reservation.getLatest', mongoMethods.reservation.getLatest)
   }
 }

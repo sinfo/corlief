@@ -5,14 +5,14 @@ module.exports = server => {
         let link = await request.server.methods.link.findByToken(token)
 
         if (link === null || link.valid === false) {
-          return { isValid: false, credentials: token }
+          return { isValid: false, credentials: token, artifacts: token }
         }
 
         let decoded = await request.server.methods.jwt.verify(token)
 
-        return { isValid: true, credentials: decoded }
+        return { isValid: true, credentials: decoded, artifacts: token }
       } catch (err) {
-        return { isValid: false, credentials: token }
+        return { isValid: false, credentials: token, artifacts: token }
       }
     }
   })

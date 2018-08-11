@@ -62,8 +62,32 @@ async function isConfirmed (companyId, edition) {
   return response
 }
 
+async function isStandAvailable (companyId, edition, stand) {
+  let confirmed = await Reservation.getConfirmedReservations(edition)
+
+  if (confirmed.length === 0) { return true }
+
+  for (let reservation of confirmed) {
+    let stands = reservation.stands
+
+    for (let s of stands) {
+      if (s.day === stand.day && s.standId === stand.standId) {
+        return false
+      }
+    }
+  }
+
+  return true
+}
+
+async function getLatest (companyId, edition) {
+  return Reservation.getLatest(companyId, edition)
+}
+
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.findOne = findOne
 module.exports.addStands = addStands
 module.exports.isConfirmed = isConfirmed
+module.exports.isStandAvailable = isStandAvailable
+module.exports.getLatest = getLatest

@@ -60,3 +60,11 @@ module.exports.file = {
   },
   assign: 'file'
 }
+
+module.exports.link = {
+  method: async (request, h) => {
+    const token = request.auth.artifacts
+    return request.server.methods.link.findByToken(token)
+  },
+  assign: 'link'
+}

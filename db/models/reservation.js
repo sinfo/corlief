@@ -89,9 +89,8 @@ reservationSchema.static('getLatest', async function (companyId, edition) {
     : null
 })
 
-reservationSchema.static('getCurrentConfirmedReservations', async function (edition) {
-  return this.find({ edition: edition })
-    .where('feedback.status', 'CONFIRMED')
+reservationSchema.static('getConfirmedReservations', async function (edition) {
+  return this.find({ edition: edition, 'feedback.status': 'CONFIRMED' })
 })
 
 module.exports = mongoose.model('Reservation', reservationSchema)
