@@ -85,3 +85,27 @@ let credentials = Joi.object().keys({
 })
 
 module.exports.credentials = credentials
+
+let standReservation = Joi.object().keys({
+  day: Joi.number().required().min(1).max(5),
+  standId: Joi.number().required().min(0).max(100)
+})
+
+let standsReservation = Joi.array().items(standReservation).min(1)
+
+module.exports.standReservation = standReservation
+module.exports.standsReservation = standsReservation
+
+let reservation = Joi.object().keys({
+  id: Joi.number().required(),
+  companyId: Joi.string().required(),
+  edition: Joi.string().required(),
+  issued: Joi.date().required(),
+  stands: standsReservation,
+  feedback: Joi.object().keys({
+    status: Joi.string().required(),
+    member: Joi.string().optional()
+  })
+})
+
+module.exports.reservation = reservation
