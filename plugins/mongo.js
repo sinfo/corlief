@@ -46,9 +46,9 @@ module.exports = {
     server.method('reservation.find', mongoMethods.reservation.find)
     server.method('reservation.findOne', mongoMethods.reservation.findOne)
     server.method('reservation.addStands', mongoMethods.reservation.addStands)
-    server.method('reservation.isConfirmed', mongoMethods.reservation.isConfirmed)
-    server.method('reservation.isStandAvailable', mongoMethods.reservation.isStandAvailable)
-    server.method('reservation.getLatest', mongoMethods.reservation.getLatest)
+    server.method('reservation.areAvailable', mongoMethods.reservation.areAvailable)
+    server.method('reservation.canMakeReservation', mongoMethods.reservation.canMakeReservation)
     server.method('reservation.areConsecutive', mongoMethods.reservation.areConsecutive)
+    server.method('reservation.areValid', mongoMethods.reservation.areValid)
   }
 }

@@ -36,7 +36,10 @@ module.exports = [
           helpers.pre.edition,
           helpers.pre.link
         ],
-        helpers.pre.config
+        [
+          helpers.pre.config,
+          helpers.pre.venue
+        ]
       ],
       handler: async (request, h) => {
         let companyId = request.auth.credentials.company
@@ -44,28 +47,36 @@ module.exports = [
         let edition = request.pre.edition
         let link = request.pre.link
         let config = request.pre.config
+        let venue = request.pre.venue
 
         try {
-          for (let stand of stands) {
-            if (!await request.server.methods.reservation.isStandAvailable(companyId, edition, stand)) {
-              return Boom.conflict('Stand not available', stand)
-            }
+          if (stands.length !== link.participationDays) {
+            return Boom.badData('Wrong ammount of stands in reservation', {
+              stands: stands.length,
+              participationDays: link.participationDays
+            })
           }
 
-          let isConfirmed = await request.server.methods.reservation.isConfirmed(companyId, edition)
+          let canMakeReservation = await request.server.methods.reservation.canMakeReservation(companyId, edition)
 
-          if (isConfirmed.result) {
-            return Boom.locked(isConfirmed.error)
+          if (!canMakeReservation.result) {
+            return Boom.locked(canMakeReservation.error)
           }
 
-          let latest = await request.server.methods.reservation.getLatest(companyId, edition)
+          let areValid = await request.server.methods.reservation.areValid(venue, stands)
 
-          if (latest !== null && latest.stands.length >= link.participationDays) {
-            return Boom.entityTooLarge('Cannot book any more stands')
+          if (!areValid) {
+            return Boom.badData('Stand(s) not registered in venue')
+          }
+
+          let areAvailable = await request.server.methods.reservation.areAvailable(edition, stands)
+
+          if (!areAvailable) {
+            return Boom.conflict('Stand(s) not available', stands)
           }
 
           let consecutiveDaysReservations = config.consecutive_days_reservations
-          let areConsecutive = await request.server.methods.reservation.areConsecutive(latest, stands)
+          let areConsecutive = await request.server.methods.reservation.areConsecutive(stands)
 
           if (consecutiveDaysReservations && !areConsecutive) {
             return Boom.badData('Must be consecutive days in the same stand')

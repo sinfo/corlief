@@ -76,3 +76,11 @@ module.exports.config = {
   },
   assign: 'config'
 }
+
+module.exports.venue = {
+  method: async (request, h) => {
+    const edition = request.pre.edition
+    return request.server.methods.venue.find({ edition: edition })
+  },
+  assign: 'venue'
+}

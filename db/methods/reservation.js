@@ -41,9 +41,9 @@ async function addStands (companyId, edition, stands) {
   return latest.addStands(stands)
 }
 
-async function isConfirmed (companyId, edition) {
+async function canMakeReservation (companyId, edition) {
   let response = {
-    result: false,
+    result: true,
     error: null
   }
 
@@ -54,20 +54,36 @@ async function isConfirmed (companyId, edition) {
   }
 
   if (latest.feedback.status === 'CONFIRMED') {
-    response.result = true
+    response.result = false
     response.error = 'Reservation confirmed'
+    return response
+  }
+
+  if (latest.feedback.status === 'PENDING') {
+    response.result = false
+    response.error = 'Pending reservation'
     return response
   }
 
   return response
 }
 
-async function isStandAvailable (companyId, edition, stand) {
-  let confirmed = await Reservation.getConfirmedReservations(edition)
+async function areConsecutive (stands) {
+  stands = stands.sort((s1, s2) => s1.day > s2.day)
 
-  if (confirmed.length === 0) { return true }
+  for (let i = 0; i < stands.length - 1; i++) {
+    if (stands[i].standId !== stands[i + 1].standId || stands[i].day !== stands[i + 1].day - 1) {
+      return false
+    }
+  }
 
-  for (let reservation of confirmed) {
+  return true
+}
+
+async function isStandAvailable (confirmedStands, stand) {
+  if (confirmedStands.length === 0) { return true }
+
+  for (let reservation of confirmedStands) {
     let stands = reservation.stands
 
     for (let s of stands) {
@@ -80,28 +96,23 @@ async function isStandAvailable (companyId, edition, stand) {
   return true
 }
 
-async function getLatest (companyId, edition) {
-  return Reservation.getLatest(companyId, edition)
+async function areAvailable (edition, stands) {
+  let confirmed = await Reservation.getConfirmedReservations(edition)
+
+  for (let stand of stands) {
+    if (!await isStandAvailable(confirmed, stand)) {
+      return false
+    }
+  }
+
+  return true
 }
 
-async function areConsecutive (latest, stands) {
-  let savedStands = latest && latest.stands.length > 0 ? latest.stands : []
+async function areValid (venue, stands) {
+  let ids = venue.getIds()
 
-  stands = stands.filter(stand => {
-    for (let ss of savedStands) {
-      if (ss.day === stand.day) {
-        return false
-      }
-    }
-
-    return true
-  })
-
-  stands = stands.concat(savedStands)
-  stands = stands.sort((s1, s2) => s1.day > s2.day)
-
-  for (let i = 0; i < stands.length - 1; i++) {
-    if (stands[i].standId !== stands[i + 1].standId || stands[i].day !== stands[i + 1].day - 1) {
+  for (let stand of stands) {
+    if (!ids.includes(stand.standId)) {
       return false
     }
   }
@@ -113,7 +124,7 @@ module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.findOne = findOne
 module.exports.addStands = addStands
-module.exports.isConfirmed = isConfirmed
-module.exports.isStandAvailable = isStandAvailable
-module.exports.getLatest = getLatest
+module.exports.canMakeReservation = canMakeReservation
 module.exports.areConsecutive = areConsecutive
+module.exports.areAvailable = areAvailable
+module.exports.areValid = areValid

@@ -60,4 +60,8 @@ let venueSchema = mongoose.Schema({
   }
 })
 
+venueSchema.methods.getIds = function () {
+  return this.stands.map(stand => stand.id)
+}
+
 module.exports = mongoose.model('Venue', venueSchema)
