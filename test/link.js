@@ -59,7 +59,7 @@ describe('link', async function () {
       expect(response.statusCode).to.eql(200)
 
       Object.keys(mocks.LINK).forEach(key => {
-        expect(response.result[key]).to.eql(mocks.LINK[key]) // eslint-disable-line security/detect-object-injection
+        expect(response.result[key]).to.eql(mocks.LINK[key])
       })
 
       expect(link).to.be.null

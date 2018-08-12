@@ -46,7 +46,7 @@ module.exports = [
         let stands = request.payload
         let edition = request.pre.edition
         let link = request.pre.link
-        let config = request.pre.config
+        // let config = request.pre.config
         let venue = request.pre.venue
 
         try {
@@ -75,12 +75,14 @@ module.exports = [
             return Boom.conflict('Stand(s) not available', stands)
           }
 
+          // TODO
+          /*
           let consecutiveDaysReservations = config.consecutive_days_reservations
           let areConsecutive = await request.server.methods.reservation.areConsecutive(stands)
-
           if (consecutiveDaysReservations && !areConsecutive) {
             return Boom.badData('Must be consecutive days in the same stand')
           }
+          */
 
           let reservation = await request.server.methods.reservation.addStands(companyId, edition, stands)
 
