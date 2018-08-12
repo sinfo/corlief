@@ -8,8 +8,6 @@ const plugins = require('./plugins')
 const config = require('./config')
 const auth = require('./auth')
 
-// set node environment
-process.env.NODE_ENV = process.argv.length === 3 ? process.argv[2] : 'test'
 
 // Create a server with a host and port
 const server = Hapi.server({
