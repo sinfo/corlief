@@ -29,3 +29,11 @@ module.exports.findByToken = async (token) => {
 module.exports.arrayToJSON = (venues) => {
   return venues.map(venue => venue.toJSON())
 }
+
+module.exports.setToken = async (query, token) => {
+  return Link.findAndModify({
+    query: query,
+    update: { $set: { token: token } },
+    new: true
+  })
+}
