@@ -2,3 +2,4 @@ node_modules
 keys/*
 data/*
 corlief.sh
+*.swp

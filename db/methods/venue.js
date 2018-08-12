@@ -58,6 +58,26 @@ async function addStand (edition, topLeft, bottomRight) {
   return venue.save()
 }
 
+async function removeStand (edition, id) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null || venue.image.length === 0) {
+    return null
+  }
+
+  // find stand with stand.id == id
+  let i = 0
+  for (; i < venue.stands.length && venue.stands[i].id !== id; i++);
+  if (i === venue.stands[i].length) {
+    return -1 // stand not found
+  }
+
+  // remove element
+  venue.stands.splice(i, 1)
+
+  return venue.save()
+}
+
 async function replaceStands (edition, stands) {
   let venue = await find({ edition: edition })
 
@@ -81,4 +101,5 @@ module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.updateImage = updateImage
 module.exports.addStand = addStand
+module.exports.removeStand = removeStand
 module.exports.replaceStands = replaceStands

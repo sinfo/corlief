@@ -32,7 +32,6 @@ module.exports = [
     config: {
       tags: ['api'],
       description: 'Gets a venue or all editions\' venues',
-      notes: 'based on the edition and/or token in the query',
       handler: async (request, h) => {
         try {
           let venue = await request.server.methods.venue.find(request.params)
@@ -144,6 +143,40 @@ module.exports = [
       validate: {
         payload: helpers.joi.standPayload
           .description('Stand')
+      },
+      response: {
+        schema: helpers.joi.venue
+      }
+    }
+  },
+  {
+    method: 'DELETE',
+    path: '/venue/stand/{id}',
+    config: {
+      tags: ['api'],
+      description: 'Removes stand with id from the venue corresponding to the latest edition',
+      pre: [
+        helpers.pre.edition
+      ],
+      handler: async (request, h) => {
+        try {
+          let venue = await request.server.methods.venue.removeStand(request.pre.edition, request.params)
+          return venue === null
+            ? Boom.badData('No venue associated with this event or with image')
+            : (venue === -1) ? Boom.badData('No stand with this id') : venue.toJSON()
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        params: {
+          id: Joi.string().min(1)
+            .max(30)
+            .description('Stand id')
+        }
+        // payload: helpers.joi.standPayload
+        // .description('Stand')
       },
       response: {
         schema: helpers.joi.venue
