@@ -6,6 +6,97 @@ const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
 
 describe('link', async function () {
+  
+  describe('get', async function () {
+    before('adding link to db', async function () {
+      await new Link(mocks.LINK11).save()
+      await new Link(mocks.LINK12).save()
+      await new Link(mocks.LINK21).save()
+    })
+
+    it('should get a list of all links if no parameters are given', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(3)
+      expectToContain(response.result, mocks.LINK11)
+      expectToContain(response.result, mocks.LINK12)
+      expectToContain(response.result, mocks.LINK21)
+    })
+
+    it('should give a list of links when one parameter is given', async function () {
+      // companyId
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link?companyId=${mocks.LINK11.companyId}`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(2)
+      expectToContain(response.result, mocks.LINK11)
+      expectToContain(response.result, mocks.LINK12)
+
+      // edition
+      response = await server.inject({
+        method: 'GET',
+        url: `/link?edition=${mocks.LINK11.edition}`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(2)
+      expectToContain(response.result, mocks.LINK11)
+      expectToContain(response.result, mocks.LINK21)
+
+      // token
+      response = await server.inject({
+        method: 'GET',
+        url: `/link?token=${mocks.LINK11.token}`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(1)
+      expectToContain(response.result, mocks.LINK11)
+    })
+
+    it('should give a list of links when all parameters are given', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link?companyId=${mocks.LINK21.companyId}&edition=${mocks.LINK21.edition}&token=${mocks.LINK21.token}`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(1)
+      expectToContain(response.result, mocks.LINK21)
+
+      // different order
+      response = await server.inject({
+        method: 'GET',
+        url: `/link?token=${mocks.LINK12.token}&edition=${mocks.LINK12.edition}&companyId=${mocks.LINK12.companyId}`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(1)
+      expectToContain(response.result, mocks.LINK12)
+    })
+
+    it('should give an empty list if no match is found', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link?token=null`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(0)
+    })
+
+    after('removing links from db', async function () {
+      await Link.collection.drop()
+    })
+  })
+  
   describe('add', async function () {
     const EXPIRATION = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
     const MARGIN = 1000 * 5 // 5 seconds
@@ -44,8 +135,7 @@ describe('link', async function () {
 
   describe('delete', async function () {
     before('adding link to db', async function () {
-      let newLink = new Link(mocks.LINK)
-      await newLink.save()
+      await new Link(mocks.LINK).save()
     })
 
     it('should be able to delete an existing link', async function () {
@@ -79,3 +169,11 @@ describe('link', async function () {
     })
   })
 })
+
+function expectToContain (list, obj) {
+  const element = list.find((element) => (element.token === obj.token))
+  expect(element).to.not.eql(undefined)
+  Object.keys(obj).forEach(key => {
+    expect(element[key]).to.eql(element[key])
+  })
+}
