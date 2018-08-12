@@ -8,7 +8,7 @@ const server = require(path.join(__dirname, '..', 'app')).server
 describe('company', async function () {
   const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
   const TO_EXPIRE = new Date().getTime() + 1000 // 1 second
-  let token1, token2, token3
+  let token1, toExpireToken, invalidToken
 
   before('create links', async function () {
     let res1 = await server.inject({
@@ -47,17 +47,32 @@ describe('company', async function () {
       }
     })
 
+    let res4 = await server.inject({
+      method: 'POST',
+      url: `/link`,
+      payload: {
+        companyId: mocks.LINK3.companyId,
+        participationDays: mocks.LINK3.participationDays,
+        activities: mocks.LINK3.activities,
+        advertisementKind: mocks.LINK3.advertisementKind,
+        expirationDate: ON_TIME
+      }
+    })
+
     await Link.findOneAndUpdate({
       companyId: mocks.INVALID_LINK.company,
       edition: mocks.INVALID_LINK.edition
     }, { $set: { valid: false } })
 
     token1 = res1.result.token
-    token2 = res2.result.token
-    token3 = res3.token
+    toExpireToken = res2.result.token
+    invalidToken = res3.result.token
+    // token2 = res4.result.token
 
     expect(res1.statusCode).to.eql(200)
     expect(res2.statusCode).to.eql(200)
+    expect(res3.statusCode).to.eql(200)
+    expect(res4.statusCode).to.eql(200)
   })
 
   describe('auth', async function () {
@@ -82,7 +97,7 @@ describe('company', async function () {
           method: 'GET',
           url: `/company/auth`,
           headers: {
-            Authorization: `bearer ${token2}`
+            Authorization: `bearer ${toExpireToken}`
           }
         })
 
@@ -95,7 +110,7 @@ describe('company', async function () {
         method: 'GET',
         url: `/company/auth`,
         headers: {
-          Authorization: `bearer ${token3}`
+          Authorization: `bearer ${invalidToken}`
         }
       })
 
@@ -140,6 +155,10 @@ describe('company', async function () {
       expect(res2.statusCode).to.eql(401)
       expect(res3.statusCode).to.eql(401)
     })
+  })
+
+  describe('make reservation', async function () {
+
   })
 
   after('removing links from db', async function () {
