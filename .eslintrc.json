@@ -1,10 +1,15 @@
 {
-    "extends": "standard",
+    "extends": [
+        "standard",
+        "plugin:security/recommended"
+    ],
     "plugins": [
-        "chai-friendly"
+        "chai-friendly",
+        "security"
     ],
     "rules": {
         "no-unused-expressions": 0,
-        "chai-friendly/no-unused-expressions": 2
+        "chai-friendly/no-unused-expressions": 2,
+        "security/detect-non-literal-require": 0
     }
 }

@@ -26,12 +26,20 @@ module.exports = {
       })
     }
 
+    server.method('link.create', mongoMethods.link.create)
     server.method('link.delete', mongoMethods.link.delete)
     server.method('link.find', mongoMethods.link.find)
+    server.method('link.findByToken', mongoMethods.link.findByToken)
     server.method('link.arrayToJSON', mongoMethods.venue.arrayToJSON)
 
     server.method('venue.arrayToJSON', mongoMethods.venue.arrayToJSON)
     server.method('venue.find', mongoMethods.venue.find)
     server.method('venue.updateImage', mongoMethods.venue.updateImage)
+    server.method('venue.addStand', mongoMethods.venue.addStand)
+    server.method('venue.replaceStands', mongoMethods.venue.replaceStands)
+
+    server.method('config.find', mongoMethods.config.find)
+    server.method('config.findByEdition', mongoMethods.config.findByEdition)
+    server.method('config.arrayToJSON', mongoMethods.config.arrayToJSON)
   }
 }

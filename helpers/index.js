@@ -1,2 +1,2 @@
 module.exports.pre = require('./pre')
-module.exports.responses = require('./responses')
+module.exports.joi = require('./joi')
