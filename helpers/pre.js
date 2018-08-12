@@ -68,3 +68,11 @@ module.exports.link = {
   },
   assign: 'link'
 }
+
+module.exports.config = {
+  method: async (request, h) => {
+    let edition = request.pre.edition
+    return request.server.methods.config.findByEdition(edition)
+  },
+  assign: 'config'
+}

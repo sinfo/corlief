@@ -32,14 +32,18 @@ module.exports = [
       tags: ['api'],
       description: 'Make reservation',
       pre: [
-        helpers.pre.edition,
-        helpers.pre.link
+        [
+          helpers.pre.edition,
+          helpers.pre.link
+        ],
+        helpers.pre.config
       ],
       handler: async (request, h) => {
         let companyId = request.auth.credentials.company
         let stands = request.payload
         let edition = request.pre.edition
         let link = request.pre.link
+        let config = request.pre.config
 
         try {
           for (let stand of stands) {
@@ -56,8 +60,15 @@ module.exports = [
 
           let latest = await request.server.methods.reservation.getLatest(companyId, edition)
 
-          if (latest.stands.length >= link.participationDays) {
-            return Boom.entityTooLarge('Cannot reserve any more stands')
+          if (latest !== null && latest.stands.length >= link.participationDays) {
+            return Boom.entityTooLarge('Cannot book any more stands')
+          }
+
+          let consecutiveDaysReservations = config.consecutive_days_reservations
+          let areConsecutive = await request.server.methods.reservation.areConsecutive(latest, stands)
+
+          if (consecutiveDaysReservations && !areConsecutive) {
+            return Boom.badData('Must be consecutive days in the same stand')
           }
 
           let reservation = await request.server.methods.reservation.addStands(companyId, edition, stands)

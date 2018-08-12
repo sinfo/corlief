@@ -49,5 +49,6 @@ module.exports = {
     server.method('reservation.isConfirmed', mongoMethods.reservation.isConfirmed)
     server.method('reservation.isStandAvailable', mongoMethods.reservation.isStandAvailable)
     server.method('reservation.getLatest', mongoMethods.reservation.getLatest)
+    server.method('reservation.areConsecutive', mongoMethods.reservation.areConsecutive)
   }
 }

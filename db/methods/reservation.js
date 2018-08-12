@@ -84,6 +84,31 @@ async function getLatest (companyId, edition) {
   return Reservation.getLatest(companyId, edition)
 }
 
+async function areConsecutive (latest, stands) {
+  let savedStands = latest && latest.stands.length > 0 ? latest.stands : []
+
+  stands = stands.filter(stand => {
+    for (let ss of savedStands) {
+      if (ss.day === stand.day) {
+        return false
+      }
+    }
+
+    return true
+  })
+
+  stands = stands.concat(savedStands)
+  stands = stands.sort((s1, s2) => s1.day > s2.day)
+
+  for (let i = 0; i < stands.length - 1; i++) {
+    if (stands[i].standId !== stands[i + 1].standId || stands[i].day !== stands[i + 1].day - 1) {
+      return false
+    }
+  }
+
+  return true
+}
+
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.findOne = findOne
@@ -91,3 +116,4 @@ module.exports.addStands = addStands
 module.exports.isConfirmed = isConfirmed
 module.exports.isStandAvailable = isStandAvailable
 module.exports.getLatest = getLatest
+module.exports.areConsecutive = areConsecutive

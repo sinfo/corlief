@@ -91,7 +91,10 @@ let standReservation = Joi.object().keys({
   standId: Joi.number().required().min(0).max(100)
 })
 
-let standsReservation = Joi.array().items(standReservation).min(1)
+let standsReservation = Joi.array().items(standReservation)
+  .min(1).unique((s1, s2) => {
+    return s1.day === s2.day && s1.standId === s2.standId
+  })
 
 module.exports.standReservation = standReservation
 module.exports.standsReservation = standsReservation
