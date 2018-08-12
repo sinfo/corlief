@@ -8,7 +8,6 @@ const plugins = require('./plugins')
 const config = require('./config')
 const auth = require('./auth')
 
-
 // Create a server with a host and port
 const server = Hapi.server({
   host: config.HOST,
