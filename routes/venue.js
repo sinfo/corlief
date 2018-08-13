@@ -160,10 +160,10 @@ module.exports = [
       ],
       handler: async (request, h) => {
         try {
-          let venue = await request.server.methods.venue.removeStand(request.pre.edition, request.params)
+          let venue = await request.server.methods.venue.removeStand(request.pre.edition, request.params.id)
           return venue === null
             ? Boom.badData('No venue associated with this event or with image')
-            : (venue === -1) ? Boom.badData('No stand with this id') : venue.toJSON()
+            : venue.toJSON()
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
@@ -175,8 +175,6 @@ module.exports = [
             .max(30)
             .description('Stand id')
         }
-        // payload: helpers.joi.standPayload
-        // .description('Stand')
       },
       response: {
         schema: helpers.joi.venue

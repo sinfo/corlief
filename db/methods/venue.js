@@ -66,14 +66,20 @@ async function removeStand (edition, id) {
   }
 
   // find stand with stand.id == id
-  let i = 0
-  for (; i < venue.stands.length && venue.stands[i].id !== id; i++);
-  if (i === venue.stands[i].length) {
-    return -1 // stand not found
+  let index = 0
+  let found = false
+  for (index = 0; !found && index < venue.stands.length; index++) {
+    if (Number(venue.stands[index].id) === Number(id)) {
+      found = true
+    }
+  }
+
+  if (!found) {
+    return null
   }
 
   // remove element
-  venue.stands.splice(i, 1)
+  venue.stands.splice(index - 1, 1)
 
   return venue.save()
 }
