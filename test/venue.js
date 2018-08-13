@@ -334,6 +334,53 @@ describe('venue', function () {
       venue = res.result
     })
 
+    it('should add a series of stands and try to remove the one with id 3 (which doesn\'t exist)', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/venue/stand`,
+        payload: mocks.STAND1
+      })
+
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/venue/stand`,
+        payload: mocks.STAND2
+      })
+
+      let res3 = await server.inject({
+        method: 'POST',
+        url: `/venue/stand`,
+        payload: mocks.STAND3
+      })
+
+      let v = await Venue.findOne({ edition: venue.edition })
+      v.stands = v.stands.filter(stand => stand.id !== 1)
+      await v.save()
+
+      let res4 = await server.inject({
+        method: 'POST',
+        url: `/venue/stand`,
+        payload: mocks.STAND4
+      })
+
+      let res5 = await server.inject({
+        method: 'DELETE',
+        url: `/venue/stand/3`
+      })
+
+      let result = res4.result
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(200)
+      expect(res3.statusCode).to.eql(200)
+      expect(res4.statusCode).to.eql(200)
+      expect(res5.statusCode).to.eql(422) // not sure abot this
+      expect(result.stands.length).to.eql(3)
+      expect(result.stands).to.deep.include(Object.assign({}, mocks.STAND1, { id: 0 }))
+      expect(result.stands).to.deep.include(Object.assign({}, mocks.STAND3, { id: 2 }))
+      expect(result.stands).to.deep.include(Object.assign({}, mocks.STAND4, { id: 1 }))
+    })
+
     it('should add a series of stands and remove the one with id 1', async function () {
       let res1 = await server.inject({
         method: 'POST',
