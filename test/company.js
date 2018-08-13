@@ -2,8 +2,12 @@ const path = require('path')
 const { before, after, it, describe } = require('mocha')
 const {expect} = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
+const Venue = require(path.join('..', 'db', 'models', 'venue'))
 const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
+const streamToPromise = require('stream-to-promise')
+const FormData = require('form-data')
+const fs = require('fs')
 
 describe('company', async function () {
   const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
@@ -158,7 +162,74 @@ describe('company', async function () {
   })
 
   describe('make reservation', async function () {
+    let stands = [
+      mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
+    ]
 
+    before('prepare venue and stands', async function () {
+      let form = new FormData()
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
+
+      let payload = await streamToPromise(form)
+      let headers = form.getHeaders()
+
+      let res = await server.inject({
+        method: 'POST',
+        url: `/venue/image`,
+        headers: headers,
+        payload: payload
+      })
+
+      expect(res.statusCode).to.eql(200)
+
+      for (let stand of stands) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/stand`,
+          payload: stand
+        })
+
+        expect(res.statusCode).to.eql(200)
+      }
+    })
+
+    it('should be able to make reservations', async function () {
+      /*
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: {
+
+        }
+        */
+    })
+
+    it('should fail if the number of reservations does not match with the participation days', async function () {
+
+    })
+
+    it('should fail if the company has a pending reservation', async function () {
+
+    })
+
+    it('should fail if the company has a confirmed reservation', async function () {
+
+    })
+
+    it('should fail if the stands are not valid', async function () {
+
+    })
+
+    it('should fail if the stands are already occupied', async function () {
+
+    })
+
+    after('removing venue from db', async function () {
+      await Venue.collection.drop()
+    })
   })
 
   after('removing links from db', async function () {
