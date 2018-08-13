@@ -69,7 +69,7 @@ async function removeStand (edition, id) {
   let index = 0
   let found = false
   for (index = 0; !found && index < venue.stands.length; index++) {
-    if (Number(venue.stands[index].id) === Number(id)) {
+    if (venue.stands[index].id === id) {
       found = true
     }
   }

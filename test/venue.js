@@ -319,7 +319,7 @@ describe('venue', function () {
 
     before('create venue with image', async function () {
       let form = new FormData()
-      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js')))
 
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
@@ -374,7 +374,7 @@ describe('venue', function () {
       expect(res2.statusCode).to.eql(200)
       expect(res3.statusCode).to.eql(200)
       expect(res4.statusCode).to.eql(200)
-      expect(res5.statusCode).to.eql(422) // not sure abot this
+      expect(res5.statusCode).to.eql(422)
       expect(result.stands.length).to.eql(3)
       expect(result.stands).to.deep.include(Object.assign({}, mocks.STAND1, { id: 0 }))
       expect(result.stands).to.deep.include(Object.assign({}, mocks.STAND3, { id: 2 }))

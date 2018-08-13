@@ -162,7 +162,7 @@ module.exports = [
         try {
           let venue = await request.server.methods.venue.removeStand(request.pre.edition, request.params.id)
           return venue === null
-            ? Boom.badData('No venue associated with this event or with image')
+            ? Boom.badData('No stand with this id in the venue')
             : venue.toJSON()
         } catch (err) {
           logger.error(err)
@@ -171,9 +171,7 @@ module.exports = [
       },
       validate: {
         params: {
-          id: Joi.string().min(1)
-            .max(30)
-            .description('Stand id')
+          id: Joi.number().min(0)
         }
       },
       response: {
