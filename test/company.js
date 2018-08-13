@@ -1,8 +1,9 @@
 const path = require('path')
-const { before, after, it, describe } = require('mocha')
+const { before, after, it, describe, afterEach } = require('mocha')
 const {expect} = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const Venue = require(path.join('..', 'db', 'models', 'venue'))
+const Reservation = require(path.join('..', 'db', 'models', 'reservation'))
 const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
 const streamToPromise = require('stream-to-promise')
@@ -12,7 +13,7 @@ const fs = require('fs')
 describe('company', async function () {
   const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
   const TO_EXPIRE = new Date().getTime() + 1000 // 1 second
-  let token1, toExpireToken, invalidToken
+  let token1, token2, toExpireToken, invalidToken
 
   before('create links', async function () {
     let res1 = await server.inject({
@@ -47,7 +48,7 @@ describe('company', async function () {
         participationDays: mocks.INVALID_LINK.participationDays,
         activities: mocks.INVALID_LINK.activities,
         advertisementKind: mocks.INVALID_LINK.advertisementKind,
-        expirationDate: TO_EXPIRE
+        expirationDate: ON_TIME
       }
     })
 
@@ -64,14 +65,13 @@ describe('company', async function () {
     })
 
     await Link.findOneAndUpdate({
-      companyId: mocks.INVALID_LINK.company,
-      edition: mocks.INVALID_LINK.edition
-    }, { $set: { valid: false } })
+      companyId: mocks.INVALID_LINK.companyId
+    }, { $set: { valid: false } }, { new: true })
 
     token1 = res1.result.token
     toExpireToken = res2.result.token
     invalidToken = res3.result.token
-    // token2 = res4.result.token
+    token2 = res4.result.token
 
     expect(res1.statusCode).to.eql(200)
     expect(res2.statusCode).to.eql(200)
@@ -166,6 +166,8 @@ describe('company', async function () {
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]
 
+    let venue, stands1, stands2
+
     before('prepare venue and stands', async function () {
       let form = new FormData()
       form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
@@ -189,26 +191,119 @@ describe('company', async function () {
           payload: stand
         })
 
+        venue = res.result
+
         expect(res.statusCode).to.eql(200)
       }
+
+      stands1 = [
+        {
+          day: 1,
+          standId: venue.stands[0].id
+        },
+        {
+          day: 2,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 3,
+          standId: venue.stands[2].id
+        }
+      ]
+
+      stands2 = [
+        {
+          day: 4,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 5,
+          standId: venue.stands[2].id
+        }
+      ]
     })
 
     it('should be able to make reservations', async function () {
-      /*
       let res1 = await server.inject({
         method: 'POST',
         url: `/company/reservation`,
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: {
+        payload: stands1
+      })
 
-        }
-        */
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        },
+        payload: stands2
+      })
+
+      let reservation1 = res1.result
+      let reservation2 = res2.result
+
+      expect(res1.statusCode).to.eql(200)
+      expect(reservation1).to.be.an('object')
+      expect(reservation1.id).to.eql(0)
+      expect(reservation1.companyId).to.eql(mocks.LINK.companyId)
+      expect(reservation1.stands).to.eql(stands1)
+      expect(reservation1.feedback.status).to.eql('PENDING')
+
+      expect(res2.statusCode).to.eql(200)
+      expect(reservation2).to.be.an('object')
+      expect(reservation2.id).to.eql(0)
+      expect(reservation2.companyId).to.eql(mocks.LINK3.companyId)
+      expect(reservation2.stands).to.eql(stands2)
+      expect(reservation2.feedback.status).to.eql('PENDING')
+    })
+
+    it('should fail if the payload has the wrong format or is empty', async function () {
+      let res0 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: []
+      })
+
+      expect(res0.statusCode).to.eql(400)
     })
 
     it('should fail if the number of reservations does not match with the participation days', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: [ stands1[0] ]
+      })
 
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: [ stands1[0], stands1[1] ]
+      })
+
+      let res4 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: [ stands1[0], stands1[1], stands2[0], stands2[1] ]
+      })
+
+      expect(res1.statusCode).to.eql(422)
+      expect(res2.statusCode).to.eql(422)
+      expect(res4.statusCode).to.eql(422)
     })
 
     it('should fail if the company has a pending reservation', async function () {
@@ -225,6 +320,14 @@ describe('company', async function () {
 
     it('should fail if the stands are already occupied', async function () {
 
+    })
+
+    afterEach('removing reservations from db', async function () {
+      try {
+        await Reservation.collection.drop()
+      } catch (Err) {
+
+      }
     })
 
     after('removing venue from db', async function () {

@@ -15,8 +15,7 @@ let venueSchema = mongoose.Schema({
       id: {
         type: Number,
         min: 0,
-        required: true,
-        unique: true
+        required: true
       },
       topLeft: {
         type: {

@@ -50,6 +50,10 @@ module.exports = [
         let venue = request.pre.venue
 
         try {
+          if (venue === null) {
+            return Boom.forbidden('No venue created')
+          }
+
           if (stands.length !== link.participationDays) {
             return Boom.badData('Wrong ammount of stands in reservation', {
               stands: stands.length,
