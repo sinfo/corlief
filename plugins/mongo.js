@@ -42,5 +42,14 @@ module.exports = {
     server.method('config.find', mongoMethods.config.find)
     server.method('config.findByEdition', mongoMethods.config.findByEdition)
     server.method('config.arrayToJSON', mongoMethods.config.arrayToJSON)
+
+    server.method('reservation.arrayToJSON', mongoMethods.reservation.arrayToJSON)
+    server.method('reservation.find', mongoMethods.reservation.find)
+    server.method('reservation.findOne', mongoMethods.reservation.findOne)
+    server.method('reservation.addStands', mongoMethods.reservation.addStands)
+    server.method('reservation.areAvailable', mongoMethods.reservation.areAvailable)
+    server.method('reservation.canMakeReservation', mongoMethods.reservation.canMakeReservation)
+    server.method('reservation.areConsecutive', mongoMethods.reservation.areConsecutive)
+    server.method('reservation.areValid', mongoMethods.reservation.areValid)
   }
 }

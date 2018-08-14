@@ -15,8 +15,7 @@ let venueSchema = mongoose.Schema({
       id: {
         type: Number,
         min: 0,
-        required: true,
-        unique: true
+        required: true
       },
       topLeft: {
         type: {
@@ -59,5 +58,9 @@ let venueSchema = mongoose.Schema({
     }
   }
 })
+
+venueSchema.methods.getIds = function () {
+  return this.stands.map(stand => stand.id)
+}
 
 module.exports = mongoose.model('Venue', venueSchema)

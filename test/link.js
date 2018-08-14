@@ -6,7 +6,6 @@ const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
 
 describe('link', async function () {
-  
   describe('get', async function () {
     before('adding link to db', async function () {
       await new Link(mocks.LINK11).save()
@@ -96,7 +95,7 @@ describe('link', async function () {
       await Link.collection.drop()
     })
   })
-  
+
   describe('add', async function () {
     const EXPIRATION = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
     const MARGIN = 1000 * 5 // 5 seconds
@@ -149,7 +148,7 @@ describe('link', async function () {
       expect(response.statusCode).to.eql(200)
 
       Object.keys(mocks.LINK).forEach(key => {
-        expect(response.result[key]).to.eql(mocks.LINK[key]) // eslint-disable-line security/detect-object-injection
+        expect(response.result[key]).to.eql(mocks.LINK[key])
       })
 
       expect(link).to.be.null

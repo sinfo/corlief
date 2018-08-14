@@ -19,6 +19,16 @@ module.exports = {
     activities: [],
     advertisementKind: 'someAdv'
   },
+  LINK3: {
+    companyId: 'deloitte',
+    edition: 'someEdition',
+    created: new Date(),
+    token: 'someToken',
+    valid: true,
+    participationDays: 2,
+    activities: [],
+    advertisementKind: 'someAdv'
+  },
   LINK11: {
     companyId: 'oneCompany',
     edition: 'oneEdition',

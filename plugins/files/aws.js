@@ -5,7 +5,7 @@ const mime = require('mime-types')
 
 function promiseWrapper (s3, key, params, returnData) {
   return new Promise((resolve, reject) => {
-    s3[key](params, (err, data) => { // eslint-disable-line security/detect-object-injection
+    s3[key](params, (err, data) => {
       if (err) {
         resolve(null)
       }
