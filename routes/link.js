@@ -87,9 +87,15 @@ module.exports = [
         let companyId = request.params.companyId
         let edition = request.params.edition
         let participationDays = request.payload.participationDays !== undefined
-          ? request.payload.participationDays : 0
+          ? request.payload.participationDays : await request.server.methods.link.find({
+            companyId: companyId,
+            edition: edition
+          }).participationDays
         let advertisementKind = request.payload.advertisementKind !== undefined
-          ? request.payload.advertisementKind : 'none'
+          ? request.payload.advertisementKind : await request.server.methods.link.find({
+            companyId: companyId,
+            edition: edition
+          }).advertisementKind
 
         try {
           let link = await request.server.methods.link.update(
@@ -115,6 +121,9 @@ module.exports = [
           advertisementKind: Joi.string().min(1).max(20)
             .description('Type of package')
         }
+      },
+      response: {
+        schema: helpers.joi.link
       }
     }
   }

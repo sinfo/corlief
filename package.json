@@ -8,7 +8,7 @@
     "watch": "./node_modules/.bin/nodemon",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --file ./test/prepareServer ./test/* --exit --timeout 5000 --slow 1000",
     "lint": "./node_modules/.bin/eslint --ext .js .",
-    "gen-keys": "ssh-keygen -t rsa -b 4096 -f ./keys/jwtRS256.key -q -N \"\"; openssl rsa -in ./keys/jwtRS256.key -pubout -outform PEM -out ./keys/jwtRS256.key.pub",
+    "gen-keys": "mkdir -p keys; ssh-keygen -t rsa -b 4096 -f ./keys/jwtRS256.key -q -N \"\"; openssl rsa -in ./keys/jwtRS256.key -pubout -outform PEM -out ./keys/jwtRS256.key.pub",
     "production": "NODE_ENV=production node index.js"
   },
   "pre-commit": [
@@ -27,12 +27,13 @@
   "homepage": "https://github.com/sinfo/corlief#readme",
   "devDependencies": {
     "chai": "^4.1.2",
-    "eslint": "^5.2.0",
-    "eslint-config-standard": "^11.0.0",
+    "eslint": "^5.1.0",
+    "eslint-config-standard": "^12.0.0-alpha.0",
     "eslint-plugin-chai-friendly": "^0.4.1",
     "eslint-plugin-import": "^2.13.0",
-    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-standard": "^3.1.0",
     "form-data": "^2.3.2",
     "mocha": "^5.2.0",
@@ -44,6 +45,7 @@
     "aws-sdk": "^2.278.1",
     "boom": "^7.2.0",
     "hapi": "^17.5.2",
+    "hapi-auth-bearer-token": "^6.0.1",
     "hapi-router": "^4.0.0",
     "hapi-swagger": "^9.1.1",
     "inert": "^5.1.0",

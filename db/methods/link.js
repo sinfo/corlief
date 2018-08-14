@@ -14,23 +14,16 @@ module.exports.arrayToJSON = (venues) => {
 }
 
 module.exports.update = async (id, edition, pDays, adKind) => {
-  let temp = Link.find(
-    {
-      companyId: id,
-      edition: edition
-    }
-  )
-  return Link.findOneAndUpdate(
+  let update = Link.findOneAndUpdate(
     {
       companyId: id,
       edition: edition
     },
-    {
-      $set: {
-        participationDays: pDays !== 0 ? pDays : temp.participationDays,
-        advertisementKind: adKind !== 'none' ? adKind : temp.advertisementKind
-      }
-    },
-    { new: true }
+    { $set: {
+      participationDays: pDays,
+      advertisementKind: adKind
+    }},
+    {new: true}
   )
+  return update
 }

@@ -9,6 +9,10 @@ module.exports = {
     activities: [],
     advertisementKind: 'someAdv'
   },
+  UPDATE: {
+    participationDays: 3,
+    advertisementKind: 'someAdv'
+  },
   VENUE1: {
     edition: 'someEdition',
     image: 'someImageUrl'
