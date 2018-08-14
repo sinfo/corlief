@@ -78,26 +78,18 @@ module.exports = [
   },
   {
     method: 'PUT',
-    path: '/link/company/{company}/edition/{edition}',
+    path: '/link/company/{companyId}/edition/{edition}',
     config: {
       tags: ['api'],
       description: 'Updates a link\'s information',
       notes: 'Returns the updated link',
       handler: async (request, h) => {
-        let companyId = request.params.companyId
-        let edition = request.params.edition
-        let participationDays = request.payload.participationDays !== undefined
-          ? request.payload.participationDays : await request.server.methods.link.find({
-            companyId: companyId,
-            edition: edition
-          }).participationDays
-        let advertisementKind = request.payload.advertisementKind !== undefined
-          ? request.payload.advertisementKind : await request.server.methods.link.find({
-            companyId: companyId,
-            edition: edition
-          }).advertisementKind
-
         try {
+          let companyId = request.params.companyId
+          let edition = request.params.edition
+          let participationDays = request.payload.participationDays
+          let advertisementKind = request.payload.advertisementKind
+
           let link = await request.server.methods.link.update(
             companyId, edition, participationDays, advertisementKind)
           return link === null ? Boom.badData('No link associated') : link.toJSON()

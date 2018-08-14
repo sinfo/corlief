@@ -42,7 +42,7 @@ describe('link', async function () {
       await Link.collection.drop()
     })
   })
-  /*  TODO: fix this mess
+
   describe('update', async function () {
     before('adding link to db', async function () {
       let newLink = new Link(mocks.LINK)
@@ -68,10 +68,8 @@ describe('link', async function () {
 
       expect(response.statusCode).to.eql(200)
 
-      Object.keys(mocks.LINK).forEach(key => {
-        expect(response.result[key]).to.eql(mocks.LINK[key])
-      })
-
+      expect(response.result.participationDays).to.eql(5)
+      expect(response.result.advertisementKind).to.eql('someAdv2')
       expect(link.participationDays).to.eql(5)
       expect(link.advertisementKind).to.eql('someAdv2')
     })
@@ -94,13 +92,16 @@ describe('link', async function () {
 
       expect(response.statusCode).to.eql(200)
 
-      let link = await Link.findOne(mocks.LINK)
+      let link = await Link.findOne({
+        companyId: mocks.LINK.companyId,
+        edition: mocks.LINK.edition
+      })
 
-      expect(link.participationDays).to.eql(3)
+      expect(link.participationDays).to.eql(5)
     })
 
     after('removing link from db', async function () {
       await Link.collection.drop()
     })
-  }) */
+  })
 })
