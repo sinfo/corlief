@@ -260,6 +260,33 @@ describe('company', async function () {
       expect(reservation2.feedback.status).to.eql('PENDING')
     })
 
+    it('should be able to make reservations after cancellation', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      await Reservation.findOneAndUpdate(
+        { id: 0, companyId: mocks.LINK.companyId },
+        { 'feedback.status': 'CANCELLED' })
+
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(200)
+    })
+
     it('should fail if the payload has the wrong format or is empty', async function () {
       let res0 = await server.inject({
         method: 'POST',
@@ -273,7 +300,7 @@ describe('company', async function () {
       expect(res0.statusCode).to.eql(400)
     })
 
-    it('should fail if the number of reservations does not match with the participation days', async function () {
+    it('should fail if the number of reservations does not match the participation days', async function () {
       let res1 = await server.inject({
         method: 'POST',
         url: `/company/reservation`,
@@ -307,26 +334,105 @@ describe('company', async function () {
     })
 
     it('should fail if the company has a pending reservation', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
 
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(423)
     })
 
     it('should fail if the company has a confirmed reservation', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
 
+      await Reservation.findOneAndUpdate(
+        { id: 0, companyId: mocks.LINK.companyId },
+        { 'feedback.status': 'CONFIRMED' })
+
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(423)
     })
 
     it('should fail if the stands are not valid', async function () {
+      let invalidStands = []
 
+      for (let stand of stands1) {
+        invalidStands.push({
+          day: stand.day,
+          standId: stand.standId + 20
+        })
+      }
+
+      let res = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: invalidStands
+      })
+
+      expect(res.statusCode).to.eql(422)
     })
 
     it('should fail if the stands are already occupied', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
 
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        },
+        payload: stands1
+      })
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(422)
     })
 
     afterEach('removing reservations from db', async function () {
       try {
         await Reservation.collection.drop()
-      } catch (Err) {
-
+      } catch (err) {
+        // do nothing
       }
     })
 
