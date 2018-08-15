@@ -185,12 +185,6 @@ describe('link', async function () {
         payload: payload
       })
 
-      console.log(payload)
-
-      console.log(mocks.LINK.companyId, mocks.LINK.edition)
-
-      console.log(response.result)
-
       let link = await Link.findOne({
         companyId: mocks.LINK.companyId,
         edition: mocks.LINK.edition
