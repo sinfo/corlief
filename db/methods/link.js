@@ -29,3 +29,14 @@ module.exports.findByToken = async (token) => {
 module.exports.arrayToJSON = (venues) => {
   return venues.map(venue => venue.toJSON())
 }
+
+module.exports.revoke = async (id, edition) => {
+  return Link.findOneAndUpdate(
+    {
+      companyId: id,
+      edition: edition
+    },
+    {$set: {valid: false}},
+    {new: true}
+  )
+}

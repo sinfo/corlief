@@ -136,5 +136,39 @@ module.exports = [
         schema: helpers.joi.link
       }
     }
+  },
+  {
+    method: 'GET',
+    path: '/link/company/{companyId}/edition/{edition}',
+    config: {
+      tags: ['api'],
+      description: 'Revokes a link',
+      notes: 'Changes valid field to false',
+      handler: async (request, h) => {
+        try {
+          let companyId = request.params.companyId
+          let edition = request.params.edition
+
+          let link = await request.server.methods.link.revoke(companyId, edition)
+          return link === null ? Boom.badData('No link associated') : link.toJSON()
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        params: {
+          companyId: Joi.string().required().min(1)
+            .max(30)
+            .description('company identifier'),
+          edition: Joi.string().required().min(1)
+            .max(30)
+            .description('edition identifier')
+        }
+      },
+      response: {
+        schema: helpers.joi.links
+      }
+    }
   }
 ]
