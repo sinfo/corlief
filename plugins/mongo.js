@@ -52,5 +52,6 @@ module.exports = {
     server.method('reservation.canMakeReservation', mongoMethods.reservation.canMakeReservation)
     server.method('reservation.areConsecutive', mongoMethods.reservation.areConsecutive)
     server.method('reservation.areValid', mongoMethods.reservation.areValid)
+    server.method('reservation.getConfirmedReservations', mongoMethods.reservation.getConfirmedReservations)
   }
 }
