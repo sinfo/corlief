@@ -31,9 +31,38 @@ module.exports.arrayToJSON = (venues) => {
 }
 
 module.exports.setToken = async (query, token) => {
-  return Link.findAndModify({
-    query: query,
-    update: { $set: { token: token } },
-    new: true
-  })
+  let changes = {}
+
+  if (token) {
+    changes.advertisementKind = token
+  }
+
+  let update = Link.findOneAndUpdate(
+    query,
+    { $set: changes },
+    { new: true }
+  )
+  return update
+}
+
+module.exports.update = async (id, edition, pDays, adKind) => {
+  let changes = {}
+
+  if (pDays) {
+    changes.participationDays = pDays
+  }
+
+  if (adKind) {
+    changes.advertisementKind = adKind
+  }
+
+  let update = Link.findOneAndUpdate(
+    {
+      companyId: id,
+      edition: edition
+    },
+    { $set: changes },
+    { new: true }
+  )
+  return update
 }

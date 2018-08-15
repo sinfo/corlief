@@ -9,6 +9,9 @@ module.exports = {
     activities: [],
     advertisementKind: 'someAdv'
   },
+  UPDATE: {
+    participationDays: 3
+  },
   LINK2: {
     companyId: 'link',
     edition: 'someEdition',
@@ -16,6 +19,16 @@ module.exports = {
     token: 'someToken',
     valid: true,
     participationDays: 3,
+    activities: [],
+    advertisementKind: 'someAdv'
+  },
+  LINK3: {
+    companyId: 'deloitte',
+    edition: 'someEdition',
+    created: new Date(),
+    token: 'someToken',
+    valid: true,
+    participationDays: 2,
     activities: [],
     advertisementKind: 'someAdv'
   },

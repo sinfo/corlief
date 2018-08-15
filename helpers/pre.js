@@ -60,3 +60,27 @@ module.exports.file = {
   },
   assign: 'file'
 }
+
+module.exports.link = {
+  method: async (request, h) => {
+    const token = request.auth.artifacts
+    return request.server.methods.link.findByToken(token)
+  },
+  assign: 'link'
+}
+
+module.exports.config = {
+  method: async (request, h) => {
+    let edition = request.pre.edition
+    return request.server.methods.config.findByEdition(edition)
+  },
+  assign: 'config'
+}
+
+module.exports.venue = {
+  method: async (request, h) => {
+    const edition = request.pre.edition
+    return request.server.methods.venue.find({ edition: edition })
+  },
+  assign: 'venue'
+}
