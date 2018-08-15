@@ -168,7 +168,7 @@ describe('link', async function () {
     })
   })
 
-  /*  describe('update', async function () {
+  describe('update', async function () {
     let payload = {
       participationDays: 5,
       advertisementKind: 'someAdv2'
@@ -236,7 +236,6 @@ describe('link', async function () {
       await Link.collection.drop()
     })
   })
-}) */
 
   function expectToContain (list, obj) {
     const element = list.find((element) => (element.token === obj.token))

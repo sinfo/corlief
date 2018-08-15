@@ -100,13 +100,13 @@ module.exports = [
       },
       validate: {
         params: {
-          companyId: Joi.string().required().min(1).min(50)
+          companyId: Joi.string().required().min(1).max(50)
             .description('Company identifier'),
           edition: Joi.string().required().min(1).max(30)
             .description('Edition identifier')
         },
         payload: {
-          participationDays: Joi.number().integer().min(1).max(10)
+          participationDays: Joi.number().integer().min(1).max(5)
             .description('Number of days company is participanting'),
           advertisementKind: Joi.string().min(1).max(30)
             .description('Type of package')
