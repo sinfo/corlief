@@ -18,8 +18,13 @@ function getDataFromStream (stream) {
 
 module.exports.edition = {
   method: async (request, h) => {
-    const edition = await request.server.methods.deck.getLatestEdition()
-    return edition.id
+    try {
+      const edition = await request.server.methods.deck.getLatestEdition()
+      return edition.id
+    } catch (err) {
+      console.error(err)
+      return null
+    }
   },
   assign: 'edition'
 }
