@@ -120,6 +120,28 @@ async function areValid (venue, stands) {
   return true
 }
 
+async function cancelReservation (companyId, edition) {
+  let latest = await Reservation.getLatest(companyId, edition)
+
+  let response = {
+    reservation: latest,
+    error: null
+  }
+
+  if (response.latest == null) {
+    response.error = 'No reservation found'
+    return response
+  }
+
+  if (response.latest.feedback.status === 'CONFIRMED' || response.latest.feedback.status === 'PENDING') {
+    response.reservation.feedback.status = 'CANCELED'
+  } else {
+    response.error = 'No confirmed/pending reservation found'
+  }
+
+  return response
+}
+
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.findOne = findOne
@@ -129,3 +151,4 @@ module.exports.areConsecutive = areConsecutive
 module.exports.areAvailable = areAvailable
 module.exports.areValid = areValid
 module.exports.getConfirmedReservations = Reservation.getConfirmedReservations
+module.exports.cancelReservation = cancelReservation
