@@ -204,16 +204,13 @@ module.exports = [
         const { expirationDate } = request.payload
 
         try {
-          const token = request.server.methods.jwt.generate(edition, companyId, expirationDate)
+          const token = await request.server.methods.jwt.generate(edition, companyId, expirationDate)
           const link = await request.server.methods.link.setToken(request.params, token)
           return (link) ? link.toJSON() : Boom.badData('No link associated')
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
         }
-      },
-      response: {
-        schema: helpers.joi.link
       }
     }
   }
