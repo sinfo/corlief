@@ -1,5 +1,5 @@
 const path = require('path')
-const { before, after, it, describe } = require('mocha')
+const { before, after, context, it, describe } = require('mocha')
 const {expect} = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const mocks = require('./mocks')
@@ -127,8 +127,8 @@ describe('link', async function () {
       expect(link.advertisementKind).to.eql(mocks.LINK.advertisementKind)
     })
 
-    context('validation fails', async function() {
-      it('should return a 400 error if companyId param is missing', async function() {
+    context('validation fails', async function () {
+      it('should return a 400 error if companyId param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -146,7 +146,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 400 error if participationDays param is missing', async function() {
+      it('should return a 400 error if participationDays param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -164,7 +164,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 400 error if advertisementKind param is missing', async function() {
+      it('should return a 400 error if advertisementKind param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -182,7 +182,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 400 error if expirationDate param is missing', async function() {
+      it('should return a 400 error if expirationDate param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -200,7 +200,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 400 error if expirationDate is before current date', async function() {
+      it('should return a 400 error if expirationDate is before current date', async function () {
         const pastExpirationDate = new Date().getTime() - 1000 * 60 * 60 * 24 * 31 * 2 // 2 months before
         const response = await server.inject({
           method: 'POST',
@@ -219,7 +219,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 422 error if company does not exist', async function() {
+      it('should return a 422 error if company does not exist', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
