@@ -125,14 +125,10 @@ module.exports = {
     companyId: 'oneCompany',
     edition: 'oneEdition',
     issued: new Date(),
-    stands: {
-      type: []
-    },
+    stands: [],
     feedback: {
-      type: {
-        status: 'PENDING',
-        member: ''
-      }
+      status: 'PENDING',
+      member: ''
     }
   },
   RESERVATION2: {
@@ -140,14 +136,10 @@ module.exports = {
     companyId: 'oneCompany',
     edition: 'twoEdition',
     issued: new Date(),
-    stands: {
-      type: []
-    },
+    stands: [],
     feedback: {
-      type: {
-        status: 'PENDING',
-        member: ''
-      }
+      status: 'PENDING',
+      member: ''
     }
   },
   RESERVATION3: {
@@ -155,14 +147,10 @@ module.exports = {
     companyId: 'twoCompany',
     edition: 'oneEdition',
     issued: new Date(),
-    stands: {
-      type: []
-    },
+    stands: [],
     feedback: {
-      type: {
-        status: 'PENDING',
-        member: ''
-      }
+      status: 'PENDING',
+      member: ''
     }
   }
 }

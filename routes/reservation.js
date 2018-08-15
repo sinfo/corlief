@@ -34,9 +34,6 @@ module.exports = [
           logger.error(err)
           return Boom.boomify(err)
         }
-      },
-      response: {
-        schema: helpers.joi.reservations
       }
     }
   }
