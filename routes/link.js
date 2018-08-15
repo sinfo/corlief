@@ -146,10 +146,10 @@ module.exports = [
       notes: 'Changes valid field to false',
       handler: async (request, h) => {
         try {
-          let companyId = request.params.companyId
+          let company = request.params.companyId
           let edition = request.params.edition
 
-          let link = await request.server.methods.link.revoke(companyId, edition)
+          let link = await request.server.methods.link.revoke(company, edition)
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
           logger.error(err)

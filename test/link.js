@@ -181,7 +181,7 @@ describe('link', async function () {
 
       let link = await Link.findOne(mocks.LINK)
 
-      console.log(mocks.LINK.companyId, mocks.LINK.edition)
+      console.log(mocks.LINK.companyId, mocks.LINK.edition, mocks.LINK.valid)
       console.log(response.result)
 
       expect(response.statusCode).to.eql(200)
