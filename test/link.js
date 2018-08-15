@@ -179,9 +179,13 @@ describe('link', async function () {
         url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`
       })
 
-      let link = await Link.findOne(mocks.LINK)
+      let link = await Link.findOne({
+        companyId: mocks.LINK.companyId,
+        edition: mocks.LINK.edition
+      })
 
       console.log(mocks.LINK.companyId, mocks.LINK.edition, mocks.LINK.valid)
+      console.log(link.companyId, link.edition, link.valid)
       console.log(response.result)
 
       expect(response.statusCode).to.eql(200)
