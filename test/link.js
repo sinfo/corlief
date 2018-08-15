@@ -127,8 +127,8 @@ describe('link', async function () {
       expect(link.advertisementKind).to.eql(mocks.LINK.advertisementKind)
     })
 
-    context('validation fails', async function() {
-      it('should return a 400 error if companyId param is missing', async function() {
+    describe('validation fails', async function () {
+      it('should return a 400 error if companyId param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -146,7 +146,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 400 error if participationDays param is missing', async function() {
+      it('should return a 400 error if participationDays param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -164,7 +164,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 400 error if advertisementKind param is missing', async function() {
+      it('should return a 400 error if advertisementKind param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -182,7 +182,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 400 error if expirationDate param is missing', async function() {
+      it('should return a 400 error if expirationDate param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -200,7 +200,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 400 error if expirationDate is before current date', async function() {
+      it('should return a 400 error if expirationDate is before current date', async function () {
         const pastExpirationDate = new Date().getTime() - 1000 * 60 * 60 * 24 * 31 * 2 // 2 months before
         const response = await server.inject({
           method: 'POST',
@@ -219,7 +219,7 @@ describe('link', async function () {
         expect(response.result.message).to.eql('Invalid request payload input')
       })
 
-      it('should return a 422 error if company does not exist', async function() {
+      it('should return a 422 error if company does not exist', async function () {
         const response = await server.inject({
           method: 'POST',
           url: `/link`,
@@ -269,6 +269,42 @@ describe('link', async function () {
       let response = await server.inject({
         method: 'DELETE',
         url: `/link/company/${mocks.LINK.companyId}_nonexistent/edition/${mocks.LINK.edition}`
+      })
+
+      expect(response.statusCode).to.eql(422)
+    })
+
+    after('removing link from db', async function () {
+      await Link.collection.drop()
+    })
+  })
+
+  describe('revoke', async function () {
+    before('adding link to db', async function () {
+      await new Link(mocks.LINK).save()
+    })
+
+    it('should be able to revoke an existing link', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/revoke`
+      })
+
+      let link = await Link.findOne({
+        companyId: mocks.LINK.companyId,
+        edition: mocks.LINK.edition
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.valid).to.eql(false)
+
+      expect(link.valid).to.eql(false)
+    })
+
+    it('should give an error when trying to revoke a nonexisting link', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link/company/nonexistent/edition/noEdition/revoke`
       })
 
       expect(response.statusCode).to.eql(422)
