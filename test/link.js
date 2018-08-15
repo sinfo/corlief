@@ -192,7 +192,7 @@ describe('link', async function () {
 
       expect(response).to.not.be.null
 
-      // expect(response.statusCode).to.eql(200)
+      expect(response.statusCode).to.eql(200)
 
       expect(response.result.participationDays).to.eql(5)
       expect(response.result.advertisementKind).to.eql('someAdv2')
