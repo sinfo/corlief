@@ -128,7 +128,61 @@ describe('link', async function () {
     })
 
     context('validation fails', async function() {
-      it('should return a 400 error if required param is missing', async function() {
+      it('should return a 400 error if companyId param is missing', async function() {
+        let response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            // missing companyId
+            participationDays: mocks.LINK.participationDays,
+            activities: mocks.LINK.activities,
+            advertisementKind: mocks.LINK.advertisementKind,
+            expirationDate: EXPIRATION
+          }
+        })
+
+        expect(response.statusCode).to.eql(400)
+        expect(response.result.error).to.eql('Bad Request')
+        expect(response.result.message).to.eql('Invalid request payload input')
+      })
+
+      it('should return a 400 error if participationDays param is missing', async function() {
+        let response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            companyId: mocks.LINK.companyId,
+            // missing participationDays
+            activities: mocks.LINK.activities,
+            advertisementKind: mocks.LINK.advertisementKind,
+            expirationDate: EXPIRATION
+          }
+        })
+
+        expect(response.statusCode).to.eql(400)
+        expect(response.result.error).to.eql('Bad Request')
+        expect(response.result.message).to.eql('Invalid request payload input')
+      })
+
+      it('should return a 400 error if advertisementKind param is missing', async function() {
+        let response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            companyId: mocks.LINK.companyId,
+            participationDays: mocks.LINK.participationDays,
+            activities: mocks.LINK.activities,
+            // missing advertisementKind
+            expirationDate: EXPIRATION
+          }
+        })
+
+        expect(response.statusCode).to.eql(400)
+        expect(response.result.error).to.eql('Bad Request')
+        expect(response.result.message).to.eql('Invalid request payload input')
+      })
+
+      it('should return a 400 error if expirationDate param is missing', async function() {
         let response = await server.inject({
           method: 'POST',
           url: `/link`,
