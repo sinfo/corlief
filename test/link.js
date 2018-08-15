@@ -167,8 +167,8 @@ describe('link', async function () {
       await Link.collection.drop()
     })
   })
-
-/* describe('revoke', async function () {
+/*
+  describe('revoke', async function () {
     before('adding link to db', async function () {
       await new Link(mocks.LINK).save()
     })
@@ -189,7 +189,7 @@ describe('link', async function () {
       console.log(response.result)
 
       expect(response.statusCode).to.eql(200)
-      expect(response.valid).to.eql(false)
+      expect(response.result.valid).to.eql(false)
 
       expect(link.valid).to.eql(false)
     })
@@ -197,7 +197,7 @@ describe('link', async function () {
     it('should give an error when trying to revoke a nonexisting link', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/link/company/nonexistent/edition/noEdition`
+        url: `/link/company/nonexistent/edition/noEdition/revoke`
       })
 
       expect(response.statusCode).to.eql(422)

@@ -150,6 +150,7 @@ module.exports = [
           let edition = request.params.edition
 
           let link = await request.server.methods.link.revoke(companyId, edition)
+
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
           logger.error(err)
