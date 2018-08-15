@@ -128,3 +128,4 @@ module.exports.canMakeReservation = canMakeReservation
 module.exports.areConsecutive = areConsecutive
 module.exports.areAvailable = areAvailable
 module.exports.areValid = areValid
+module.exports.getConfirmedReservations = Reservation.getConfirmedReservations

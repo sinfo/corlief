@@ -24,6 +24,14 @@ module.exports.edition = {
   assign: 'edition'
 }
 
+module.exports.duration = {
+  method: async (request, h) => {
+    const edition = await request.server.methods.deck.getLatestEdition()
+    return new Date(edition.duration).getDate()
+  },
+  assign: 'duration'
+}
+
 module.exports.isCompanyValid = {
   method: async (request, h) => {
     const companyId = request.payload.companyId

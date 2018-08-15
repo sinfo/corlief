@@ -112,3 +112,19 @@ let reservation = Joi.object().keys({
 })
 
 module.exports.reservation = reservation
+
+let venueAvailability = Joi.array().items(
+  Joi.object().keys({
+    day: Joi.number().integer().min(1).max(5).required(),
+    stands: Joi.array().items(
+      Joi.object().keys({
+        id: Joi.number().integer().min(0),
+        free: Joi.boolean()
+      })
+    ).unique((s1, s2) => {
+      return s1.id === s2.id
+    })
+  })
+)
+
+module.exports.venueAvailability = venueAvailability
