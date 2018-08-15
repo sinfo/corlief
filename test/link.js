@@ -167,8 +167,8 @@ describe('link', async function () {
       await Link.collection.drop()
     })
   })
-/*
-  describe('revoke', async function () {
+
+/* describe('revoke', async function () {
     before('adding link to db', async function () {
       await new Link(mocks.LINK).save()
     })
@@ -176,7 +176,7 @@ describe('link', async function () {
     it('should be able to revoke an existing link', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/revoke`
       })
 
       let link = await Link.findOne({

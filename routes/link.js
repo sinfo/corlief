@@ -139,7 +139,7 @@ module.exports = [
   },
   {
     method: 'GET',
-    path: '/link/company/{companyId}/edition/{edition}',
+    path: '/link/company/{companyId}/edition/{edition}/revoke',
     config: {
       tags: ['api'],
       description: 'Revokes a link',
