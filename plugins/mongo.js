@@ -31,6 +31,7 @@ module.exports = {
     server.method('link.find', mongoMethods.link.find)
     server.method('link.findByToken', mongoMethods.link.findByToken)
     server.method('link.arrayToJSON', mongoMethods.venue.arrayToJSON)
+    server.method('link.update', mongoMethods.link.update)
 
     server.method('venue.arrayToJSON', mongoMethods.venue.arrayToJSON)
     server.method('venue.find', mongoMethods.venue.find)

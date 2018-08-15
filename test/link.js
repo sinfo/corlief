@@ -167,12 +167,75 @@ describe('link', async function () {
       await Link.collection.drop()
     })
   })
-})
 
-function expectToContain (list, obj) {
-  const element = list.find((element) => (element.token === obj.token))
-  expect(element).to.not.eql(undefined)
-  Object.keys(obj).forEach(key => {
-    expect(element[key]).to.eql(element[key])
+  describe('update', async function () {
+    let payload = {
+      participationDays: 5,
+      advertisementKind: 'someAdv2'
+    }
+    before('adding link to db', async function () {
+      let newLink = new Link(mocks.LINK)
+      await newLink.save()
+    })
+
+    it('should be able to update an existing link', async function () {
+      let response = await server.inject({
+        method: 'PUT',
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`,
+        payload: payload
+      })
+
+      let link = await Link.findOne({
+        companyId: mocks.LINK.companyId,
+        edition: mocks.LINK.edition
+      })
+
+      expect(response).to.not.be.null
+
+      expect(response.statusCode).to.eql(200)
+
+      expect(response.result.participationDays).to.eql(5)
+      expect(response.result.advertisementKind).to.eql('someAdv2')
+      expect(link.participationDays).to.eql(5)
+      expect(link.advertisementKind).to.eql('someAdv2')
+    })
+
+    it('should give an error when trying to update a nonexisting link', async function () {
+      let response = await server.inject({
+        method: 'PUT',
+        url: `/link/company/sinfo/edition/2018`
+      })
+
+      expect(response.statusCode).to.eql(400)
+    })
+
+    it('should do nothing when payload is empty', async function () {
+      let response = await server.inject({
+        method: 'PUT',
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`,
+        payload: {}
+      })
+
+      expect(response.statusCode).to.eql(200)
+
+      let link = await Link.findOne({
+        companyId: mocks.LINK.companyId,
+        edition: mocks.LINK.edition
+      })
+
+      expect(link.participationDays).to.eql(5)
+    })
+
+    after('removing link from db', async function () {
+      await Link.collection.drop()
+    })
   })
-}
+
+  function expectToContain (list, obj) {
+    const element = list.find((element) => (element.token === obj.token))
+    expect(element).to.not.eql(undefined)
+    Object.keys(obj).forEach(key => {
+      expect(element[key]).to.eql(element[key])
+    })
+  }
+})
