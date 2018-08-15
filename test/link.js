@@ -96,7 +96,7 @@ describe('link', async function () {
     })
   })
 
-  describe('add', async function () {
+  describe('create', async function () {
     const EXPIRATION = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
     const MARGIN = 1000 * 5 // 5 seconds
 
@@ -125,6 +125,117 @@ describe('link', async function () {
       expect(link.participationDays).to.eql(mocks.LINK.participationDays)
       expect(link.activities).to.eql(mocks.LINK.activities)
       expect(link.advertisementKind).to.eql(mocks.LINK.advertisementKind)
+    })
+
+    context('validation fails', async function() {
+      it('should return a 400 error if companyId param is missing', async function() {
+        const response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            // missing companyId
+            participationDays: mocks.LINK.participationDays,
+            activities: mocks.LINK.activities,
+            advertisementKind: mocks.LINK.advertisementKind,
+            expirationDate: EXPIRATION
+          }
+        })
+
+        expect(response.statusCode).to.eql(400)
+        expect(response.result.error).to.eql('Bad Request')
+        expect(response.result.message).to.eql('Invalid request payload input')
+      })
+
+      it('should return a 400 error if participationDays param is missing', async function() {
+        const response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            companyId: mocks.LINK.companyId,
+            // missing participationDays
+            activities: mocks.LINK.activities,
+            advertisementKind: mocks.LINK.advertisementKind,
+            expirationDate: EXPIRATION
+          }
+        })
+
+        expect(response.statusCode).to.eql(400)
+        expect(response.result.error).to.eql('Bad Request')
+        expect(response.result.message).to.eql('Invalid request payload input')
+      })
+
+      it('should return a 400 error if advertisementKind param is missing', async function() {
+        const response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            companyId: mocks.LINK.companyId,
+            participationDays: mocks.LINK.participationDays,
+            activities: mocks.LINK.activities,
+            // missing advertisementKind
+            expirationDate: EXPIRATION
+          }
+        })
+
+        expect(response.statusCode).to.eql(400)
+        expect(response.result.error).to.eql('Bad Request')
+        expect(response.result.message).to.eql('Invalid request payload input')
+      })
+
+      it('should return a 400 error if expirationDate param is missing', async function() {
+        const response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            companyId: mocks.LINK.companyId,
+            participationDays: mocks.LINK.participationDays,
+            activities: mocks.LINK.activities,
+            advertisementKind: mocks.LINK.advertisementKind
+            // missing expirationDate
+          }
+        })
+
+        expect(response.statusCode).to.eql(400)
+        expect(response.result.error).to.eql('Bad Request')
+        expect(response.result.message).to.eql('Invalid request payload input')
+      })
+
+      it('should return a 400 error if expirationDate is before current date', async function() {
+        const pastExpirationDate = new Date().getTime() - 1000 * 60 * 60 * 24 * 31 * 2 // 2 months before
+        const response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            companyId: mocks.LINK.companyId,
+            participationDays: mocks.LINK.participationDays,
+            activities: mocks.LINK.activities,
+            advertisementKind: mocks.LINK.advertisementKind,
+            expirationDate: pastExpirationDate
+          }
+        })
+
+        expect(response.statusCode).to.eql(400)
+        expect(response.result.error).to.eql('Bad Request')
+        expect(response.result.message).to.eql('Invalid request payload input')
+      })
+
+      it('should return a 422 error if company does not exist', async function() {
+        const response = await server.inject({
+          method: 'POST',
+          url: `/link`,
+          payload: {
+            companyId: 'nonExistingCompany',
+            participationDays: mocks.LINK.participationDays,
+            activities: mocks.LINK.activities,
+            advertisementKind: mocks.LINK.advertisementKind,
+            expirationDate: EXPIRATION
+          }
+        })
+
+        expect(response.statusCode).to.eql(422)
+        expect(response.result.error).to.eql('Unprocessable Entity')
+        expect(response.result.message).to.eql('CompanyId does not exist')
+      })
     })
 
     after('removing link from db', async function () {

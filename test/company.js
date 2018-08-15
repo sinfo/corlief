@@ -441,6 +441,260 @@ describe('company', async function () {
     })
   })
 
+  describe('get stands\'s availability', async function () {
+    let stands = [
+      mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
+    ]
+
+    let venue, stands1, stands2
+
+    before('prepare venue and stands', async function () {
+      let form = new FormData()
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
+
+      let payload = await streamToPromise(form)
+      let headers = form.getHeaders()
+
+      let res = await server.inject({
+        method: 'POST',
+        url: `/venue/image`,
+        headers: headers,
+        payload: payload
+      })
+
+      expect(res.statusCode).to.eql(200)
+
+      for (let stand of stands) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/stand`,
+          payload: stand
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
+      stands1 = [
+        {
+          day: 1,
+          standId: venue.stands[0].id
+        },
+        {
+          day: 2,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 3,
+          standId: venue.stands[2].id
+        }
+      ]
+
+      stands2 = [
+        {
+          day: 4,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 5,
+          standId: venue.stands[2].id
+        }
+      ]
+    })
+
+    it('should represent the stand\'s availability in case of confirmed reservation', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        },
+        payload: stands2
+      })
+
+      let reservation1 = res1.result
+      let reservation2 = res2.result
+
+      await Reservation.findOneAndUpdate(reservation1, { 'feedback.status': 'CONFIRMED' })
+      await Reservation.findOneAndUpdate(reservation2, { 'feedback.status': 'CONFIRMED' })
+
+      let res = await server.inject({
+        method: 'GET',
+        url: `/company/venue`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        }
+      })
+
+      let avail = res.result
+
+      expect(res.statusCode).to.eql(200)
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(200)
+
+      for (let day of avail) {
+        for (let stand of day.stands) {
+          let found = false
+
+          for (let stands of [stands1, stands2]) {
+            for (let s of stands) {
+              if (s.id === stand.id && s.day === stand.day) {
+                expect(stand.free).to.not.be.true
+                found = true
+                break
+              }
+
+              if (found) { break }
+              expect(stand.free).to.be.true
+            }
+          }
+        }
+      }
+    })
+
+    it('should show that all stands are available if no reservation is confimed', async function () {
+      let res = await server.inject({
+        method: 'GET',
+        url: `/company/venue`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        }
+      })
+
+      let avail = res.result
+
+      expect(res.statusCode).to.eql(200)
+      for (let day of avail) {
+        for (let stand of day.stands) {
+          expect(stand.free).to.be.true
+        }
+      }
+    })
+
+    it('should not show occupied stands if pending reservation', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        },
+        payload: stands2
+      })
+
+      let res = await server.inject({
+        method: 'GET',
+        url: `/company/venue`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        }
+      })
+
+      let avail = res.result
+
+      expect(res.statusCode).to.eql(200)
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(200)
+      for (let day of avail) {
+        for (let stand of day.stands) {
+          expect(stand.free).to.be.true
+        }
+      }
+    })
+
+    it('should not show occupied stands if pending reservation', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        },
+        payload: stands2
+      })
+
+      let res = await server.inject({
+        method: 'GET',
+        url: `/company/venue`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        }
+      })
+
+      let reservation1 = res1.result
+      let reservation2 = res2.result
+
+      await Reservation.findOneAndUpdate(reservation1, { 'feedback.status': 'CANCELLED' })
+      await Reservation.findOneAndUpdate(reservation2, { 'feedback.status': 'CANCELLED' })
+
+      let avail = res.result
+
+      expect(res.statusCode).to.eql(200)
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(200)
+      for (let day of avail) {
+        for (let stand of day.stands) {
+          expect(stand.free).to.be.true
+        }
+      }
+    })
+
+    it('should return an error if no venue corresponding with the latest edition is created', async function () {
+      await Venue.findOneAndRemove({ edition: venue.edition })
+
+      let res = await server.inject({
+        method: 'GET',
+        url: `/company/venue`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        }
+      })
+
+      expect(res.statusCode).to.eql(422)
+
+      let newVenue = new Venue(venue)
+      await newVenue.save()
+    })
+
+    afterEach('removing reservations from db', async function () {
+      try {
+        await Reservation.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
+    })
+
+    after('removing venue from db', async function () {
+      await Venue.collection.drop()
+    })
+  })
+
   after('removing links from db', async function () {
     await Link.collection.drop()
   })
