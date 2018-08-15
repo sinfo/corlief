@@ -1,8 +1,6 @@
 const logger = require('logger').getLogger()
 const Boom = require('boom')
 const Joi = require('joi')
-const path = require('path')
-const helpers = require(path.join(__dirname, '..', 'helpers'))
 
 module.exports = [
   {
