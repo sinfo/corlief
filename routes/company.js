@@ -25,6 +25,48 @@ module.exports = [
     }
   },
   {
+    method: 'GET',
+    path: '/company/venue',
+    config: {
+      auth: 'company',
+      tags: ['api'],
+      description: 'Get current venue\'s stands\' availability',
+      pre: [
+        [
+          helpers.pre.edition,
+          helpers.pre.duration
+        ],
+        [
+          helpers.pre.venue
+        ]
+      ],
+      handler: async (request, h) => {
+        const edition = request.pre.edition
+        const duration = request.pre.duration
+        const venue = request.pre.venue
+
+        try {
+          if (venue === null) {
+            return Boom.badData('No venue is associated with this edition')
+          }
+
+          let confirmedReservation = await request.server.methods.reservation.getConfirmedReservations(edition)
+          return venue.getStandsAvailability(confirmedReservation, duration)
+        } catch (err) {
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
+      response: {
+        schema: helpers.joi.venueAvailability
+      }
+    }
+  },
+  {
     method: 'POST',
     path: '/company/reservation',
     config: {
@@ -92,7 +134,6 @@ module.exports = [
 
           return reservation.toJSON()
         } catch (err) {
-          console.error(err)
           return Boom.boomify(err)
         }
       },

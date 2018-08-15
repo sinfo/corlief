@@ -9,6 +9,9 @@ module.exports = {
     activities: [],
     advertisementKind: 'someAdv'
   },
+  UPDATE: {
+    participationDays: 3
+  },
   LINK2: {
     companyId: 'link',
     edition: 'someEdition',
