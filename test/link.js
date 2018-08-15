@@ -360,7 +360,7 @@ describe('link', async function () {
 
       // check if response token is correct (exp is in seconds)
       const token = await server.methods.jwt.verify(response.result.token)
-      expect(token.exp).to.eql(Math.round(expirationDate / 1000))
+      expect(token.exp).to.eql(Math.floor(expirationDate / 1000))
 
       // apart from the token link should remain the same
       Object.keys(response.result).forEach(key => {
