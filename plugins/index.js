@@ -3,5 +3,6 @@ module.exports = [
   require('./jwt'),
   require('./mongo'),
   require('./deck'),
-  require('./files')
+  require('./files'),
+  require('hapi-auth-bearer-token')
 ]

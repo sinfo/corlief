@@ -26,8 +26,10 @@ module.exports = {
       })
     }
 
+    server.method('link.create', mongoMethods.link.create)
     server.method('link.delete', mongoMethods.link.delete)
     server.method('link.find', mongoMethods.link.find)
+    server.method('link.findByToken', mongoMethods.link.findByToken)
     server.method('link.arrayToJSON', mongoMethods.venue.arrayToJSON)
     server.method('link.update', mongoMethods.link.update)
 
@@ -35,5 +37,20 @@ module.exports = {
     server.method('venue.find', mongoMethods.venue.find)
     server.method('venue.updateImage', mongoMethods.venue.updateImage)
     server.method('venue.addStand', mongoMethods.venue.addStand)
+    server.method('venue.removeStand', mongoMethods.venue.removeStand)
+    server.method('venue.replaceStands', mongoMethods.venue.replaceStands)
+
+    server.method('config.find', mongoMethods.config.find)
+    server.method('config.findByEdition', mongoMethods.config.findByEdition)
+    server.method('config.arrayToJSON', mongoMethods.config.arrayToJSON)
+
+    server.method('reservation.arrayToJSON', mongoMethods.reservation.arrayToJSON)
+    server.method('reservation.find', mongoMethods.reservation.find)
+    server.method('reservation.findOne', mongoMethods.reservation.findOne)
+    server.method('reservation.addStands', mongoMethods.reservation.addStands)
+    server.method('reservation.areAvailable', mongoMethods.reservation.areAvailable)
+    server.method('reservation.canMakeReservation', mongoMethods.reservation.canMakeReservation)
+    server.method('reservation.areConsecutive', mongoMethods.reservation.areConsecutive)
+    server.method('reservation.areValid', mongoMethods.reservation.areValid)
   }
 }

@@ -2,12 +2,10 @@ let mongoose = require('mongoose')
 
 let linkSchema = mongoose.Schema({
   companyId: {
-    type: String,
-    unique: true
+    type: String
   },
   edition: {
-    type: String,
-    unique: true
+    type: String
   },
   created: Date,
   token: {
@@ -29,5 +27,7 @@ let linkSchema = mongoose.Schema({
     }
   }
 })
+
+linkSchema.index({ companyId: 1, edition: 1 }, { unique: true })
 
 module.exports = mongoose.model('Link', linkSchema)
