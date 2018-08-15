@@ -167,7 +167,6 @@ describe('link', async function () {
       await Link.collection.drop()
     })
   })
-/*
   describe('revoke', async function () {
     before('adding link to db', async function () {
       await new Link(mocks.LINK).save()
@@ -183,10 +182,6 @@ describe('link', async function () {
         companyId: mocks.LINK.companyId,
         edition: mocks.LINK.edition
       })
-
-      console.log(mocks.LINK.companyId, mocks.LINK.edition, mocks.LINK.valid)
-      console.log(link.companyId, link.edition, link.valid)
-      console.log(response.result)
 
       expect(response.statusCode).to.eql(200)
       expect(response.result.valid).to.eql(false)
@@ -206,7 +201,7 @@ describe('link', async function () {
     after('removing link from db', async function () {
       await Link.collection.drop()
     })
-  }) */
+  })
 })
 
 function expectToContain (list, obj) {
