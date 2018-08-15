@@ -32,10 +32,8 @@ module.exports.arrayToJSON = (venues) => {
 
 module.exports.revoke = async (id, edition) => {
   return Link.findOneAndUpdate(
-    {
-      companyId: id,
-      edition: edition
-    },
+    {companyId: id,
+      edition: edition},
     {$set: {valid: false}},
     {new: true}
   )
