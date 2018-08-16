@@ -119,5 +119,38 @@ module.exports = {
       x: 5,
       y: 5
     }
+  },
+  RESERVATION1: {
+    id: 1,
+    companyId: 'oneCompany',
+    edition: 'oneEdition',
+    issued: new Date(),
+    stands: [],
+    feedback: {
+      status: 'PENDING',
+      member: ''
+    }
+  },
+  RESERVATION2: {
+    id: 2,
+    companyId: 'oneCompany',
+    edition: 'twoEdition',
+    issued: new Date(),
+    stands: [],
+    feedback: {
+      status: 'PENDING',
+      member: ''
+    }
+  },
+  RESERVATION3: {
+    id: 3,
+    companyId: 'twoCompany',
+    edition: 'oneEdition',
+    issued: new Date(),
+    stands: [],
+    feedback: {
+      status: 'PENDING',
+      member: ''
+    }
   }
 }

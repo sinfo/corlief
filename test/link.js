@@ -14,7 +14,7 @@ describe('link', async function () {
     })
 
     it('should get a list of all links if no parameters are given', async function () {
-      let response = await server.inject({
+      const response = await server.inject({
         method: 'GET',
         url: `/link`
       })
@@ -82,7 +82,7 @@ describe('link', async function () {
     })
 
     it('should give an empty list if no match is found', async function () {
-      let response = await server.inject({
+      const response = await server.inject({
         method: 'GET',
         url: `/link?token=null`
       })
@@ -249,12 +249,12 @@ describe('link', async function () {
     })
 
     it('should be able to delete an existing link', async function () {
-      let response = await server.inject({
+      const response = await server.inject({
         method: 'DELETE',
         url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`
       })
 
-      let link = await Link.findOne(mocks.LINK)
+      const link = await Link.findOne(mocks.LINK)
 
       expect(response.statusCode).to.eql(200)
 
@@ -266,7 +266,7 @@ describe('link', async function () {
     })
 
     it('should give an error when trying to delete a nonexisting link', async function () {
-      let response = await server.inject({
+      const response = await server.inject({
         method: 'DELETE',
         url: `/link/company/${mocks.LINK.companyId}_nonexistent/edition/${mocks.LINK.edition}`
       })
@@ -316,23 +316,22 @@ describe('link', async function () {
   })
 
   describe('update', async function () {
-    let payload = {
+    const payload = {
       participationDays: 5,
       advertisementKind: 'someAdv2'
     }
     before('adding link to db', async function () {
-      let newLink = new Link(mocks.LINK)
-      await newLink.save()
+      await new Link(mocks.LINK).save()
     })
 
     it('should be able to update an existing link', async function () {
-      let response = await server.inject({
+      const response = await server.inject({
         method: 'PUT',
         url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`,
         payload: payload
       })
 
-      let link = await Link.findOne({
+      const link = await Link.findOne({
         companyId: mocks.LINK.companyId,
         edition: mocks.LINK.edition
       })
@@ -348,7 +347,7 @@ describe('link', async function () {
     })
 
     it('should give an error when trying to update a nonexisting link', async function () {
-      let response = await server.inject({
+      const response = await server.inject({
         method: 'PUT',
         url: `/link/company/sinfo/edition/2018`
       })
@@ -357,7 +356,7 @@ describe('link', async function () {
     })
 
     it('should do nothing when payload is empty', async function () {
-      let response = await server.inject({
+      const response = await server.inject({
         method: 'PUT',
         url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`,
         payload: {}
@@ -365,12 +364,89 @@ describe('link', async function () {
 
       expect(response.statusCode).to.eql(200)
 
-      let link = await Link.findOne({
+      const link = await Link.findOne({
         companyId: mocks.LINK.companyId,
         edition: mocks.LINK.edition
       })
 
       expect(link.participationDays).to.eql(5)
+    })
+
+    after('removing link from db', async function () {
+      await Link.collection.drop()
+    })
+  })
+
+  describe('extend-token-validity', async function () {
+    before('adding link to db', async function () {
+      await new Link(mocks.LINK).save()
+    })
+
+    it('should extend the validity of the token', async function () {
+      const expirationDate = new Date().getTime() + 1000 * 60 * 60 * 24 // 1 day
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/extend`,
+        payload: {
+          expirationDate: expirationDate
+        }
+      })
+
+      expect(response.statusCode).to.eql(200)
+
+      // check if response token is correct (exp is in seconds)
+      const token = await server.methods.jwt.verify(response.result.token)
+      expect(token.exp).to.eql(Math.floor(expirationDate / 1000))
+
+      // apart from the token link should remain the same
+      Object.keys(response.result).forEach(key => {
+        if (key !== 'token') {
+          expect(response.result[key]).to.eql(mocks.LINK[key])
+        }
+      })
+
+      // check if database equals response
+      const databaseLink = await Link.findOne({ companyId: mocks.LINK.companyId, edition: mocks.LINK.edition })
+
+      Object.keys(response.result).forEach(key => {
+        expect(response.result[key]).to.eql(databaseLink[key])
+      })
+    })
+
+    it('should give an error if the company does not exist', async function () {
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/link/company/null/edition/${mocks.LINK.edition}/extend`,
+        payload: {
+          expirationDate: new Date().getTime() + 1000 * 60 * 60 * 24 // 1 day
+        }
+      })
+
+      expect(response.statusCode).to.eql(422)
+    })
+
+    it('should give an error if the edition does not exist', async function () {
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/link/company/${mocks.LINK.companyId}/edition/null/extend`,
+        payload: {
+          expirationDate: new Date().getTime() + 1000 * 60 * 60 * 24 // 1 day
+        }
+      })
+
+      expect(response.statusCode).to.eql(422)
+    })
+
+    it('should an error if the new date is not valid', async function () {
+      const response = await server.inject({
+        method: 'PUT',
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/extend`,
+        payload: {
+          expirationDate: new Date().getTime() - 1000 * 60 // past time by 1m
+        }
+      })
+
+      expect(response.statusCode).to.eql(400)
     })
 
     after('removing link from db', async function () {

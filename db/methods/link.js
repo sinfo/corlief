@@ -39,6 +39,14 @@ module.exports.arrayToJSON = (venues) => {
   return venues.map(venue => venue.toJSON())
 }
 
+module.exports.setToken = async (query, token) => {
+  return Link.findOneAndUpdate(
+    query,
+    { $set: {token: token} },
+    { new: true }
+  )
+}
+
 module.exports.update = async (id, edition, pDays, adKind) => {
   let changes = {}
 

@@ -1,63 +1,146 @@
 const path = require('path')
 const { before, after, it, describe, afterEach } = require('mocha')
 const {expect} = require('chai')
+const mocks = require('./mocks')
+const Reservation = require(path.join('..', 'db', 'models', 'reservation'))
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const Venue = require(path.join('..', 'db', 'models', 'venue'))
-const Reservation = require(path.join('..', 'db', 'models', 'reservation'))
-const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
 const streamToPromise = require('stream-to-promise')
 const FormData = require('form-data')
 const fs = require('fs')
 
-describe('company', async function () {
-  const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
-  let token1, token2
-
-  before('create links', async function () {
-    let res1 = await server.inject({
-      method: 'POST',
-      url: `/link`,
-      payload: {
-        companyId: mocks.LINK.companyId,
-        participationDays: mocks.LINK.participationDays,
-        activities: mocks.LINK.activities,
-        advertisementKind: mocks.LINK.advertisementKind,
-        expirationDate: ON_TIME
-      }
+describe('reservation', async function () {
+  describe('get', async function () {
+    before('adding reservation to db', async function () {
+      await new Reservation(mocks.RESERVATION1).save()
+      await new Reservation(mocks.RESERVATION2).save()
+      await new Reservation(mocks.RESERVATION3).save()
     })
 
-    let res4 = await server.inject({
-      method: 'POST',
-      url: `/link`,
-      payload: {
-        companyId: mocks.LINK3.companyId,
-        participationDays: mocks.LINK3.participationDays,
-        activities: mocks.LINK3.activities,
-        advertisementKind: mocks.LINK3.advertisementKind,
-        expirationDate: ON_TIME
-      }
+    it('should get a list of all reservations if no parameters are given', async function () {
+      const response = await server.inject({
+        method: 'GET',
+        url: `/reservation`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(3)
+      expectToContain(response.result, mocks.RESERVATION1)
+      expectToContain(response.result, mocks.RESERVATION2)
+      expectToContain(response.result, mocks.RESERVATION3)
     })
 
-    await Link.findOneAndUpdate({
-      companyId: mocks.INVALID_LINK.companyId
-    }, { $set: { valid: false } }, { new: true })
+    it('should give a list of reservations when one parameter is given', async function () {
+      // companyId
+      let response = await server.inject({
+        method: 'GET',
+        url: `/reservation?companyId=${mocks.RESERVATION1.companyId}`
+      })
 
-    token1 = res1.result.token
-    token2 = res4.result.token
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(2)
+      expectToContain(response.result, mocks.RESERVATION1)
+      expectToContain(response.result, mocks.RESERVATION2)
 
-    expect(res1.statusCode).to.eql(200)
-    expect(res4.statusCode).to.eql(200)
+      // edition
+      response = await server.inject({
+        method: 'GET',
+        url: `/reservation?edition=${mocks.RESERVATION1.edition}`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(2)
+      expectToContain(response.result, mocks.RESERVATION1)
+      expectToContain(response.result, mocks.RESERVATION3)
+    })
+
+    it('should give a list of reservations when all parameters are given', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/reservation?companyId=${mocks.RESERVATION3.companyId}&edition=${mocks.RESERVATION3.edition}`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(1)
+      expectToContain(response.result, mocks.RESERVATION3)
+
+      // different order
+      response = await server.inject({
+        method: 'GET',
+        url: `/reservation?edition=${mocks.RESERVATION2.edition}&companyId=${mocks.RESERVATION2.companyId}`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(1)
+      expectToContain(response.result, mocks.RESERVATION2)
+    })
+
+    it('should give an empty list if no match is found', async function () {
+      const response = await server.inject({
+        method: 'GET',
+        url: `/reservation?edition=null`
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.length).to.eql(0)
+    })
+
+    after('removing reservations from db', async function () {
+      await Reservation.collection.drop()
+    })
+
+    function expectToContain (list, obj) {
+      const element = list.find((element) => (element.id === obj.id && element.companyId === obj.companyId && element.edition === obj.edition))
+      expect(element).to.not.eql(undefined)
+      Object.keys(obj).forEach(key => {
+        expect(element[key]).to.eql(element[key])
+      })
+    }
   })
 
   describe('confirm reservation', async function () {
+    const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
+    let token1, token2
+
     let stands = [
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]
 
     let venue, stands1, stands2
 
-    before('prepare venue and stands and make reservations', async function () {
+    before('create links, make venue and reservations', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK.companyId,
+          participationDays: mocks.LINK.participationDays,
+          activities: mocks.LINK.activities,
+          advertisementKind: mocks.LINK.advertisementKind,
+          expirationDate: ON_TIME
+        }
+      })
+
+      let res4 = await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK3.companyId,
+          participationDays: mocks.LINK3.participationDays,
+          activities: mocks.LINK3.activities,
+          advertisementKind: mocks.LINK3.advertisementKind,
+          expirationDate: ON_TIME
+        }
+      })
+
+      await Link.findOneAndUpdate({
+        companyId: mocks.INVALID_LINK.companyId
+      }, { $set: { valid: false } }, { new: true })
+
+      token1 = res1.result.token
+      token2 = res4.result.token
+
       let form = new FormData()
       form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
 
@@ -131,6 +214,9 @@ describe('company', async function () {
 
       expect(res2.statusCode).to.eql(200)
       expect(res3.statusCode).to.eql(200)
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res4.statusCode).to.eql(200)
     })
 
     it('should be able to confirm a pending reservation', async function () {
@@ -195,13 +281,10 @@ describe('company', async function () {
       }
     })
 
-    after('removing venue and reservations from db', async function () {
+    after('removing all from db', async function () {
       await Venue.collection.drop()
+      await Link.collection.drop()
       await Reservation.collection.drop()
     })
-  })
-
-  after('removing links from db', async function () {
-    await Link.collection.drop()
   })
 })

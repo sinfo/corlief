@@ -6,25 +6,12 @@ const helpers = require(path.join(__dirname, '..', 'helpers'))
 
 module.exports = [
   {
-    // link?companyId=...&edition=...
     method: 'GET',
     path: '/link',
     config: {
       tags: ['api'],
       description: 'Gets a link or list of links',
-      notes: 'based on the company id and/or edition and/or token in the query',
-      handler: async (request, h) => {
-        try {
-          let link = await request.server.methods.link.find(request.query)
-          let result = link.length !== undefined
-            ? await request.server.methods.link.arrayToJSON(link)
-            : link.toJSON()
-          return result === null ? Boom.badData('No link associated') : result
-        } catch (err) {
-          logger.error(err)
-          return Boom.boomify(err)
-        }
-      },
+      notes: 'Based on the company id and/or edition and/or token in the query',
       validate: {
         query: {
           companyId: Joi.string().min(1)
@@ -35,6 +22,19 @@ module.exports = [
             .description('Edition Number'),
           token: Joi.string()
             .description('Token')
+        }
+      },
+      handler: async (request, h) => {
+        try {
+          const link = await request.server.methods.link.find(request.query)
+
+          const result = (link.length !== undefined)
+            ? await request.server.methods.link.arrayToJSON(link)
+            : link.toJSON()
+          return result === null ? Boom.badData('No link associated') : result
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
         }
       },
       response: {
@@ -49,18 +49,6 @@ module.exports = [
       tags: ['api'],
       description: 'Removes a link from a company in a given edition',
       notes: 'Returns the removed link',
-      handler: async (request, h) => {
-        let companyId = request.params.companyId
-        let edition = request.params.edition
-
-        try {
-          let link = await request.server.methods.link.delete(companyId, edition)
-          return link === null ? Boom.badData('No link associated') : link.toJSON()
-        } catch (err) {
-          logger.error(err)
-          return Boom.boomify(err)
-        }
-      },
       validate: {
         params: {
           companyId: Joi.string()
@@ -69,6 +57,17 @@ module.exports = [
           edition: Joi.string()
             .required().min(1).max(30)
             .description('Edition identifier')
+        }
+      },
+      handler: async (request, h) => {
+        const { companyId, edition } = request.params
+
+        try {
+          const link = await request.server.methods.link.delete(companyId, edition)
+          return link === null ? Boom.badData('No link associated') : link.toJSON()
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
         }
       },
       response: {
@@ -83,6 +82,20 @@ module.exports = [
       tags: ['api'],
       description: 'Updates a link\'s information',
       notes: 'Returns the updated link',
+      validate: {
+        params: {
+          companyId: Joi.string().required().min(1).max(50)
+            .description('Company identifier'),
+          edition: Joi.string().required().min(1).max(30)
+            .description('Edition identifier')
+        },
+        payload: {
+          participationDays: Joi.number().integer().min(1).max(5)
+            .description('Number of days company is participanting'),
+          advertisementKind: Joi.string().min(1).max(30)
+            .description('Type of package')
+        }
+      },
       handler: async (request, h) => {
         try {
           let companyId = request.params.companyId
@@ -96,20 +109,6 @@ module.exports = [
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
-        }
-      },
-      validate: {
-        params: {
-          companyId: Joi.string().required().min(1).max(50)
-            .description('Company identifier'),
-          edition: Joi.string().required().min(1).max(30)
-            .description('Edition identifier')
-        },
-        payload: {
-          participationDays: Joi.number().integer().min(1).max(5)
-            .description('Number of days company is participanting'),
-          advertisementKind: Joi.string().min(1).max(30)
-            .description('Type of package')
         }
       },
       response: {
@@ -180,27 +179,14 @@ module.exports = [
   },
   {
     method: 'GET',
-    path: '/link/company/{company}/edition/{edition}/revoke',
+    path: '/link/company/{companyId}/edition/{edition}/revoke',
     config: {
       tags: ['api'],
       description: 'Revokes a link',
       notes: 'Returns the same link with the valid field changed to false',
-      handler: async (request, h) => {
-        try {
-          let companyId = request.params.company
-          let edition = request.params.edition
-
-          let link = await request.server.methods.link.revoke(companyId, edition)
-
-          return link === null ? Boom.badData('No link associated') : link.toJSON()
-        } catch (err) {
-          console.error(err)
-          return Boom.boomify(err)
-        }
-      },
       validate: {
         params: {
-          company: Joi.string()
+          companyId: Joi.string()
             .required().min(1).max(50)
             .description('Company identifier'),
           edition: Joi.string()
@@ -208,8 +194,55 @@ module.exports = [
             .description('Edition identifier')
         }
       },
+      handler: async (request, h) => {
+        try {
+          const {companyId, edition} = request.params
+          const link = await request.server.methods.link.revoke(companyId, edition)
+          return link === null ? Boom.badData('No link associated') : link.toJSON()
+        } catch (err) {
+          console.error(err)
+          return Boom.boomify(err)
+        }
+      },
       response: {
         schema: helpers.joi.link
+      }
+    }
+  },
+  {
+    method: 'PUT',
+    path: '/link/company/{companyId}/edition/{edition}/extend',
+    config: {
+      tags: ['api'],
+      description: 'Extends the validy of the token for the given company for the given edition',
+      notes: 'Returns the new link with a new token if inputs inputs are valid',
+      validate: {
+        params: {
+          companyId: Joi.string()
+            .required().min(1).max(50)
+            .description('Company identifier'),
+          edition: Joi.string()
+            .required().min(1).max(30)
+            .description('Edition identifier')
+        },
+        payload: {
+          expirationDate: Joi.date()
+            .required().min(new Date())
+            .description('Date of link expiration')
+        }
+      },
+      handler: async (request, h) => {
+        const { companyId, edition } = request.params
+        const { expirationDate } = request.payload
+
+        try {
+          const token = await request.server.methods.jwt.generate(edition, companyId, expirationDate)
+          const link = await request.server.methods.link.setToken(request.params, token)
+          return (link) ? link.toJSON() : Boom.badData('No link associated')
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
+        }
       }
     }
   }
