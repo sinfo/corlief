@@ -98,56 +98,49 @@ describe('reservation', async function () {
       })
     }
   })
-})
-
-describe('company', async function () {
-  const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
-  let token1, token2
-
-  before('create links', async function () {
-    let res1 = await server.inject({
-      method: 'POST',
-      url: `/link`,
-      payload: {
-        companyId: mocks.LINK.companyId,
-        participationDays: mocks.LINK.participationDays,
-        activities: mocks.LINK.activities,
-        advertisementKind: mocks.LINK.advertisementKind,
-        expirationDate: ON_TIME
-      }
-    })
-
-    let res4 = await server.inject({
-      method: 'POST',
-      url: `/link`,
-      payload: {
-        companyId: mocks.LINK3.companyId,
-        participationDays: mocks.LINK3.participationDays,
-        activities: mocks.LINK3.activities,
-        advertisementKind: mocks.LINK3.advertisementKind,
-        expirationDate: ON_TIME
-      }
-    })
-
-    await Link.findOneAndUpdate({
-      companyId: mocks.INVALID_LINK.companyId
-    }, { $set: { valid: false } }, { new: true })
-
-    token1 = res1.result.token
-    token2 = res4.result.token
-
-    expect(res1.statusCode).to.eql(200)
-    expect(res4.statusCode).to.eql(200)
-  })
 
   describe('confirm reservation', async function () {
+    const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
+    let token1, token2
+
     let stands = [
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]
 
     let venue, stands1, stands2
 
-    before('prepare venue and stands and make reservations', async function () {
+    before('create links, make venue and reservations', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK.companyId,
+          participationDays: mocks.LINK.participationDays,
+          activities: mocks.LINK.activities,
+          advertisementKind: mocks.LINK.advertisementKind,
+          expirationDate: ON_TIME
+        }
+      })
+
+      let res4 = await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK3.companyId,
+          participationDays: mocks.LINK3.participationDays,
+          activities: mocks.LINK3.activities,
+          advertisementKind: mocks.LINK3.advertisementKind,
+          expirationDate: ON_TIME
+        }
+      })
+
+      await Link.findOneAndUpdate({
+        companyId: mocks.INVALID_LINK.companyId
+      }, { $set: { valid: false } }, { new: true })
+
+      token1 = res1.result.token
+      token2 = res4.result.token
+
       let form = new FormData()
       form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
 
@@ -221,6 +214,9 @@ describe('company', async function () {
 
       expect(res2.statusCode).to.eql(200)
       expect(res3.statusCode).to.eql(200)
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res4.statusCode).to.eql(200)
     })
 
     it('should be able to confirm a pending reservation', async function () {
@@ -285,12 +281,10 @@ describe('company', async function () {
       }
     })
 
-    after('removing venue and reservations from db', async function () {
+    after('removing all from db', async function () {
       await Venue.collection.drop()
+      await Link.collection.drop()
+      await Reservation.collection.drop()
     })
-  })
-
-  after('removing links from db', async function () {
-    await Link.collection.drop()
   })
 })
