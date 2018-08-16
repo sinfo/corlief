@@ -211,6 +211,8 @@ module.exports = [
           logger.error(err)
           return Boom.boomify(err)
         }
+      }
+    }
   },
   {
     method: 'GET',

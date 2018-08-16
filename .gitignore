@@ -3,3 +3,5 @@ keys/*
 data/*
 corlief.sh
 *.swp
+
+package-lock.json
