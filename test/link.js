@@ -127,7 +127,7 @@ describe('link', async function () {
       expect(link.advertisementKind).to.eql(mocks.LINK.advertisementKind)
     })
 
-    context('validation fails', async function () {
+    describe('validation fails', async function () {
       it('should return a 400 error if companyId param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
@@ -269,6 +269,42 @@ describe('link', async function () {
       const response = await server.inject({
         method: 'DELETE',
         url: `/link/company/${mocks.LINK.companyId}_nonexistent/edition/${mocks.LINK.edition}`
+      })
+
+      expect(response.statusCode).to.eql(422)
+    })
+
+    after('removing link from db', async function () {
+      await Link.collection.drop()
+    })
+  })
+
+  describe('revoke', async function () {
+    before('adding link to db', async function () {
+      await new Link(mocks.LINK).save()
+    })
+
+    it('should be able to revoke an existing link', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/revoke`
+      })
+
+      let link = await Link.findOne({
+        companyId: mocks.LINK.companyId,
+        edition: mocks.LINK.edition
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.valid).to.eql(false)
+
+      expect(link.valid).to.eql(false)
+    })
+
+    it('should give an error when trying to revoke a nonexisting link', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link/company/nonexistent/edition/noEdition/revoke`
       })
 
       expect(response.statusCode).to.eql(422)
