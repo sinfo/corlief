@@ -10,7 +10,6 @@ const streamToPromise = require('stream-to-promise')
 const FormData = require('form-data')
 const fs = require('fs')
 
-
 describe('reservation', async function () {
   describe('get', async function () {
     before('adding reservation to db', async function () {
@@ -88,7 +87,16 @@ describe('reservation', async function () {
     })
 
     after('removing reservations from db', async function () {
-          await Reservation.collection.drop()
+      await Reservation.collection.drop()
+    })
+
+    function expectToContain (list, obj) {
+      const element = list.find((element) => (element.id === obj.id && element.companyId === obj.companyId && element.edition === obj.edition))
+      expect(element).to.not.eql(undefined)
+      Object.keys(obj).forEach(key => {
+        expect(element[key]).to.eql(element[key])
+      })
+    }
   })
 })
 
@@ -281,15 +289,8 @@ describe('company', async function () {
       await Venue.collection.drop()
     })
   })
+
   after('removing links from db', async function () {
     await Link.collection.drop()
   })
 })
-  
-function expectToContain (list, obj) {
-  const element = list.find((element) => (element.id === obj.id && element.companyId === obj.companyId && element.edition === obj.edition))
-  expect(element).to.not.eql(undefined)
-  Object.keys(obj).forEach(key => {
-    expect(element[key]).to.eql(element[key])
-  })
-}

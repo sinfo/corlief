@@ -35,6 +35,8 @@ module.exports = [
           logger.error(err)
           return Boom.boomify(err)
         }
+      }
+    }
   },
   {
     method: 'GET',
@@ -45,6 +47,13 @@ module.exports = [
       pre: [
         helpers.pre.edition
       ],
+      validate: {
+        params: Joi.object({
+          companyId: Joi.string().required()
+            .min(1).max(50)
+            .description('Company identifier')
+        })
+      },
       handler: async (request, h) => {
         try {
           const companyId = request.params.companyId
@@ -56,13 +65,6 @@ module.exports = [
         } catch (err) {
           return Boom.boomify(err)
         }
-      },
-      validate: {
-        params: Joi.object({
-          companyId: Joi.string().required()
-            .min(1).max(50)
-            .description('Company identifier')
-        })
       },
       response: {
         schema: helpers.joi.reservation

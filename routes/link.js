@@ -82,6 +82,20 @@ module.exports = [
       tags: ['api'],
       description: 'Updates a link\'s information',
       notes: 'Returns the updated link',
+      validate: {
+        params: {
+          companyId: Joi.string().required().min(1).max(50)
+            .description('Company identifier'),
+          edition: Joi.string().required().min(1).max(30)
+            .description('Edition identifier')
+        },
+        payload: {
+          participationDays: Joi.number().integer().min(1).max(5)
+            .description('Number of days company is participanting'),
+          advertisementKind: Joi.string().min(1).max(30)
+            .description('Type of package')
+        }
+      },
       handler: async (request, h) => {
         try {
           let companyId = request.params.companyId
@@ -95,20 +109,6 @@ module.exports = [
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)
-        }
-      },
-      validate: {
-        params: {
-          companyId: Joi.string().required().min(1).max(50)
-            .description('Company identifier'),
-          edition: Joi.string().required().min(1).max(30)
-            .description('Edition identifier')
-        },
-        payload: {
-          participationDays: Joi.number().integer().min(1).max(5)
-            .description('Number of days company is participanting'),
-          advertisementKind: Joi.string().min(1).max(30)
-            .description('Type of package')
         }
       },
       response: {
@@ -179,27 +179,25 @@ module.exports = [
   },
   {
     method: 'GET',
-    path: '/link/company/{company}/edition/{edition}/revoke',
+    path: '/link/company/{companyId}/edition/{edition}/revoke',
     config: {
       tags: ['api'],
       description: 'Revokes a link',
       notes: 'Returns the same link with the valid field changed to false',
       validate: {
         params: {
-          company: Joi.string()
+          companyId: Joi.string()
             .required().min(1).max(50)
             .description('Company identifier'),
           edition: Joi.string()
             .required().min(1).max(30)
             .description('Edition identifier')
+        }
       },
       handler: async (request, h) => {
         try {
-          let companyId = request.params.company
-          let edition = request.params.edition
-
-          let link = await request.server.methods.link.revoke(companyId, edition)
-
+          const {companyId, edition} = request.params
+          const link = await request.server.methods.link.revoke(companyId, edition)
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
           console.error(err)
@@ -209,6 +207,7 @@ module.exports = [
       response: {
         schema: helpers.joi.link
       }
+    }
   },
   {
     method: 'PUT',

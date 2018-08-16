@@ -1,5 +1,5 @@
 const path = require('path')
-const { before, after, context, it, describe } = require('mocha')
+const { before, after, it, describe } = require('mocha')
 const {expect} = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const mocks = require('./mocks')
