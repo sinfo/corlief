@@ -110,8 +110,10 @@ let reservation = Joi.object().keys({
     member: Joi.string().optional()
   })
 })
+let reservations = Joi.array().items(reservation).min(0)
 
 module.exports.reservation = reservation
+module.exports.reservations = reservations
 
 let venueAvailability = Joi.array().items(
   Joi.object().keys({

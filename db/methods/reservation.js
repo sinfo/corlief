@@ -128,6 +128,30 @@ async function companyReservations (companyId, edition, latest) {
   return latest ? Reservation.getLatest(companyId, edition) : find(filter)
 }
 
+async function confirm (companyId, edition) {
+  let result = {
+    data: null,
+    error: null
+  }
+
+  let latest = await Reservation.getLatest(companyId, edition)
+
+  if (latest === null) {
+    result.error = 'No reservation found'
+    return result
+  }
+
+  let available = await areAvailable(edition, latest.stands)
+
+  if (!available) {
+    result.error = 'Stands are no longer available'
+    return result
+  }
+
+  result.data = await latest.confirm()
+  return result
+}
+
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.findOne = findOne
@@ -138,3 +162,4 @@ module.exports.areAvailable = areAvailable
 module.exports.areValid = areValid
 module.exports.getConfirmedReservations = Reservation.getConfirmedReservations
 module.exports.companyReservations = companyReservations
+module.exports.confirm = confirm

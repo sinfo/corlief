@@ -30,7 +30,9 @@ module.exports = {
     server.method('link.delete', mongoMethods.link.delete)
     server.method('link.find', mongoMethods.link.find)
     server.method('link.findByToken', mongoMethods.link.findByToken)
+    server.method('link.setToken', mongoMethods.link.setToken)
     server.method('link.arrayToJSON', mongoMethods.venue.arrayToJSON)
+    server.method('link.revoke', mongoMethods.link.revoke)
     server.method('link.update', mongoMethods.link.update)
 
     server.method('venue.arrayToJSON', mongoMethods.venue.arrayToJSON)
@@ -54,5 +56,6 @@ module.exports = {
     server.method('reservation.areValid', mongoMethods.reservation.areValid)
     server.method('reservation.getConfirmedReservations', mongoMethods.reservation.getConfirmedReservations)
     server.method('reservation.companyReservations', mongoMethods.reservation.companyReservations)
+    server.method('reservation.confirm', mongoMethods.reservation.confirm)
   }
 }

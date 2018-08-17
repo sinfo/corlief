@@ -134,7 +134,6 @@ module.exports = [
 
           return reservation.toJSON()
         } catch (err) {
-          console.error(err)
           return Boom.boomify(err)
         }
       },

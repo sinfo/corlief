@@ -82,6 +82,16 @@ reservationSchema.methods.addStands = function (stands) {
   return this.save()
 }
 
+reservationSchema.methods.confirm = async function () {
+  this.set({ feedback: { status: 'CONFIRMED' } })
+  return this.save()
+}
+
+reservationSchema.methods.cancel = async function () {
+  this.set({ feedback: { status: 'CANCELLED' } })
+  return this.save()
+}
+
 reservationSchema.static('getLatest', async function (companyId, edition) {
   let reservations = await this.find({ companyId: companyId, edition: edition }).sort('-id')
   return reservations.length > 0
