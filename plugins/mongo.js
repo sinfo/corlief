@@ -56,5 +56,6 @@ module.exports = {
     server.method('reservation.areValid', mongoMethods.reservation.areValid)
     server.method('reservation.getConfirmedReservations', mongoMethods.reservation.getConfirmedReservations)
     server.method('reservation.confirm', mongoMethods.reservation.confirm)
+    server.method('reservation.cancel', mongoMethods.reservation.cancel)
   }
 }
