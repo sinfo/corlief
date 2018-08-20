@@ -223,7 +223,7 @@ describe('company', async function () {
       ]
     })
 
-    it('should be able to make reservations', async function () {
+    it('should be able to make and fetch reservations', async function () {
       let res1 = await server.inject({
         method: 'POST',
         url: `/company/reservation`,
@@ -242,6 +242,23 @@ describe('company', async function () {
         payload: stands2
       })
 
+      // lousy tests. Only passing by
+      let response1 = await server.inject({
+        method: 'GET',
+        url: `/company/reservation?latest=true`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        }
+      })
+
+      let response2 = await server.inject({
+        method: 'GET',
+        url: `/company/reservation?latest=false`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        }
+      })
+
       let reservation1 = res1.result
       let reservation2 = res2.result
 
@@ -258,6 +275,13 @@ describe('company', async function () {
       expect(reservation2.companyId).to.eql(mocks.LINK3.companyId)
       expect(reservation2.stands).to.eql(stands2)
       expect(reservation2.feedback.status).to.eql('PENDING')
+
+      // Responses to GET
+      expect(response1.statusCode).to.eql(200)
+      expect(response1.result[0]).to.eql(reservation1)
+
+      expect(response2.statusCode).to.eql(200)
+      expect(response2.result[0]).to.eql(reservation2)
     })
 
     it('should be able to make reservations after cancellation', async function () {

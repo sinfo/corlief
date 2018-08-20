@@ -160,18 +160,14 @@ module.exports = [
       ],
       handler: async (request, h) => {
         try {
-          console.log(request.auth.credentials)
           const companyId = request.auth.credentials.company
           const edition = request.pre.edition
           const latest = request.query.latest
-
-          console.log(companyId, edition, latest)
 
           let reservation = await request.server.methods.reservation.companyReservations(companyId, edition, latest)
           if (reservation === null) {
             return []
           }
-          console.log('we got here')
           return reservation.length === undefined ? [reservation.toJSON()] : request.server.methods.reservation.arrayToJSON(reservation)
         } catch (err) {
           console.error(err)
