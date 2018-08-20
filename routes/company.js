@@ -178,10 +178,12 @@ module.exports = [
 
           let response = await request.server.methods.reservation.cancelReservation(companyId, edition)
 
+          console.log('got response:: err = ' + response.error)
           if (response.error !== null) {
-            return Boom.locked(response.error)
+            throw Error(response.error)
           }
 
+          console.log('a good one')
           return response.reservation.toJSON()
         } catch (err) {
           console.error(err)

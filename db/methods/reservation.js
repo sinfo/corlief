@@ -121,20 +121,25 @@ async function areValid (venue, stands) {
 }
 
 async function cancelReservation (companyId, edition) {
+  console.log('company::::: ' + companyId)
   let latest = await Reservation.getLatest(companyId, edition)
+  console.log('status:::::: ' + latest.feedback.status)
 
   let response = {
     reservation: latest,
     error: null
   }
 
-  if (response.latest == null) {
+  if (response.reservation === null) {
     response.error = 'No reservation found'
     return response
   }
 
-  if (response.latest.feedback.status === 'CONFIRMED' || response.latest.feedback.status === 'PENDING') {
-    response.reservation.feedback.status = 'CANCELED'
+  if (response.reservation.feedback.status === 'CONFIRMED' || response.reservation.feedback.status === 'PENDING') {
+    console.log('cancelled one')
+    response.reservation.feedback.status = 'CANCELLED'
+    await response.reservation.save()
+    console.log(response)
   } else {
     response.error = 'No confirmed/pending reservation found'
   }

@@ -1,5 +1,5 @@
 const path = require('path')
-const { before, after, it, describe, context } = require('mocha')
+const { before, after, it, describe } = require('mocha')
 const {expect} = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const mocks = require('./mocks')
@@ -127,7 +127,7 @@ describe('link', async function () {
       expect(link.advertisementKind).to.eql(mocks.LINK.advertisementKind)
     })
 
-    context('validation fails', async function () {
+    describe('validation fails', async function () {
       it('should return a 400 error if companyId param is missing', async function () {
         const response = await server.inject({
           method: 'POST',
