@@ -223,7 +223,7 @@ describe('company', async function () {
       ]
     })
 
-    it('should be able to make and fetch reservations', async function () {
+    it('should be able to make reservations', async function () {
       let res1 = await server.inject({
         method: 'POST',
         url: `/company/reservation`,
@@ -242,23 +242,6 @@ describe('company', async function () {
         payload: stands2
       })
 
-      // lousy tests. Only passing by
-      let response1 = await server.inject({
-        method: 'GET',
-        url: `/company/reservation?latest=true`,
-        headers: {
-          Authorization: `bearer ${token1}`
-        }
-      })
-
-      let response2 = await server.inject({
-        method: 'GET',
-        url: `/company/reservation?latest=false`,
-        headers: {
-          Authorization: `bearer ${token2}`
-        }
-      })
-
       let reservation1 = res1.result
       let reservation2 = res2.result
 
@@ -275,13 +258,6 @@ describe('company', async function () {
       expect(reservation2.companyId).to.eql(mocks.LINK3.companyId)
       expect(reservation2.stands).to.eql(stands2)
       expect(reservation2.feedback.status).to.eql('PENDING')
-
-      // Responses to GET
-      expect(response1.statusCode).to.eql(200)
-      expect(response1.result[0]).to.eql(reservation1)
-
-      expect(response2.statusCode).to.eql(200)
-      expect(response2.result[0]).to.eql(reservation2)
     })
 
     it('should be able to make reservations after cancellation', async function () {
@@ -715,6 +691,98 @@ describe('company', async function () {
     })
 
     after('removing venue from db', async function () {
+      await Venue.collection.drop()
+    })
+  })
+
+  describe('get reservation', async function () {
+    let stands = [
+      mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
+    ]
+
+    let venue, stands1, res1
+
+    before('prepare venue, stands and make reservations', async function () {
+      let form = new FormData()
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
+
+      let payload = await streamToPromise(form)
+      let headers = form.getHeaders()
+
+      let res = await server.inject({
+        method: 'POST',
+        url: `/venue/image`,
+        headers: headers,
+        payload: payload
+      })
+
+      expect(res.statusCode).to.eql(200)
+
+      for (let stand of stands) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/stand`,
+          payload: stand
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
+      stands1 = [
+        {
+          day: 1,
+          standId: venue.stands[0].id
+        },
+        {
+          day: 2,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 3,
+          standId: venue.stands[2].id
+        }
+      ]
+
+      res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+    })
+
+    it('should be able to get reservations', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/company/reservation?latest=true`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        }
+      })
+
+      expect(res1.statusCode).to.eql(200)
+      expect(response.result[0]).to.eql(res1.result)
+    })
+
+    it('should return empty array when no reservation', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/company/reservation?latest=true`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        }
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result).to.eql([])
+    })
+
+    after('removing venue from db', async function () {
+      await Reservation.collection.drop()
       await Venue.collection.drop()
     })
   })
