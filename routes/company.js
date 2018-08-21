@@ -134,6 +134,7 @@ module.exports = [
 
           return reservation.toJSON()
         } catch (err) {
+          console.error(err)
           return Boom.boomify(err)
         }
       },
@@ -175,17 +176,10 @@ module.exports = [
             return Boom.forbidden('No venue created')
           }
 
-          let response = await request.server.methods.reservation.cancelReservation(companyId, edition)
+          const reservation = await request.server.methods.reservation.cancel(companyId, edition)
 
-          console.log('got response:: err = ' + response.error)
-          if (response.error !== null) {
-            throw Error(response.error)
-          }
-
-          console.log('a good one')
-          return response.reservation.toJSON()
+          return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
         } catch (err) {
-          console.error(err)
           return Boom.boomify(err)
         }
       },

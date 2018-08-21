@@ -441,7 +441,6 @@ describe('company', async function () {
     })
   })
 
-  /*
   describe('cancel reservation', async function () {
     let stands = [
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
@@ -554,7 +553,6 @@ describe('company', async function () {
 
       let reservation1 = res1.result
       let reservation2 = res2.result
-      let reservation3 = res3.result
 
       expect(res1.statusCode).to.eql(200)
       expect(reservation1).to.be.an('object')
@@ -564,9 +562,7 @@ describe('company', async function () {
       expect(reservation2).to.be.an('object')
       expect(reservation2.feedback.status).to.eql('CANCELLED')
 
-      expect(res3.statusCode).to.eql(500)
-      expect(reservation3).to.be.an('object')
-      expect(reservation3.feedback.status).to.eql('CANCELLED')
+      expect(res3.statusCode).to.eql(422)
     })
 
     it('should be able to make reservations after cancellation', async function () {
@@ -619,7 +615,7 @@ describe('company', async function () {
         payload: stands1
       })
 
-      expect(res1.statusCode).to.eql(500)
+      expect(res1.statusCode).to.eql(422)
     })
 
     afterEach('removing reservations from db', async function () {
@@ -634,7 +630,6 @@ describe('company', async function () {
       await Venue.collection.drop()
     })
   })
-  */
 
   describe('get stands\'s availability', async function () {
     let stands = [
