@@ -12,7 +12,8 @@ module.exports = {
   name: 'mongo',
   version: '1.0.0',
   register: async (server, options) => {
-    mongoose.connect(MONGO_URL, { useNewUrlParser: true })
+    mongoose.connect(MONGO_URL,
+      { useNewUrlParser: true, reconnectTries: Number.MAX_VALUE, reconnectInterval: 500 })
 
     var db = mongoose.connection
     db.on('error', (err) => {
@@ -56,5 +57,6 @@ module.exports = {
     server.method('reservation.areValid', mongoMethods.reservation.areValid)
     server.method('reservation.getConfirmedReservations', mongoMethods.reservation.getConfirmedReservations)
     server.method('reservation.confirm', mongoMethods.reservation.confirm)
+    server.method('reservation.cancel', mongoMethods.reservation.cancel)
   }
 }

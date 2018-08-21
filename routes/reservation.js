@@ -70,5 +70,38 @@ module.exports = [
         schema: helpers.joi.reservation
       }
     }
+  },
+  {
+    method: 'DELETE',
+    path: '/reservation/company/{companyId}',
+    config: {
+      tags: ['api'],
+      description: 'Cancel latest company\'s reservation',
+      pre: [
+        helpers.pre.edition
+      ],
+      validate: {
+        params: Joi.object({
+          companyId: Joi.string().required()
+            .min(1).max(50)
+            .description('Company identifier')
+        })
+      },
+      handler: async (request, h) => {
+        try {
+          const companyId = request.params.companyId
+          const edition = request.pre.edition
+
+          const reservation = await request.server.methods.reservation.cancel(companyId, edition)
+
+          return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
+        } catch (err) {
+          return Boom.boomify(err)
+        }
+      },
+      response: {
+        schema: helpers.joi.reservation
+      }
+    }
   }
 ]

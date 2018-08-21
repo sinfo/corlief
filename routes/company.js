@@ -79,7 +79,6 @@ module.exports = [
           helpers.pre.link
         ],
         [
-          helpers.pre.config,
           helpers.pre.venue
         ]
       ],
@@ -88,7 +87,6 @@ module.exports = [
         let stands = request.payload
         let edition = request.pre.edition
         let link = request.pre.link
-        // let config = request.pre.config
         let venue = request.pre.venue
 
         try {
@@ -134,6 +132,7 @@ module.exports = [
 
           return reservation.toJSON()
         } catch (err) {
+          console.error(err)
           return Boom.boomify(err)
         }
       },
@@ -142,6 +141,50 @@ module.exports = [
           'Authorization': Joi.string()
         }).unknown(),
         payload: helpers.joi.standsReservation
+      },
+      response: {
+        schema: helpers.joi.reservation
+      }
+    }
+  },
+  {
+    method: 'DELETE',
+    path: '/company/reservation',
+    config: {
+      auth: 'company',
+      tags: ['api'],
+      description: 'Cancel company reservation',
+      pre: [
+        [
+          helpers.pre.edition,
+          helpers.pre.link
+        ],
+        [
+          helpers.pre.config,
+          helpers.pre.venue
+        ]
+      ],
+      handler: async (request, h) => {
+        let companyId = request.auth.credentials.company
+        let edition = request.pre.edition
+        let venue = request.pre.venue
+
+        try {
+          if (venue === null) {
+            return Boom.forbidden('No venue created')
+          }
+
+          const reservation = await request.server.methods.reservation.cancel(companyId, edition)
+
+          return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
+        } catch (err) {
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
       },
       response: {
         schema: helpers.joi.reservation

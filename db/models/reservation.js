@@ -88,6 +88,10 @@ reservationSchema.methods.confirm = async function () {
 }
 
 reservationSchema.methods.cancel = async function () {
+  if (this.feedback.status === 'CANCELLED') {
+    return null
+  }
+
   this.set({ feedback: { status: 'CANCELLED' } })
   return this.save()
 }

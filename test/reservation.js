@@ -1,5 +1,5 @@
 const path = require('path')
-const { before, after, it, describe, afterEach } = require('mocha')
+const { before, after, it, describe, afterEach, beforeEach } = require('mocha')
 const {expect} = require('chai')
 const mocks = require('./mocks')
 const Reservation = require(path.join('..', 'db', 'models', 'reservation'))
@@ -284,6 +284,176 @@ describe('reservation', async function () {
     after('removing all from db', async function () {
       await Venue.collection.drop()
       await Link.collection.drop()
+      await Reservation.collection.drop()
+    })
+  })
+
+  describe('cancel reservation', async function () {
+    const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
+    let token1, token2
+
+    let stands = [
+      mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
+    ]
+
+    let venue, stands1, stands2
+
+    before('create links and make venue', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK.companyId,
+          participationDays: mocks.LINK.participationDays,
+          activities: mocks.LINK.activities,
+          advertisementKind: mocks.LINK.advertisementKind,
+          expirationDate: ON_TIME
+        }
+      })
+
+      let res4 = await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK3.companyId,
+          participationDays: mocks.LINK3.participationDays,
+          activities: mocks.LINK3.activities,
+          advertisementKind: mocks.LINK3.advertisementKind,
+          expirationDate: ON_TIME
+        }
+      })
+
+      await Link.findOneAndUpdate({
+        companyId: mocks.INVALID_LINK.companyId
+      }, { $set: { valid: false } }, { new: true })
+
+      token1 = res1.result.token
+      token2 = res4.result.token
+
+      let form = new FormData()
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
+
+      let payload = await streamToPromise(form)
+      let headers = form.getHeaders()
+
+      let res = await server.inject({
+        method: 'POST',
+        url: `/venue/image`,
+        headers: headers,
+        payload: payload
+      })
+
+      expect(res.statusCode).to.eql(200)
+
+      for (let stand of stands) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/stand`,
+          payload: stand
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
+      stands1 = [
+        {
+          day: 1,
+          standId: venue.stands[0].id
+        },
+        {
+          day: 2,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 3,
+          standId: venue.stands[2].id
+        }
+      ]
+
+      stands2 = [
+        {
+          day: 4,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 5,
+          standId: venue.stands[2].id
+        }
+      ]
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res4.statusCode).to.eql(200)
+    })
+
+    beforeEach('make reservations', async function () {
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let res3 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        },
+        payload: stands2
+      })
+
+      expect(res2.statusCode).to.eql(200)
+      expect(res3.statusCode).to.eql(200)
+    })
+
+    it('should be able to cancel a reservation', async function () {
+      let res = await server.inject({
+        method: 'DELETE',
+        url: `/reservation/company/${mocks.LINK.companyId}`
+      })
+
+      expect(res.statusCode).to.eql(200)
+      expect(res.result.companyId).to.eql(mocks.LINK.companyId)
+      expect(res.result.feedback.status).to.eql('CANCELLED')
+    })
+
+    it('should be able to cancel a confirmed reservation', async function () {
+      await Reservation.findOneAndUpdate(
+        { companyId: mocks.LINK.companyId },
+        { 'feedback.status': 'CONFIRMED' }
+      )
+
+      let res = await server.inject({
+        method: 'DELETE',
+        url: `/reservation/company/${mocks.LINK.companyId}`
+      })
+
+      expect(res.statusCode).to.eql(200)
+      expect(res.result.companyId).to.eql(mocks.LINK.companyId)
+      expect(res.result.feedback.status).to.eql('CANCELLED')
+    })
+
+    it('should not be able to cancel a non existing reservation', async function () {
+      await Reservation.findOneAndRemove({ companyId: mocks.LINK.companyId })
+
+      let res = await server.inject({
+        method: 'DELETE',
+        url: `/reservation/company/${mocks.LINK.companyId}`
+      })
+
+      expect(res.statusCode).to.eql(422)
+    })
+
+    after('removing links and venue from db', async function () {
+      await Venue.collection.drop()
+      await Link.collection.drop()
+    })
+
+    afterEach('removing reservations', async function () {
       await Reservation.collection.drop()
     })
   })
