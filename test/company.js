@@ -441,6 +441,201 @@ describe('company', async function () {
     })
   })
 
+  /*
+  describe('cancel reservation', async function () {
+    let stands = [
+      mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
+    ]
+
+    let venue, stands1
+
+    before('prepare venue and stands', async function () {
+      let form = new FormData()
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
+
+      let payload = await streamToPromise(form)
+      let headers = form.getHeaders()
+
+      let res = await server.inject({
+        method: 'POST',
+        url: `/venue/image`,
+        headers: headers,
+        payload: payload
+      })
+
+      expect(res.statusCode).to.eql(200)
+
+      for (let stand of stands) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/stand`,
+          payload: stand
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
+      stands1 = [
+        {
+          day: 1,
+          standId: venue.stands[0].id
+        },
+        {
+          day: 2,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 3,
+          standId: venue.stands[2].id
+        }
+      ]
+    })
+
+    it('should be able to cancel existing reservation', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let res2 = await server.inject({
+        method: 'DELETE',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let reservation1 = res1.result
+      let reservation2 = res2.result
+
+      expect(res1.statusCode).to.eql(200)
+      expect(reservation1).to.be.an('object')
+      expect(reservation1.feedback.status).to.eql('PENDING')
+
+      expect(res2.statusCode).to.eql(200)
+      expect(reservation2).to.be.an('object')
+      expect(reservation2.feedback.status).to.eql('CANCELLED')
+    })
+
+    it('should fail if it was already removed', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let res2 = await server.inject({
+        method: 'DELETE',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let res3 = await server.inject({
+        method: 'DELETE',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let reservation1 = res1.result
+      let reservation2 = res2.result
+      let reservation3 = res3.result
+
+      expect(res1.statusCode).to.eql(200)
+      expect(reservation1).to.be.an('object')
+      expect(reservation1.feedback.status).to.eql('PENDING')
+
+      expect(res2.statusCode).to.eql(200)
+      expect(reservation2).to.be.an('object')
+      expect(reservation2.feedback.status).to.eql('CANCELLED')
+
+      expect(res3.statusCode).to.eql(500)
+      expect(reservation3).to.be.an('object')
+      expect(reservation3.feedback.status).to.eql('CANCELLED')
+    })
+
+    it('should be able to make reservations after cancellation', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      await Reservation.findOneAndUpdate(
+        { id: 0, companyId: mocks.LINK.companyId },
+        { 'feedback.status': 'CANCELLED' })
+
+      let res2 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res2.statusCode).to.eql(200)
+    })
+
+    it('should fail if the payload has the wrong format or is empty', async function () {
+      let res0 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: []
+      })
+
+      expect(res0.statusCode).to.eql(400)
+    })
+
+    it('should fail if there are no reservations', async function () {
+      let res1 = await server.inject({
+        method: 'DELETE',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      expect(res1.statusCode).to.eql(500)
+    })
+
+    afterEach('removing reservations from db', async function () {
+      try {
+        await Reservation.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
+    })
+
+    after('removing venue from db', async function () {
+      await Venue.collection.drop()
+    })
+  })
+  */
+
   describe('get stands\'s availability', async function () {
     let stands = [
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
