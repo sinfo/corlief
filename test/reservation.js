@@ -438,12 +438,14 @@ describe('reservation', async function () {
     })
 
     it('should not be able to cancel a non existing reservation', async function () {
+      await Reservation.findOneAndRemove({ companyId: mocks.LINK.companyId })
+
       let res = await server.inject({
         method: 'DELETE',
         url: `/reservation/company/${mocks.LINK.companyId}`
       })
 
-      expect(res.statusCode).to.eql(200)
+      expect(res.statusCode).to.eql(422)
     })
 
     after('removing links and venue from db', async function () {
