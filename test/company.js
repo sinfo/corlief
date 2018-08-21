@@ -592,19 +592,6 @@ describe('company', async function () {
       expect(res2.statusCode).to.eql(200)
     })
 
-    it('should fail if the payload has the wrong format or is empty', async function () {
-      let res0 = await server.inject({
-        method: 'POST',
-        url: `/company/reservation`,
-        headers: {
-          Authorization: `bearer ${token1}`
-        },
-        payload: []
-      })
-
-      expect(res0.statusCode).to.eql(400)
-    })
-
     it('should fail if there are no reservations', async function () {
       let res1 = await server.inject({
         method: 'DELETE',

@@ -79,7 +79,6 @@ module.exports = [
           helpers.pre.link
         ],
         [
-          helpers.pre.config,
           helpers.pre.venue
         ]
       ],
@@ -88,7 +87,6 @@ module.exports = [
         let stands = request.payload
         let edition = request.pre.edition
         let link = request.pre.link
-        // let config = request.pre.config
         let venue = request.pre.venue
 
         try {
@@ -186,8 +184,7 @@ module.exports = [
       validate: {
         headers: Joi.object({
           'Authorization': Joi.string()
-        }).unknown(),
-        payload: helpers.joi.standsReservation
+        }).unknown()
       },
       response: {
         schema: helpers.joi.reservation
