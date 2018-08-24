@@ -103,6 +103,20 @@ reservationSchema.static('getLatest', async function (companyId, edition) {
     : null
 })
 
+reservationSchema.static('getAllLatest', async function (edition) {
+  let companies = await this.distinct('companyId', { edition: edition })
+  let allLatest = []
+
+  for (let companyId of companies) {
+    let latest = await this.getLatest(companyId, edition)
+    if (latest !== null) {
+      allLatest.push(latest)
+    }
+  }
+
+  return allLatest
+})
+
 reservationSchema.static('getConfirmedReservations', async function (edition) {
   return this.find({ edition: edition, 'feedback.status': 'CONFIRMED' })
 })
