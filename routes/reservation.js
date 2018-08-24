@@ -40,6 +40,41 @@ module.exports = [
   },
   {
     method: 'GET',
+    path: '/reservation/latest',
+    config: {
+      tags: ['api'],
+      description: 'Gets a reservation or list of reservations',
+      notes: 'Based on the company id and/or edition in the query',
+      pre: [
+        helpers.pre.edition
+      ],
+      validate: {
+        query: {
+          companyId: Joi.string().min(1)
+            .max(30)
+            .description('ID of company')
+        }
+      },
+      handler: async (request, h) => {
+        try {
+          const edition = request.pre.edition
+          const companyId = request.query.companyId
+
+          const reservations = await request.server.methods.reservation.getLatestReservations(edition, companyId)
+          return request.server.methods.reservation.arrayToJSON(reservations)
+        } catch (err) {
+          console.error(err)
+          logger.error(err)
+          return Boom.boomify(err)
+        }
+      },
+      response: {
+        schema: helpers.joi.reservations
+      }
+    }
+  },
+  {
+    method: 'GET',
     path: '/reservation/company/{companyId}/confirm',
     config: {
       tags: ['api'],

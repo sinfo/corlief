@@ -154,6 +154,15 @@ async function cancel (companyId, edition) {
   return latest.cancel()
 }
 
+async function getLatestReservations (edition, companyId) {
+  if (companyId === undefined) {
+    return Reservation.getAllLatest(edition)
+  }
+
+  let latest = await Reservation.getLatest(companyId, edition)
+  return latest === null ? [] : [ latest ]
+}
+
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.findOne = findOne
@@ -163,5 +172,6 @@ module.exports.areConsecutive = areConsecutive
 module.exports.areAvailable = areAvailable
 module.exports.areValid = areValid
 module.exports.getConfirmedReservations = Reservation.getConfirmedReservations
+module.exports.getLatestReservations = getLatestReservations
 module.exports.confirm = confirm
 module.exports.cancel = cancel
