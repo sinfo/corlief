@@ -32,7 +32,7 @@ module.exports = [
             : reservation.toJSON()
           return result === null ? Boom.badData('No reservation associated') : result
         } catch (err) {
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       }
@@ -63,8 +63,7 @@ module.exports = [
           const reservations = await request.server.methods.reservation.getLatestReservations(edition, companyId)
           return request.server.methods.reservation.arrayToJSON(reservations)
         } catch (err) {
-          console.error(err)
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       },

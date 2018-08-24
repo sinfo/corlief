@@ -33,7 +33,7 @@ module.exports = [
             : link.toJSON()
           return result === null ? Boom.badData('No link associated') : result
         } catch (err) {
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       },
@@ -66,7 +66,7 @@ module.exports = [
           const link = await request.server.methods.link.delete(companyId, edition)
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       },
@@ -107,7 +107,7 @@ module.exports = [
             companyId, edition, participationDays, advertisementKind)
           return link === null ? Boom.badData('no link associated') : link.toJSON()
         } catch (err) {
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       },
@@ -168,7 +168,7 @@ module.exports = [
 
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       },
@@ -240,7 +240,7 @@ module.exports = [
           const link = await request.server.methods.link.setToken(request.params, token)
           return (link) ? link.toJSON() : Boom.badData('No link associated')
         } catch (err) {
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       }

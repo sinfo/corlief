@@ -17,7 +17,6 @@ module.exports = {
 
     var db = mongoose.connection
     db.on('error', (err) => {
-      logger.error('Connection error')
       logger.error(`connection error: ${err.message}`)
     })
 
