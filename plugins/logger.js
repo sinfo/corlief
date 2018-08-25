@@ -5,12 +5,6 @@ module.exports = {
   name: 'logger',
   version: '1.0.0',
   register: async (server, options) => {
-    if (process.env.NODE_ENV === 'production' &&
-      config.LOGENTRIES_TOKEN === undefined) {
-      console.error('Missing env var CORLIEF_LOGENTRIES_TOKEN')
-      process.exit(1)
-    }
-
     let logger = loggerGenerator.getLogger(config.LOGENTRIES_TOKEN)
 
     if (process.env.NODE_ENV !== 'test') {

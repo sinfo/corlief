@@ -31,8 +31,12 @@ const config = {
 module.exports = config
 
 module.exports.validate = () => {
-  if (process.env.NODE_ENV === 'production' && config.LOGENTRIES_TOKEN === undefined) {
-    logger.warn('Production mode without logentries token given')
+  if (process.env.NODE_ENV === 'production') {
+    logger.warn('Running in production mode')
+
+    if (config.LOGENTRIES_TOKEN === undefined) {
+      logger.warn('Production mode without logentries token given')
+    }
   }
 
   for (let key of Object.keys(config.STORAGE)) {
