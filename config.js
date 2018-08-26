@@ -18,8 +18,8 @@ const config = {
     SECRET: process.env.CORLIEF_STORAGE_SECRET,
     REGION: process.env.CORLIEF_STORAGE_REGION,
     DOMAIN: process.env.CORLIEF_STORAGE_DOMAIN,
-    PATH: process.env.CORLIEF_STORAGE_PATH || '/dev/',
-    TEST: process.env.CORLIEF_STORAGE_TEST || '/test/'
+    PATH: process.env.NODE_ENV === 'production' ? '/corlief/production/' : '/corlief/dev/',
+    TEST: '/corlief/test/'
   },
 
   DECK: {
