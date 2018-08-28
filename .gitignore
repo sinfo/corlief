@@ -3,5 +3,6 @@ keys/*
 data/*
 corlief.sh
 *.swp
+.vscode
 
 package-lock.json
