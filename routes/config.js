@@ -15,7 +15,7 @@ module.exports = [
           let configs = await request.server.methods.config.find(request.query)
           return request.server.methods.config.arrayToJSON(configs)
         } catch (err) {
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       },
@@ -41,7 +41,7 @@ module.exports = [
             ? Boom.badData(`Couldn't create configuration for edition '${edition}'`)
             : config.toJSON()
         } catch (err) {
-          logger.error(err)
+          logger.error(err.message)
           return Boom.boomify(err)
         }
       },

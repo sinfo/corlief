@@ -88,6 +88,10 @@ reservationSchema.methods.confirm = async function () {
 }
 
 reservationSchema.methods.cancel = async function () {
+  if (this.feedback.status === 'CANCELLED') {
+    return null
+  }
+
   this.set({ feedback: { status: 'CANCELLED' } })
   return this.save()
 }
@@ -97,6 +101,20 @@ reservationSchema.static('getLatest', async function (companyId, edition) {
   return reservations.length > 0
     ? reservations[0]
     : null
+})
+
+reservationSchema.static('getAllLatest', async function (edition) {
+  let companies = await this.distinct('companyId', { edition: edition })
+  let allLatest = []
+
+  for (let companyId of companies) {
+    let latest = await this.getLatest(companyId, edition)
+    if (latest !== null) {
+      allLatest.push(latest)
+    }
+  }
+
+  return allLatest
 })
 
 reservationSchema.static('getConfirmedReservations', async function (edition) {

@@ -41,6 +41,7 @@ async function register () {
 // Start the server
 async function start () {
   try {
+    config.validate()
     await register()
     await server.start()
   } catch (err) {
