@@ -82,17 +82,37 @@ reservationSchema.methods.addStands = function (stands) {
   return this.save()
 }
 
-reservationSchema.methods.confirm = async function () {
-  this.set({ feedback: { status: 'CONFIRMED' } })
+reservationSchema.methods.confirm = async function (member) {
+  if (member) {
+    this.set({
+      feedback: {
+        status: 'CONFIRMED',
+        member: member
+      }
+    })
+  } else {
+    this.set({ feedback: { status: 'CONFIRMED' } })
+  }
+
   return this.save()
 }
 
-reservationSchema.methods.cancel = async function () {
+reservationSchema.methods.cancel = async function (member) {
   if (this.feedback.status === 'CANCELLED') {
     return null
   }
 
-  this.set({ feedback: { status: 'CANCELLED' } })
+  if (member) {
+    this.set({
+      feedback: {
+        status: 'CANCELLED',
+        member: member
+      }
+    })
+  } else {
+    this.set({ feedback: { status: 'CANCELLED' } })
+  }
+
   return this.save()
 }
 

@@ -276,6 +276,7 @@ describe('reservation', async function () {
 
       expect(res.statusCode).to.eql(200)
       expect(res.result.feedback.status).to.eql('CONFIRMED')
+      expect(res.result.feedback.member).to.eql(sinfoCredentials.id)
     })
 
     it('should be able to confirm a cancelled reservation', async function () {
@@ -304,6 +305,7 @@ describe('reservation', async function () {
 
       expect(res.statusCode).to.eql(200)
       expect(res.result.feedback.status).to.eql('CONFIRMED')
+      expect(res.result.feedback.member).to.eql(sinfoCredentials.id)
     })
 
     it('should give an error if no reservation is found', async function () {
@@ -478,6 +480,7 @@ describe('reservation', async function () {
       expect(res.statusCode).to.eql(200)
       expect(res.result.companyId).to.eql(mocks.LINK.companyId)
       expect(res.result.feedback.status).to.eql('CANCELLED')
+      expect(res.result.feedback.member).to.eql(sinfoCredentials.id)
     })
 
     it('should be able to cancel a confirmed reservation', async function () {
@@ -497,6 +500,7 @@ describe('reservation', async function () {
       expect(res.statusCode).to.eql(200)
       expect(res.result.companyId).to.eql(mocks.LINK.companyId)
       expect(res.result.feedback.status).to.eql('CANCELLED')
+      expect(res.result.feedback.member).to.eql(sinfoCredentials.id)
     })
 
     it('should not be able to cancel a non existing reservation', async function () {

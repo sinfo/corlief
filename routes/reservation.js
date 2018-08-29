@@ -104,8 +104,9 @@ module.exports = [
         try {
           const companyId = request.params.companyId
           const edition = request.pre.edition
+          const member = request.auth.credentials.user
 
-          const reservation = await request.server.methods.reservation.confirm(companyId, edition)
+          const reservation = await request.server.methods.reservation.confirm(companyId, edition, member)
 
           return reservation.data === null ? Boom.badData(reservation.error) : reservation.data.toJSON()
         } catch (err) {
@@ -141,8 +142,9 @@ module.exports = [
         try {
           const companyId = request.params.companyId
           const edition = request.pre.edition
+          const member = request.auth.credentials.user
 
-          const reservation = await request.server.methods.reservation.cancel(companyId, edition)
+          const reservation = await request.server.methods.reservation.cancel(companyId, edition, member)
 
           return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
         } catch (err) {
