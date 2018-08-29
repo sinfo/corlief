@@ -4,6 +4,13 @@ const {expect} = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
+const helpers = require('./helpers')
+
+let sinfoCredentials
+
+before('getting sinfo auth', async function () {
+  sinfoCredentials = await helpers.sinfoCredentials()
+})
 
 describe('link', async function () {
   describe('get', async function () {
@@ -16,7 +23,10 @@ describe('link', async function () {
     it('should get a list of all links if no parameters are given', async function () {
       const response = await server.inject({
         method: 'GET',
-        url: `/link`
+        url: `/link`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -30,7 +40,10 @@ describe('link', async function () {
       // companyId
       let response = await server.inject({
         method: 'GET',
-        url: `/link?companyId=${mocks.LINK11.companyId}`
+        url: `/link?companyId=${mocks.LINK11.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -41,7 +54,10 @@ describe('link', async function () {
       // edition
       response = await server.inject({
         method: 'GET',
-        url: `/link?edition=${mocks.LINK11.edition}`
+        url: `/link?edition=${mocks.LINK11.edition}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -52,7 +68,10 @@ describe('link', async function () {
       // token
       response = await server.inject({
         method: 'GET',
-        url: `/link?token=${mocks.LINK11.token}`
+        url: `/link?token=${mocks.LINK11.token}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -63,7 +82,10 @@ describe('link', async function () {
     it('should give a list of links when all parameters are given', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/link?companyId=${mocks.LINK21.companyId}&edition=${mocks.LINK21.edition}&token=${mocks.LINK21.token}`
+        url: `/link?companyId=${mocks.LINK21.companyId}&edition=${mocks.LINK21.edition}&token=${mocks.LINK21.token}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -73,7 +95,10 @@ describe('link', async function () {
       // different order
       response = await server.inject({
         method: 'GET',
-        url: `/link?token=${mocks.LINK12.token}&edition=${mocks.LINK12.edition}&companyId=${mocks.LINK12.companyId}`
+        url: `/link?token=${mocks.LINK12.token}&edition=${mocks.LINK12.edition}&companyId=${mocks.LINK12.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -84,7 +109,10 @@ describe('link', async function () {
     it('should give an empty list if no match is found', async function () {
       const response = await server.inject({
         method: 'GET',
-        url: `/link?token=null`
+        url: `/link?token=null`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -111,6 +139,9 @@ describe('link', async function () {
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
           expirationDate: EXPIRATION
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -138,6 +169,9 @@ describe('link', async function () {
             activities: mocks.LINK.activities,
             advertisementKind: mocks.LINK.advertisementKind,
             expirationDate: EXPIRATION
+          },
+          headers: {
+            Authorization: sinfoCredentials.authenticator
           }
         })
 
@@ -156,6 +190,9 @@ describe('link', async function () {
             activities: mocks.LINK.activities,
             advertisementKind: mocks.LINK.advertisementKind,
             expirationDate: EXPIRATION
+          },
+          headers: {
+            Authorization: sinfoCredentials.authenticator
           }
         })
 
@@ -174,6 +211,9 @@ describe('link', async function () {
             activities: mocks.LINK.activities,
             // missing advertisementKind
             expirationDate: EXPIRATION
+          },
+          headers: {
+            Authorization: sinfoCredentials.authenticator
           }
         })
 
@@ -192,6 +232,9 @@ describe('link', async function () {
             activities: mocks.LINK.activities,
             advertisementKind: mocks.LINK.advertisementKind
             // missing expirationDate
+          },
+          headers: {
+            Authorization: sinfoCredentials.authenticator
           }
         })
 
@@ -211,6 +254,9 @@ describe('link', async function () {
             activities: mocks.LINK.activities,
             advertisementKind: mocks.LINK.advertisementKind,
             expirationDate: pastExpirationDate
+          },
+          headers: {
+            Authorization: sinfoCredentials.authenticator
           }
         })
 
@@ -229,6 +275,9 @@ describe('link', async function () {
             activities: mocks.LINK.activities,
             advertisementKind: mocks.LINK.advertisementKind,
             expirationDate: EXPIRATION
+          },
+          headers: {
+            Authorization: sinfoCredentials.authenticator
           }
         })
 
@@ -251,7 +300,10 @@ describe('link', async function () {
     it('should be able to delete an existing link', async function () {
       const response = await server.inject({
         method: 'DELETE',
-        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       const link = await Link.findOne(mocks.LINK)
@@ -268,7 +320,10 @@ describe('link', async function () {
     it('should give an error when trying to delete a nonexisting link', async function () {
       const response = await server.inject({
         method: 'DELETE',
-        url: `/link/company/${mocks.LINK.companyId}_nonexistent/edition/${mocks.LINK.edition}`
+        url: `/link/company/${mocks.LINK.companyId}_nonexistent/edition/${mocks.LINK.edition}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(422)
@@ -287,7 +342,10 @@ describe('link', async function () {
     it('should be able to revoke an existing link', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/revoke`
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/revoke`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let link = await Link.findOne({
@@ -304,7 +362,10 @@ describe('link', async function () {
     it('should give an error when trying to revoke a nonexisting link', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/link/company/nonexistent/edition/noEdition/revoke`
+        url: `/link/company/nonexistent/edition/noEdition/revoke`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(422)
@@ -328,7 +389,10 @@ describe('link', async function () {
       const response = await server.inject({
         method: 'PUT',
         url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`,
-        payload: payload
+        payload: payload,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       const link = await Link.findOne({
@@ -349,7 +413,10 @@ describe('link', async function () {
     it('should give an error when trying to update a nonexisting link', async function () {
       const response = await server.inject({
         method: 'PUT',
-        url: `/link/company/sinfo/edition/2018`
+        url: `/link/company/sinfo/edition/2018`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(400)
@@ -359,7 +426,10 @@ describe('link', async function () {
       const response = await server.inject({
         method: 'PUT',
         url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}`,
-        payload: {}
+        payload: {},
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -389,6 +459,9 @@ describe('link', async function () {
         url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/extend`,
         payload: {
           expirationDate: expirationDate
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -419,6 +492,9 @@ describe('link', async function () {
         url: `/link/company/null/edition/${mocks.LINK.edition}/extend`,
         payload: {
           expirationDate: new Date().getTime() + 1000 * 60 * 60 * 24 // 1 day
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -431,6 +507,9 @@ describe('link', async function () {
         url: `/link/company/${mocks.LINK.companyId}/edition/null/extend`,
         payload: {
           expirationDate: new Date().getTime() + 1000 * 60 * 60 * 24 // 1 day
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -443,6 +522,9 @@ describe('link', async function () {
         url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/extend`,
         payload: {
           expirationDate: new Date().getTime() - 1000 * 60 // past time by 1m
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 

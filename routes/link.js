@@ -9,10 +9,14 @@ module.exports = [
     method: 'GET',
     path: '/link',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Gets a link or list of links',
       notes: 'Based on the company id and/or edition and/or token in the query',
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         query: {
           companyId: Joi.string().min(1)
             .max(30)
@@ -46,10 +50,14 @@ module.exports = [
     method: 'DELETE',
     path: '/link/company/{companyId}/edition/{edition}',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Removes a link from a company in a given edition',
       notes: 'Returns the removed link',
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         params: {
           companyId: Joi.string()
             .required().min(1).max(50)
@@ -79,10 +87,14 @@ module.exports = [
     method: 'PUT',
     path: '/link/company/{companyId}/edition/{edition}',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Updates a link\'s information',
       notes: 'Returns the updated link',
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         params: {
           companyId: Joi.string().required().min(1).max(50)
             .description('Company identifier'),
@@ -120,6 +132,7 @@ module.exports = [
     method: 'POST',
     path: '/link',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Creates a company link',
       notes: 'Returns the created link',
@@ -131,6 +144,9 @@ module.exports = [
         helpers.pre.token
       ],
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         payload: {
           companyId: Joi.string()
             .required().min(1).max(50)
@@ -181,10 +197,14 @@ module.exports = [
     method: 'GET',
     path: '/link/company/{companyId}/edition/{edition}/revoke',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Revokes a link',
       notes: 'Returns the same link with the valid field changed to false',
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         params: {
           companyId: Joi.string()
             .required().min(1).max(50)
@@ -213,10 +233,14 @@ module.exports = [
     method: 'PUT',
     path: '/link/company/{companyId}/edition/{edition}/extend',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Extends the validy of the token for the given company for the given edition',
       notes: 'Returns the new link with a new token if inputs inputs are valid',
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         params: {
           companyId: Joi.string()
             .required().min(1).max(50)

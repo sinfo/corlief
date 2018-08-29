@@ -9,6 +9,13 @@ const server = require(path.join(__dirname, '..', 'app')).server
 const streamToPromise = require('stream-to-promise')
 const FormData = require('form-data')
 const fs = require('fs')
+const helpers = require('./helpers')
+
+let sinfoCredentials
+
+before('getting sinfo auth', async function () {
+  sinfoCredentials = await helpers.sinfoCredentials()
+})
 
 describe('reservation', async function () {
   describe('get', async function () {
@@ -21,7 +28,10 @@ describe('reservation', async function () {
     it('should get a list of all reservations if no parameters are given', async function () {
       const response = await server.inject({
         method: 'GET',
-        url: `/reservation`
+        url: `/reservation`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -35,7 +45,10 @@ describe('reservation', async function () {
       // companyId
       let response = await server.inject({
         method: 'GET',
-        url: `/reservation?companyId=${mocks.RESERVATION1.companyId}`
+        url: `/reservation?companyId=${mocks.RESERVATION1.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -46,7 +59,10 @@ describe('reservation', async function () {
       // edition
       response = await server.inject({
         method: 'GET',
-        url: `/reservation?edition=${mocks.RESERVATION1.edition}`
+        url: `/reservation?edition=${mocks.RESERVATION1.edition}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -58,7 +74,10 @@ describe('reservation', async function () {
     it('should give a list of reservations when all parameters are given', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/reservation?companyId=${mocks.RESERVATION3.companyId}&edition=${mocks.RESERVATION3.edition}`
+        url: `/reservation?companyId=${mocks.RESERVATION3.companyId}&edition=${mocks.RESERVATION3.edition}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -68,7 +87,10 @@ describe('reservation', async function () {
       // different order
       response = await server.inject({
         method: 'GET',
-        url: `/reservation?edition=${mocks.RESERVATION2.edition}&companyId=${mocks.RESERVATION2.companyId}`
+        url: `/reservation?edition=${mocks.RESERVATION2.edition}&companyId=${mocks.RESERVATION2.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -79,7 +101,10 @@ describe('reservation', async function () {
     it('should give an empty list if no match is found', async function () {
       const response = await server.inject({
         method: 'GET',
-        url: `/reservation?edition=null`
+        url: `/reservation?edition=null`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(response.statusCode).to.eql(200)
@@ -119,6 +144,9 @@ describe('reservation', async function () {
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
           expirationDate: ON_TIME
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -131,6 +159,9 @@ describe('reservation', async function () {
           activities: mocks.LINK3.activities,
           advertisementKind: mocks.LINK3.advertisementKind,
           expirationDate: ON_TIME
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -147,6 +178,8 @@ describe('reservation', async function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -160,7 +193,10 @@ describe('reservation', async function () {
         let res = await server.inject({
           method: 'POST',
           url: `/venue/stand`,
-          payload: stand
+          payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
         })
 
         venue = res.result
@@ -222,7 +258,10 @@ describe('reservation', async function () {
     it('should be able to confirm a pending reservation', async function () {
       let res = await server.inject({
         method: 'GET',
-        url: `/reservation/company/${mocks.LINK.companyId}/confirm`
+        url: `/reservation/company/${mocks.LINK.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let reservations = await Reservation.find()
@@ -247,7 +286,10 @@ describe('reservation', async function () {
 
       let res = await server.inject({
         method: 'GET',
-        url: `/reservation/company/${mocks.LINK.companyId}/confirm`
+        url: `/reservation/company/${mocks.LINK.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let reservations = await Reservation.find()
@@ -267,7 +309,10 @@ describe('reservation', async function () {
     it('should give an error if no reservation is found', async function () {
       let res = await server.inject({
         method: 'GET',
-        url: `/reservation/company/______/confirm`
+        url: `/reservation/company/______/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(res.statusCode).to.eql(422)
@@ -308,6 +353,9 @@ describe('reservation', async function () {
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
           expirationDate: ON_TIME
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -320,6 +368,9 @@ describe('reservation', async function () {
           activities: mocks.LINK3.activities,
           advertisementKind: mocks.LINK3.advertisementKind,
           expirationDate: ON_TIME
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -336,6 +387,8 @@ describe('reservation', async function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -349,7 +402,10 @@ describe('reservation', async function () {
         let res = await server.inject({
           method: 'POST',
           url: `/venue/stand`,
-          payload: stand
+          payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
         })
 
         venue = res.result
@@ -413,7 +469,10 @@ describe('reservation', async function () {
     it('should be able to cancel a reservation', async function () {
       let res = await server.inject({
         method: 'DELETE',
-        url: `/reservation/company/${mocks.LINK.companyId}`
+        url: `/reservation/company/${mocks.LINK.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(res.statusCode).to.eql(200)
@@ -429,7 +488,10 @@ describe('reservation', async function () {
 
       let res = await server.inject({
         method: 'DELETE',
-        url: `/reservation/company/${mocks.LINK.companyId}`
+        url: `/reservation/company/${mocks.LINK.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(res.statusCode).to.eql(200)
@@ -442,7 +504,10 @@ describe('reservation', async function () {
 
       let res = await server.inject({
         method: 'DELETE',
-        url: `/reservation/company/${mocks.LINK.companyId}`
+        url: `/reservation/company/${mocks.LINK.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(res.statusCode).to.eql(422)
@@ -478,6 +543,9 @@ describe('reservation', async function () {
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
           expirationDate: ON_TIME
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -490,6 +558,9 @@ describe('reservation', async function () {
           activities: mocks.LINK3.activities,
           advertisementKind: mocks.LINK3.advertisementKind,
           expirationDate: ON_TIME
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -506,6 +577,8 @@ describe('reservation', async function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -519,7 +592,10 @@ describe('reservation', async function () {
         let res = await server.inject({
           method: 'POST',
           url: `/venue/stand`,
-          payload: stand
+          payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
         })
 
         venue = res.result
@@ -560,7 +636,10 @@ describe('reservation', async function () {
     it('should return an empty array if there are no reservations', async function () {
       let res = await server.inject({
         method: 'GET',
-        url: '/reservation/latest'
+        url: '/reservation/latest',
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(res.statusCode).to.eql(200)
@@ -580,7 +659,10 @@ describe('reservation', async function () {
 
       let res2 = await server.inject({
         method: 'GET',
-        url: '/reservation/latest'
+        url: '/reservation/latest',
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let reservation = res1.result
@@ -604,12 +686,18 @@ describe('reservation', async function () {
 
       let res2 = await server.inject({
         method: 'GET',
-        url: `/reservation/company/${mocks.LINK.companyId}/confirm`
+        url: `/reservation/company/${mocks.LINK.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
         method: 'GET',
-        url: '/reservation/latest'
+        url: '/reservation/latest',
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let reservation = res2.result
@@ -635,7 +723,10 @@ describe('reservation', async function () {
 
       let res2 = await server.inject({
         method: 'DELETE',
-        url: `/reservation/company/${mocks.LINK.companyId}`
+        url: `/reservation/company/${mocks.LINK.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
@@ -649,7 +740,10 @@ describe('reservation', async function () {
 
       let res4 = await server.inject({
         method: 'GET',
-        url: '/reservation/latest'
+        url: '/reservation/latest',
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let reservation = res3.result
@@ -676,7 +770,10 @@ describe('reservation', async function () {
 
       let res2 = await server.inject({
         method: 'GET',
-        url: `/reservation/company/${mocks.LINK.companyId}/confirm`
+        url: `/reservation/company/${mocks.LINK.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
@@ -690,7 +787,10 @@ describe('reservation', async function () {
 
       let res4 = await server.inject({
         method: 'GET',
-        url: '/reservation/latest'
+        url: '/reservation/latest',
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let reservation1 = res2.result
@@ -719,7 +819,10 @@ describe('reservation', async function () {
 
       let res2 = await server.inject({
         method: 'GET',
-        url: `/reservation/company/${mocks.LINK.companyId}/confirm`
+        url: `/reservation/company/${mocks.LINK.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
@@ -733,12 +836,18 @@ describe('reservation', async function () {
 
       let res4 = await server.inject({
         method: 'GET',
-        url: `/reservation/company/${mocks.LINK3.companyId}/confirm`
+        url: `/reservation/company/${mocks.LINK3.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res5 = await server.inject({
         method: 'GET',
-        url: '/reservation/latest'
+        url: '/reservation/latest',
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let reservation1 = res2.result
@@ -768,7 +877,10 @@ describe('reservation', async function () {
 
       let res2 = await server.inject({
         method: 'GET',
-        url: `/reservation/company/${mocks.LINK.companyId}/confirm`
+        url: `/reservation/company/${mocks.LINK.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
@@ -782,12 +894,18 @@ describe('reservation', async function () {
 
       let res4 = await server.inject({
         method: 'GET',
-        url: `/reservation/company/${mocks.LINK3.companyId}/confirm`
+        url: `/reservation/company/${mocks.LINK3.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res5 = await server.inject({
         method: 'GET',
-        url: `/reservation/latest?companyId=${mocks.LINK.companyId}`
+        url: `/reservation/latest?companyId=${mocks.LINK.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let reservation1 = res2.result

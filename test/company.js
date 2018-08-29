@@ -9,6 +9,13 @@ const server = require(path.join(__dirname, '..', 'app')).server
 const streamToPromise = require('stream-to-promise')
 const FormData = require('form-data')
 const fs = require('fs')
+const helpers = require('./helpers')
+
+let sinfoCredentials
+
+before('getting sinfo auth', async function () {
+  sinfoCredentials = await helpers.sinfoCredentials()
+})
 
 describe('company', async function () {
   const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
@@ -25,6 +32,9 @@ describe('company', async function () {
         activities: mocks.LINK.activities,
         advertisementKind: mocks.LINK.advertisementKind,
         expirationDate: ON_TIME
+      },
+      headers: {
+        Authorization: sinfoCredentials.authenticator
       }
     })
 
@@ -37,6 +47,9 @@ describe('company', async function () {
         activities: mocks.LINK2.activities,
         advertisementKind: mocks.LINK2.advertisementKind,
         expirationDate: TO_EXPIRE
+      },
+      headers: {
+        Authorization: sinfoCredentials.authenticator
       }
     })
 
@@ -49,6 +62,9 @@ describe('company', async function () {
         activities: mocks.INVALID_LINK.activities,
         advertisementKind: mocks.INVALID_LINK.advertisementKind,
         expirationDate: ON_TIME
+      },
+      headers: {
+        Authorization: sinfoCredentials.authenticator
       }
     })
 
@@ -61,6 +77,9 @@ describe('company', async function () {
         activities: mocks.LINK3.activities,
         advertisementKind: mocks.LINK3.advertisementKind,
         expirationDate: ON_TIME
+      },
+      headers: {
+        Authorization: sinfoCredentials.authenticator
       }
     })
 
@@ -175,6 +194,8 @@ describe('company', async function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -188,7 +209,10 @@ describe('company', async function () {
         let res = await server.inject({
           method: 'POST',
           url: `/venue/stand`,
-          payload: stand
+          payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
         })
 
         venue = res.result
@@ -455,6 +479,8 @@ describe('company', async function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -468,7 +494,10 @@ describe('company', async function () {
         let res = await server.inject({
           method: 'POST',
           url: `/venue/stand`,
-          payload: stand
+          payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
         })
 
         venue = res.result
@@ -632,6 +661,8 @@ describe('company', async function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -645,7 +676,10 @@ describe('company', async function () {
         let res = await server.inject({
           method: 'POST',
           url: `/venue/stand`,
-          payload: stand
+          payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
         })
 
         venue = res.result
@@ -886,6 +920,8 @@ describe('company', async function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -899,7 +935,10 @@ describe('company', async function () {
         let res = await server.inject({
           method: 'POST',
           url: `/venue/stand`,
-          payload: stand
+          payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
         })
 
         venue = res.result

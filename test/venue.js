@@ -7,6 +7,13 @@ const FormData = require('form-data')
 const fs = require('fs')
 const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
+const helpers = require('./helpers')
+
+let sinfoCredentials
+
+before('getting sinfo auth', async function () {
+  sinfoCredentials = await helpers.sinfoCredentials()
+})
 
 describe('venue', function () {
   this.timeout(0)
@@ -19,6 +26,7 @@ describe('venue', function () {
       form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
       payload = await streamToPromise(form)
       headers = form.getHeaders()
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
     })
 
     it('should upload an image and create a new venue', async function () {
@@ -87,7 +95,10 @@ describe('venue', function () {
     it('should give an error if no payload is given', async function () {
       let res = await server.inject({
         method: 'POST',
-        url: `/venue/image`
+        url: `/venue/image`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(res.statusCode).to.eql(415)
@@ -129,7 +140,10 @@ describe('venue', function () {
     it('should get all venues', async function () {
       let res = await server.inject({
         method: 'GET',
-        url: '/venue'
+        url: '/venue',
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let venues = res.result
@@ -144,7 +158,10 @@ describe('venue', function () {
     it('should get a specific venue', async function () {
       let res = await server.inject({
         method: 'GET',
-        url: `/venue/${mocks.VENUE1.edition}`
+        url: `/venue/${mocks.VENUE1.edition}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let venue = res.result
@@ -156,7 +173,10 @@ describe('venue', function () {
     it('should give an error if no specific venue found', async function () {
       let res = await server.inject({
         method: 'GET',
-        url: `/venue/${mocks.VENUE1.edition}_`
+        url: `/venue/${mocks.VENUE1.edition}_`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(res.statusCode).to.eql(404)
@@ -177,6 +197,8 @@ describe('venue', function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -191,7 +213,10 @@ describe('venue', function () {
       let res = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND1
+        payload: mocks.STAND1,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let result = res.result
@@ -205,13 +230,19 @@ describe('venue', function () {
       let res1 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND1
+        payload: mocks.STAND1,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res2 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND2
+        payload: mocks.STAND2,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let result = res2.result
@@ -227,19 +258,28 @@ describe('venue', function () {
       let res1 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND1
+        payload: mocks.STAND1,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res2 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND2
+        payload: mocks.STAND2,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND3
+        payload: mocks.STAND3,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let v = await Venue.findOne({ edition: venue.edition })
@@ -249,7 +289,10 @@ describe('venue', function () {
       let res4 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND4
+        payload: mocks.STAND4,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let result = res4.result
@@ -277,6 +320,9 @@ describe('venue', function () {
             x: 0,
             y: 0
           }
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -296,6 +342,9 @@ describe('venue', function () {
             x: 2,
             y: 2
           }
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
         }
       })
 
@@ -324,6 +373,8 @@ describe('venue', function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
+
       let res = await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -338,19 +389,28 @@ describe('venue', function () {
       let res1 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND1
+        payload: mocks.STAND1,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res2 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND2
+        payload: mocks.STAND2,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND3
+        payload: mocks.STAND3,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let v = await Venue.findOne({ edition: venue.edition })
@@ -360,12 +420,18 @@ describe('venue', function () {
       let res4 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND4
+        payload: mocks.STAND4,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res5 = await server.inject({
         method: 'DELETE',
-        url: `/venue/stand/3`
+        url: `/venue/stand/3`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let result = res4.result
@@ -385,19 +451,28 @@ describe('venue', function () {
       let res1 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND1
+        payload: mocks.STAND1,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res2 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND2
+        payload: mocks.STAND2,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND3
+        payload: mocks.STAND3,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let v = await Venue.findOne({ edition: venue.edition })
@@ -407,12 +482,18 @@ describe('venue', function () {
       let res4 = await server.inject({
         method: 'POST',
         url: `/venue/stand`,
-        payload: mocks.STAND4
+        payload: mocks.STAND4,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res5 = await server.inject({
         method: 'DELETE',
-        url: `/venue/stand/1`
+        url: `/venue/stand/1`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let result = res5.result
@@ -449,6 +530,8 @@ describe('venue', function () {
       let payload = await streamToPromise(form)
       let headers = form.getHeaders()
 
+      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
+
       await server.inject({
         method: 'POST',
         url: `/venue/image`,
@@ -477,7 +560,10 @@ describe('venue', function () {
       let res = await server.inject({
         method: 'PUT',
         url: '/venue/stand',
-        payload: stands
+        payload: stands,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let result = res.result
@@ -510,7 +596,10 @@ describe('venue', function () {
       let res = await server.inject({
         method: 'PUT',
         url: `/venue/stand`,
-        payload: stands
+        payload: stands,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       expect(res.statusCode).to.eql(422)

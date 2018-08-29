@@ -1,8 +1,15 @@
 const path = require('path')
-const { afterEach, it, describe } = require('mocha')
+const { before, afterEach, it, describe } = require('mocha')
 const {expect} = require('chai')
 const Config = require(path.join('..', 'db', 'models', 'config'))
 const server = require(path.join(__dirname, '..', 'app')).server
+const helpers = require('./helpers')
+
+let sinfoCredentials
+
+before('getting sinfo auth', async function () {
+  sinfoCredentials = await helpers.sinfoCredentials()
+})
 
 describe('config', function () {
   this.timeout(0)
@@ -10,7 +17,10 @@ describe('config', function () {
     it('should create a new configuration if none is set', async function () {
       let res = await server.inject({
         method: 'GET',
-        url: `/config`
+        url: `/config`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let config = res.result
@@ -25,12 +35,18 @@ describe('config', function () {
     it('should get the current config', async function () {
       let res1 = await server.inject({
         method: 'GET',
-        url: `/config`
+        url: `/config`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res2 = await server.inject({
         method: 'GET',
-        url: `/config`
+        url: `/config`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let config1 = res1.result
@@ -46,17 +62,26 @@ describe('config', function () {
     it('should get all configs', async function () {
       let res1 = await server.inject({
         method: 'GET',
-        url: `/config/all`
+        url: `/config/all`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res2 = await server.inject({
         method: 'GET',
-        url: `/config`
+        url: `/config`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let res3 = await server.inject({
         method: 'GET',
-        url: `/config/all`
+        url: `/config/all`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
       })
 
       let configs1 = res1.result
