@@ -29,6 +29,9 @@ async function register () {
     {
       plugin: HapiSwagger,
       options: {
+        schemes: [ process.env.NODE_ENV === 'production' ? 'https' : 'http' ],
+        host: config.CORLIEF_PATH,
+        cors: true,
         info: {
           title: `${Pack.name} API documentation`,
           version: Pack.version

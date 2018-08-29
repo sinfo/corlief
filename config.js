@@ -3,6 +3,9 @@ const logger = require('logger').getLogger()
 const config = {
   HOST: process.env.CORLIEF_HOST || 'localhost',
   PORT: process.env.CORLIEF_PORT || 8888,
+  CORLIEF_PATH: process.env.NODE_ENV === 'production'
+    ? process.env.CORLIEF_PATH
+    : 'localhost:8888',
 
   MONGO: {
     DB: process.env.CORLIEF_MONGO_DB || 'corlief',
@@ -33,6 +36,11 @@ module.exports = config
 module.exports.validate = () => {
   if (process.env.NODE_ENV === 'production') {
     logger.warn('Running in production mode')
+
+    if (config.CORLIEF_PATH === undefined) {
+      logger.error('Env var of CORLIEF_PATH not defined')
+      process.exit(1)
+    }
 
     if (config.LOGENTRIES_TOKEN === undefined) {
       logger.warn('Production mode without logentries token given')

@@ -13,11 +13,25 @@ module.exports = {
   version: '1.0.0',
   register: async (server, options) => {
     mongoose.connect(MONGO_URL,
-      { useNewUrlParser: true, reconnectTries: Number.MAX_VALUE, reconnectInterval: 500 })
+      {
+        useNewUrlParser: true,
+        autoReconnect: true,
+        reconnectTries: 1000,
+        reconnectInterval: 5000
+      })
 
     var db = mongoose.connection
+
+    db.on('connecting', () => {
+      logger.debug(`Trying to connect the daemon`)
+    })
+
+    db.on('disconnected', () => {
+      logger.error(`Disconnected from the mongo daemon`)
+    })
+
     db.on('error', (err) => {
-      logger.error(`connection error: ${err.message}`)
+      logger.error(`Connection error: ${err.message}`)
     })
 
     if (process.env.NODE_ENV !== 'test') {
