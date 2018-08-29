@@ -10,10 +10,14 @@ module.exports = [
     method: 'GET',
     path: '/reservation',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Gets a reservation or list of reservations',
       notes: 'Based on the company id and/or edition in the query',
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         query: {
           companyId: Joi.string().min(1)
             .max(30)
@@ -42,6 +46,7 @@ module.exports = [
     method: 'GET',
     path: '/reservation/latest',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Gets a reservation or list of reservations',
       notes: 'Based on the company id and/or edition in the query',
@@ -49,6 +54,9 @@ module.exports = [
         helpers.pre.edition
       ],
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         query: {
           companyId: Joi.string().min(1)
             .max(30)
@@ -76,12 +84,16 @@ module.exports = [
     method: 'GET',
     path: '/reservation/company/{companyId}/confirm',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Confirm latest company\'s reservation',
       pre: [
         helpers.pre.edition
       ],
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         params: Joi.object({
           companyId: Joi.string().required()
             .min(1).max(50)
@@ -92,8 +104,9 @@ module.exports = [
         try {
           const companyId = request.params.companyId
           const edition = request.pre.edition
+          const member = request.auth.credentials.user
 
-          const reservation = await request.server.methods.reservation.confirm(companyId, edition)
+          const reservation = await request.server.methods.reservation.confirm(companyId, edition, member)
 
           return reservation.data === null ? Boom.badData(reservation.error) : reservation.data.toJSON()
         } catch (err) {
@@ -109,12 +122,16 @@ module.exports = [
     method: 'DELETE',
     path: '/reservation/company/{companyId}',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Cancel latest company\'s reservation',
       pre: [
         helpers.pre.edition
       ],
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         params: Joi.object({
           companyId: Joi.string().required()
             .min(1).max(50)
@@ -125,8 +142,9 @@ module.exports = [
         try {
           const companyId = request.params.companyId
           const edition = request.pre.edition
+          const member = request.auth.credentials.user
 
-          const reservation = await request.server.methods.reservation.cancel(companyId, edition)
+          const reservation = await request.server.methods.reservation.cancel(companyId, edition, member)
 
           return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
         } catch (err) {

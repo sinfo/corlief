@@ -9,6 +9,7 @@ module.exports = [
     method: 'GET',
     path: '/venue',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Gets all venues',
       handler: async (request, h) => {
@@ -21,6 +22,11 @@ module.exports = [
           return Boom.boomify(err)
         }
       },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
       response: {
         schema: helpers.joi.venues
       }
@@ -30,6 +36,7 @@ module.exports = [
     method: 'GET',
     path: '/venue/{edition}',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Gets a venue or all editions\' venues',
       handler: async (request, h) => {
@@ -42,6 +49,9 @@ module.exports = [
         }
       },
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         params: {
           edition: Joi.string().min(1)
             .max(30)
@@ -57,6 +67,7 @@ module.exports = [
     method: 'POST',
     path: '/venue/image',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Uploads a venue\'s image to the latest edition',
       pre: [
@@ -91,6 +102,9 @@ module.exports = [
         }
       },
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         payload: {
           file: Joi.any()
             .meta({ swaggerType: 'file' })
@@ -113,6 +127,7 @@ module.exports = [
     method: 'POST',
     path: '/venue/stand',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Adds a stand to the venue corresponding to the latest edition',
       pre: [
@@ -141,6 +156,9 @@ module.exports = [
         }
       },
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         payload: helpers.joi.standPayload
           .description('Stand')
       },
@@ -153,6 +171,7 @@ module.exports = [
     method: 'DELETE',
     path: '/venue/stand/{id}',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Removes stand with id from the venue corresponding to the latest edition',
       pre: [
@@ -170,6 +189,9 @@ module.exports = [
         }
       },
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         params: {
           id: Joi.number().min(0)
         }
@@ -183,6 +205,7 @@ module.exports = [
     method: 'PUT',
     path: '/venue/stand',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Replaces all stands on the venue corresponding to the latest edition',
       pre: [
@@ -213,6 +236,9 @@ module.exports = [
         }
       },
       validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
         payload: helpers.joi.standsPayload
           .description('Stands')
       },

@@ -2,12 +2,14 @@ const logger = require('logger').getLogger()
 const Boom = require('boom')
 const path = require('path')
 const helpers = require(path.join(__dirname, '..', 'helpers'))
+const Joi = require('joi')
 
 module.exports = [
   {
     method: 'GET',
     path: '/config/all',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Gets all the editions\' configurations',
       handler: async (request, h) => {
@@ -19,6 +21,11 @@ module.exports = [
           return Boom.boomify(err)
         }
       },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
       response: {
         schema: helpers.joi.configs
       }
@@ -28,6 +35,7 @@ module.exports = [
     method: 'GET',
     path: '/config',
     config: {
+      auth: 'sinfo',
       tags: ['api'],
       description: 'Get current edition\'s configuration',
       pre: [
@@ -44,6 +52,11 @@ module.exports = [
           logger.error(err.message)
           return Boom.boomify(err)
         }
+      },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
       },
       response: {
         schema: helpers.joi.config

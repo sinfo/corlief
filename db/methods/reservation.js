@@ -128,7 +128,7 @@ async function companyReservations (companyId, edition, latest) {
   return latest ? Reservation.getLatest(companyId, edition) : find(filter)
 }
 
-async function confirm (companyId, edition) {
+async function confirm (companyId, edition, member) {
   let result = {
     data: null,
     error: null
@@ -148,18 +148,18 @@ async function confirm (companyId, edition) {
     return result
   }
 
-  result.data = await latest.confirm()
+  result.data = member ? await latest.confirm(member) : await latest.confirm(member)
   return result
 }
 
-async function cancel (companyId, edition) {
+async function cancel (companyId, edition, member) {
   let latest = await Reservation.getLatest(companyId, edition)
 
   if (latest === null) {
     return null
   }
 
-  return latest.cancel()
+  return member ? latest.cancel(member) : latest.cancel(member)
 }
 
 async function getLatestReservations (edition, companyId) {

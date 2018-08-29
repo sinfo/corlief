@@ -1,4 +1,5 @@
 const Boom = require('boom')
+const logger = require('logger').getLogger()
 
 module.exports = server => {
   server.auth.scheme('custom-sinfo', function (server, options) {
@@ -28,7 +29,7 @@ module.exports = server => {
 
           return h.authenticated({ credentials: { user: user, token: token } })
         } catch (err) {
-          console.error(err)
+          logger.error(err)
           throw Boom.unauthorized(null, 'custom-sinfo')
         }
       }
