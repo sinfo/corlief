@@ -190,5 +190,44 @@ module.exports = [
         schema: helpers.joi.reservation
       }
     }
+  },
+  {
+    method: 'GET',
+    path: '/company/reservation',
+    config: {
+      auth: 'company',
+      tags: ['api'],
+      description: 'Gets all reservations associated with company',
+      pre: [
+        helpers.pre.edition
+      ],
+      handler: async (request, h) => {
+        try {
+          const companyId = request.auth.credentials.company
+          const edition = request.pre.edition
+          const latest = request.query.latest
+
+          let reservation = await request.server.methods.reservation.companyReservations(companyId, edition, latest)
+          if (reservation === null) {
+            return []
+          }
+          return reservation.length === undefined ? [reservation.toJSON()] : request.server.methods.reservation.arrayToJSON(reservation)
+        } catch (err) {
+          console.error(err)
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
+        query: {
+          latest: Joi.boolean().required().description('Defines if only one or all')
+        }
+      },
+      response: {
+        schema: helpers.joi.reservations
+      }
+    }
   }
 ]

@@ -120,6 +120,14 @@ async function areValid (venue, stands) {
   return true
 }
 
+async function companyReservations (companyId, edition, latest) {
+  let filter = {
+    companyId: companyId,
+    edition: edition
+  }
+  return latest ? Reservation.getLatest(companyId, edition) : find(filter)
+}
+
 async function confirm (companyId, edition) {
   let result = {
     data: null,
@@ -172,6 +180,7 @@ module.exports.areConsecutive = areConsecutive
 module.exports.areAvailable = areAvailable
 module.exports.areValid = areValid
 module.exports.getConfirmedReservations = Reservation.getConfirmedReservations
+module.exports.companyReservations = companyReservations
 module.exports.getLatestReservations = getLatestReservations
 module.exports.confirm = confirm
 module.exports.cancel = cancel
