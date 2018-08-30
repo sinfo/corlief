@@ -1,4 +1,4 @@
-const logger = process.env.CORLIEF_LOGENTRIES_TOKEN
+const logger = process.env.CORLIEF_LOGENTRIES_TOKEN && process.env.NODE_ENV === 'production'
   ? require('logger').getLogger(process.env.CORLIEF_LOGENTRIES_TOKEN)
   : require('logger').getLogger()
 
