@@ -86,6 +86,13 @@ let credentials = Joi.object().keys({
 
 module.exports.credentials = credentials
 
+let sinfoCredentials = Joi.object().keys({
+  user: Joi.string().required(),
+  token: Joi.string().required()
+})
+
+module.exports.sinfoCredentials = sinfoCredentials
+
 let standReservation = Joi.object().keys({
   day: Joi.number().required().min(1).max(5),
   standId: Joi.number().required().min(0).max(100)
