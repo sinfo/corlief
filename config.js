@@ -1,5 +1,11 @@
-const logger = process.env.CORLIEF_LOGENTRIES_TOKEN && process.env.NODE_ENV === 'production'
-  ? require('logger').getLogger(process.env.CORLIEF_LOGENTRIES_TOKEN)
+const logger = process.env.CORLIEF_LOGENTRIES_TOKEN &&
+  process.env.CORLIEF_MAILGUN_API_KEY &&
+  process.env.NODE_ENV === 'production'
+  ? require('logger').getLogger(
+    process.env.CORLIEF_LOGENTRIES_TOKEN,
+    process.env.CORLIEF_MAILGUN_API_KEY,
+    'Corlief'
+  )
   : require('logger').getLogger()
 
 const config = {
