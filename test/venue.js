@@ -183,7 +183,11 @@ describe('venue', function () {
     })
 
     after('cleaning up db', async function () {
-      await Venue.collection.drop()
+      try {
+        await Venue.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -352,7 +356,11 @@ describe('venue', function () {
     })
 
     after('cleaning up venues', async function () {
-      await Venue.collection.drop()
+      try {
+        await Venue.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
 
     afterEach('delete stands from venue', async function () {
@@ -509,7 +517,11 @@ describe('venue', function () {
     })
 
     after('cleaning up venues', async function () {
-      await Venue.collection.drop()
+      try {
+        await Venue.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
 
     afterEach('delete stands from venue', async function () {
@@ -606,7 +618,11 @@ describe('venue', function () {
     })
 
     after('cleaning up venues', async function () {
-      await Venue.collection.drop()
+      try {
+        await Venue.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
 
     afterEach('delete stands from venue', async function () {

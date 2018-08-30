@@ -120,7 +120,11 @@ describe('link', async function () {
     })
 
     after('removing links from db', async function () {
-      await Link.collection.drop()
+      try {
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -288,7 +292,11 @@ describe('link', async function () {
     })
 
     after('removing link from db', async function () {
-      await Link.collection.drop()
+      try {
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -330,7 +338,11 @@ describe('link', async function () {
     })
 
     after('removing link from db', async function () {
-      await Link.collection.drop()
+      try {
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -372,7 +384,11 @@ describe('link', async function () {
     })
 
     after('removing link from db', async function () {
-      await Link.collection.drop()
+      try {
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -443,7 +459,11 @@ describe('link', async function () {
     })
 
     after('removing link from db', async function () {
-      await Link.collection.drop()
+      try {
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -532,7 +552,11 @@ describe('link', async function () {
     })
 
     after('removing link from db', async function () {
-      await Link.collection.drop()
+      try {
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 

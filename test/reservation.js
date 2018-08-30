@@ -112,7 +112,11 @@ describe('reservation', async function () {
     })
 
     after('removing reservations from db', async function () {
-      await Reservation.collection.drop()
+      try {
+        await Reservation.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
 
     function expectToContain (list, obj) {
@@ -329,9 +333,13 @@ describe('reservation', async function () {
     })
 
     after('removing all from db', async function () {
-      await Venue.collection.drop()
-      await Link.collection.drop()
-      await Reservation.collection.drop()
+      try {
+        await Venue.collection.drop()
+        await Link.collection.drop()
+        await Reservation.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -518,12 +526,20 @@ describe('reservation', async function () {
     })
 
     after('removing links and venue from db', async function () {
-      await Venue.collection.drop()
-      await Link.collection.drop()
+      try {
+        await Venue.collection.drop()
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
 
     afterEach('removing reservations', async function () {
-      await Reservation.collection.drop()
+      try {
+        await Reservation.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -934,8 +950,12 @@ describe('reservation', async function () {
     })
 
     after('removing all from db', async function () {
-      await Venue.collection.drop()
-      await Link.collection.drop()
+      try {
+        await Venue.collection.drop()
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 })

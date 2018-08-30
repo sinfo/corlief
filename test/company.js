@@ -461,7 +461,11 @@ describe('company', async function () {
     })
 
     after('removing venue from db', async function () {
-      await Venue.collection.drop()
+      try {
+        await Venue.collection.drop()
+      } catch (err) {
+
+      }
     })
   })
 
@@ -643,7 +647,10 @@ describe('company', async function () {
     })
 
     after('removing venue from db', async function () {
-      await Venue.collection.drop()
+      try {
+        await Venue.collection.drop()
+      } catch (err) {
+      }
     })
   })
 
@@ -902,7 +909,11 @@ describe('company', async function () {
     })
 
     after('removing venue from db', async function () {
-      await Venue.collection.drop()
+      try {
+        await Venue.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
@@ -998,12 +1009,20 @@ describe('company', async function () {
     })
 
     after('removing venue from db', async function () {
-      await Reservation.collection.drop()
-      await Venue.collection.drop()
+      try {
+        await Reservation.collection.drop()
+        await Venue.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 
   after('removing links from db', async function () {
-    await Link.collection.drop()
+    try {
+      await Link.collection.drop()
+    } catch (err) {
+      // do nothing
+    }
   })
 })
