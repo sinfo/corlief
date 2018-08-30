@@ -1,3 +1,4 @@
+const config = require('./config')
 const Hapi = require('hapi')
 const hapiRouter = require('hapi-router')
 const Inert = require('inert')
@@ -5,7 +6,6 @@ const Vision = require('vision')
 const HapiSwagger = require('hapi-swagger')
 const Pack = require('./package')
 const plugins = require('./plugins')
-const config = require('./config')
 const auth = require('./auth')
 
 // Create a server with a host and port

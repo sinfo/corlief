@@ -1,11 +1,10 @@
-const config = require('../config')
-const loggerGenerator = require('logger')
+const loggerGenerator = require('logger').getLogger
 
 module.exports = {
   name: 'logger',
   version: '1.0.0',
   register: async (server, options) => {
-    let logger = loggerGenerator.getLogger(config.LOGENTRIES_TOKEN)
+    let logger = loggerGenerator()
 
     if (process.env.NODE_ENV !== 'test') {
       server.events.on('response', (request) => {

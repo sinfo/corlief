@@ -1,4 +1,6 @@
-const logger = require('logger').getLogger()
+const logger = process.env.CORLIEF_LOGENTRIES_TOKEN
+  ? require('logger').getLogger(process.env.CORLIEF_LOGENTRIES_TOKEN)
+  : require('logger').getLogger()
 
 const config = {
   HOST: process.env.CORLIEF_HOST || 'localhost',
