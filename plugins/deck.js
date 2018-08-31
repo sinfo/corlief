@@ -61,6 +61,24 @@ async function validateCompanyId (companyId) {
   }
 }
 
+async function getCompanies (edition) {
+  let companies = await request({
+    method: 'GET',
+    uri: `${URL}/companies?event=${edition}&participations=true`,
+    json: true
+  })
+
+  let result = companies.map(company => {
+    return {
+      id: company.id,
+      name: company.name,
+      img: company.img
+    }
+  })
+
+  return result
+}
+
 module.exports = {
   name: 'deck',
   version: '1.0.0',
@@ -68,5 +86,6 @@ module.exports = {
     server.method('deck.validateToken', validateToken)
     server.method('deck.validateCompanyId', validateCompanyId)
     server.method('deck.getLatestEdition', getLatestEdition)
+    server.method('deck.getCompanies', getCompanies)
   }
 }

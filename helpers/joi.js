@@ -137,3 +137,13 @@ let venueAvailability = Joi.array().items(
 )
 
 module.exports.venueAvailability = venueAvailability
+
+let company = Joi.object().keys({
+  id: Joi.string().required(),
+  name: Joi.string().required(),
+  img: Joi.string()
+})
+
+let companies = Joi.array().items(company).min(0)
+
+module.exports.companies = companies

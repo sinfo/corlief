@@ -47,6 +47,35 @@ module.exports = [
     }
   },
   {
+    method: 'GET',
+    path: '/link/missing',
+    config: {
+      auth: 'sinfo',
+      tags: ['api'],
+      description: 'Get all companies that have no link for the current event',
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
+      pre: [
+        [ helpers.pre.edition ],
+        [ helpers.pre.companies ]
+      ],
+      handler: async (request, h) => {
+        try {
+          return request.pre.companies
+        } catch (err) {
+          logger.error(err.message)
+          return Boom.boomify(err)
+        }
+      },
+      response: {
+        schema: helpers.joi.companies
+      }
+    }
+  },
+  {
     method: 'DELETE',
     path: '/link/company/{companyId}/edition/{edition}',
     config: {

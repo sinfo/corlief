@@ -1,3 +1,5 @@
+const logger = require('logger').getLogger()
+
 function getDataFromStream (stream) {
   return new Promise((resolve, reject) => {
     let data = []
@@ -22,7 +24,7 @@ module.exports.edition = {
       const edition = await request.server.methods.deck.getLatestEdition()
       return edition.id
     } catch (err) {
-      console.error(err)
+      logger.error(err)
       return null
     }
   },
@@ -96,4 +98,24 @@ module.exports.venue = {
     return request.server.methods.venue.find({ edition: edition })
   },
   assign: 'venue'
+}
+
+module.exports.companies = {
+  method: async (request, h) => {
+    const edition = request.pre.edition
+    let companies = await request.server.methods.deck.getCompanies(edition)
+    let result = []
+
+    for (let company of companies) {
+      let link = await request.server.methods.link
+        .find({ companyId: company.id, edition: edition })
+
+      if (link.length === 0) {
+        result.push(company)
+      }
+    }
+
+    return result
+  },
+  assign: 'companies'
 }
