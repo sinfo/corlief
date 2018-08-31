@@ -11,7 +11,10 @@ const auth = require('./auth')
 // Create a server with a host and port
 const server = Hapi.server({
   host: config.HOST,
-  port: config.PORT
+  port: config.PORT,
+  routes: {
+    cors: true
+  }
 })
 
 async function register () {
