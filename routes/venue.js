@@ -46,7 +46,7 @@ module.exports = [
         try {
           const edition = request.pre.edition
           let venue = await request.server.methods.venue.find({ edition: edition })
-          return venue.toJSON()
+          return venue === null ? Boom.notFound('No venue found') : venue.toJSON()
         } catch (err) {
           logger.error(err.message)
           return Boom.boomify(err)
