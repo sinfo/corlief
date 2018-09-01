@@ -34,6 +34,36 @@ module.exports = [
   },
   {
     method: 'GET',
+    path: '/venue/current',
+    config: {
+      auth: 'sinfo',
+      tags: ['api'],
+      description: 'Gets venue from the current edition',
+      pre: [
+        helpers.pre.edition
+      ],
+      handler: async (request, h) => {
+        try {
+          const edition = request.pre.edition
+          let venue = await request.server.methods.venue.find({ edition: edition })
+          return venue.toJSON()
+        } catch (err) {
+          logger.error(err.message)
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
+      response: {
+        schema: helpers.joi.venue
+      }
+    }
+  },
+  {
+    method: 'GET',
     path: '/venue/{edition}',
     config: {
       auth: 'sinfo',
