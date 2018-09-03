@@ -78,6 +78,20 @@ async function getCompanies (edition, user, token) {
     jar: true
   })
 
+  companies = companies.filter(company => {
+    if (company.participations === undefined || company.participations.length === 0) {
+      return false
+    }
+
+    const participation = company.participations.filter(p => p.event === edition)[0]
+
+    if (participation.kind !== undefined && participation.kind === 'Partnership') {
+      return false
+    }
+
+    return ['in-conversations', 'closed-deal', 'announced'].includes(participation.status)
+  })
+
   let result = companies.map(company => {
     return {
       id: company.id,
