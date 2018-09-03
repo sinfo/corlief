@@ -1,4 +1,9 @@
 const request = require('request-promise')
+
+request.defaults({
+  jar: true
+})
+
 const path = require('path')
 const config = require(path.join(__dirname, '..', 'config'))
 
@@ -9,7 +14,8 @@ async function validateToken (user, token) {
     await request({
       method: 'GET',
       uri: `${URL}/auth/login/${user}/${token}`,
-      json: true
+      json: true,
+      jar: true
     })
 
     return true
@@ -48,7 +54,8 @@ async function validateCompanyId (companyId) {
     await request({
       method: 'GET',
       uri: `${URL}/companies/${companyId}`,
-      json: true
+      json: true,
+      jar: true
     })
 
     return true
@@ -61,11 +68,14 @@ async function validateCompanyId (companyId) {
   }
 }
 
-async function getCompanies (edition) {
+async function getCompanies (edition, user, token) {
+  this.validateToken(user, token)
+
   let companies = await request({
     method: 'GET',
     uri: `${URL}/companies?event=${edition}&participations=true`,
-    json: true
+    json: true,
+    jar: true
   })
 
   let result = companies.map(company => {

@@ -60,6 +60,7 @@
     "mongoose": "^5.2.3",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
+    "tough-cookie": "^2.4.3",
     "vision": "^5.3.3"
   }
 }
