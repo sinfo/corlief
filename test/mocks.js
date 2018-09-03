@@ -120,6 +120,16 @@ module.exports = {
       y: 5
     }
   },
+  STAND5: {
+    topLeft: {
+      x: 5,
+      y: 7
+    },
+    bottomRight: {
+      x: 6,
+      y: 6
+    }
+  },
   RESERVATION1: {
     id: 1,
     companyId: 'oneCompany',

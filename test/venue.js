@@ -287,7 +287,7 @@ describe('venue', function () {
       })
 
       let v = await Venue.findOne({ edition: venue.edition })
-      v.stands = v.stands.filter(stand => stand.id !== 1)
+      v.stands = v.stands.filter(stand => stand.id !== 0 && stand.id !== 1)
       await v.save()
 
       let res4 = await server.inject({
@@ -299,16 +299,27 @@ describe('venue', function () {
         }
       })
 
-      let result = res4.result
+      let res5 = await server.inject({
+        method: 'POST',
+        url: `/venue/stand`,
+        payload: mocks.STAND5,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      let result = res5.result
 
       expect(res1.statusCode).to.eql(200)
       expect(res2.statusCode).to.eql(200)
       expect(res3.statusCode).to.eql(200)
       expect(res4.statusCode).to.eql(200)
+      expect(res5.statusCode).to.eql(200)
+
       expect(result.stands.length).to.eql(3)
-      expect(result.stands).to.deep.include(Object.assign({}, mocks.STAND1, { id: 0 }))
-      expect(result.stands).to.deep.include(Object.assign({}, mocks.STAND3, { id: 2 }))
-      expect(result.stands).to.deep.include(Object.assign({}, mocks.STAND4, { id: 1 }))
+      expect(result.stands[0]).to.deep.eql(Object.assign({}, mocks.STAND3, { id: 2 }))
+      expect(result.stands[1]).to.deep.eql(Object.assign({}, mocks.STAND4, { id: 0 }))
+      expect(result.stands[2]).to.deep.eql(Object.assign({}, mocks.STAND5, { id: 1 }))
     })
 
     it('should give an error if topleft.x > bottomRight.x', async function () {

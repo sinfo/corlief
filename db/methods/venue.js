@@ -33,13 +33,16 @@ async function addStand (edition, topLeft, bottomRight) {
     return null
   }
 
-  let standsId = venue.stands.map(stand => stand.id).sort()
+  let standsId = venue.stands.map(stand => +stand.id).sort((a, b) => a - b)
   let newId = 0
+  let prevId = -1
 
   for (let standId of standsId) {
+    newId = prevId + 1
     if (newId < standId) {
       break
     }
+    prevId = standId
     newId += 1
   }
 
