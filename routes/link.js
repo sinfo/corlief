@@ -133,7 +133,7 @@ module.exports = [
         payload: {
           participationDays: Joi.number().integer().min(1).max(5)
             .description('Number of days company is participanting'),
-          advertisementKind: Joi.string().min(1).max(30)
+          advertisementKind: Joi.string().min(1).max(100)
             .description('Type of package')
         }
       },
@@ -184,7 +184,7 @@ module.exports = [
             .required().min(1).max(5)
             .description('Amount of days company will participate in edition'),
           advertisementKind: Joi.string()
-            .required().min(1).max(10)
+            .required().min(1).max(100)
             .description('Company advertisement package in edition'),
           activities: Joi.array()
             .items(Joi.object({

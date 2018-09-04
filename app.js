@@ -34,7 +34,10 @@ async function register () {
       options: {
         schemes: [ process.env.NODE_ENV === 'production' ? 'https' : 'http' ],
         host: config.CORLIEF_PATH,
-        cors: true,
+        cors: {
+          origin: ['*'],
+          additionalHeaders: ['cache-control', 'x-requested-with']
+        },
         info: {
           title: `${Pack.name} API documentation`,
           version: Pack.version
