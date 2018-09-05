@@ -491,9 +491,9 @@ describe('link', async function () {
       const token = await server.methods.jwt.verify(response.result.token)
       expect(token.exp).to.eql(Math.floor(expirationDate / 1000))
 
-      // apart from the token link should remain the same
+      // apart from the token link should remain the same (but now valid)
       Object.keys(response.result).forEach(key => {
-        if (key !== 'token') {
+        if (key !== 'token' && key !== 'valid') {
           expect(response.result[key]).to.eql(mocks.LINK[key])
         }
       })

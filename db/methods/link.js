@@ -42,7 +42,7 @@ module.exports.arrayToJSON = (venues) => {
 module.exports.setToken = async (query, token) => {
   return Link.findOneAndUpdate(
     query,
-    { $set: {token: token} },
+    { $set: {token: token, valid: true} },
     { new: true }
   )
 }
