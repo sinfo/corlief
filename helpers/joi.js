@@ -123,7 +123,7 @@ module.exports.reservation = reservation
 module.exports.reservations = reservations
 
 let venueAvailability = Joi.object().keys({
-  image: Joi.string().required(),
+  venue: venue,
   availability: Joi.array().items(
     Joi.object().keys({
       day: Joi.number().integer().min(1).max(5).required(),

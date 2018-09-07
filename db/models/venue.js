@@ -65,7 +65,7 @@ venueSchema.methods.getIds = function () {
 
 venueSchema.methods.getStandsAvailability = function (confirmedStands, duration) {
   let response = {
-    image: this.image,
+    venue: this.toJSON(),
     availability: []
   }
 
