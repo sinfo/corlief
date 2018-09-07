@@ -122,19 +122,22 @@ let reservations = Joi.array().items(reservation).min(0)
 module.exports.reservation = reservation
 module.exports.reservations = reservations
 
-let venueAvailability = Joi.array().items(
-  Joi.object().keys({
-    day: Joi.number().integer().min(1).max(5).required(),
-    stands: Joi.array().items(
-      Joi.object().keys({
-        id: Joi.number().integer().min(0),
-        free: Joi.boolean()
+let venueAvailability = Joi.object().keys({
+  image: Joi.string().required(),
+  availability: Joi.array().items(
+    Joi.object().keys({
+      day: Joi.number().integer().min(1).max(5).required(),
+      stands: Joi.array().items(
+        Joi.object().keys({
+          id: Joi.number().integer().min(0),
+          free: Joi.boolean()
+        })
+      ).unique((s1, s2) => {
+        return s1.id === s2.id
       })
-    ).unique((s1, s2) => {
-      return s1.id === s2.id
     })
-  })
-)
+  )
+})
 
 module.exports.venueAvailability = venueAvailability
 

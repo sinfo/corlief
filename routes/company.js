@@ -2,6 +2,7 @@ const Joi = require('joi')
 const path = require('path')
 const helpers = require(path.join(__dirname, '..', 'helpers'))
 const Boom = require('boom')
+const logger = require('logger').getLogger()
 
 module.exports = [
   {
@@ -53,6 +54,7 @@ module.exports = [
           let confirmedReservation = await request.server.methods.reservation.getConfirmedReservations(edition)
           return venue.getStandsAvailability(confirmedReservation, duration)
         } catch (err) {
+          logger.error(err)
           return Boom.boomify(err)
         }
       },
@@ -132,7 +134,7 @@ module.exports = [
 
           return reservation.toJSON()
         } catch (err) {
-          console.error(err)
+          logger.error(err)
           return Boom.boomify(err)
         }
       },

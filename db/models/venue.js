@@ -64,7 +64,11 @@ venueSchema.methods.getIds = function () {
 }
 
 venueSchema.methods.getStandsAvailability = function (confirmedStands, duration) {
-  let response = []
+  let response = {
+    image: this.image,
+    availability: []
+  }
+
   const standsIds = this.getIds()
 
   for (let day = 1; day <= duration; day++) {
@@ -92,7 +96,7 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, duration)
       stands.push(result)
     }
 
-    response.push({
+    response.availability.push({
       day: day,
       stands: stands
     })

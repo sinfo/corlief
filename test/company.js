@@ -754,7 +754,7 @@ describe('company', async function () {
         }
       })
 
-      let avail = res.result
+      let avail = res.result.availability
 
       expect(res.statusCode).to.eql(200)
       expect(res1.statusCode).to.eql(200)
@@ -789,7 +789,7 @@ describe('company', async function () {
         }
       })
 
-      let avail = res.result
+      let avail = res.result.availability
 
       expect(res.statusCode).to.eql(200)
       for (let day of avail) {
@@ -826,7 +826,7 @@ describe('company', async function () {
         }
       })
 
-      let avail = res.result
+      let avail = res.result.availability
 
       expect(res.statusCode).to.eql(200)
       expect(res1.statusCode).to.eql(200)
@@ -871,7 +871,7 @@ describe('company', async function () {
       await Reservation.findOneAndUpdate(reservation1, { 'feedback.status': 'CANCELLED' })
       await Reservation.findOneAndUpdate(reservation2, { 'feedback.status': 'CANCELLED' })
 
-      let avail = res.result
+      let avail = res.result.availability
 
       expect(res.statusCode).to.eql(200)
       expect(res1.statusCode).to.eql(200)
