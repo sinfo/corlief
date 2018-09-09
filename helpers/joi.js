@@ -81,7 +81,8 @@ let credentials = Joi.object().keys({
   exp: Joi.number().required(),
   company: Joi.string().required(),
   edition: Joi.string().required(),
-  iat: Joi.number()
+  iat: Joi.number(),
+  participationDays: Joi.number().required()
 })
 
 module.exports.credentials = credentials
@@ -150,3 +151,7 @@ let company = Joi.object().keys({
 let companies = Joi.array().items(company).min(0)
 
 module.exports.companies = companies
+
+let expirationDate = Joi.date().required()
+
+module.exports.expirationDate = expirationDate

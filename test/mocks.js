@@ -62,11 +62,21 @@ module.exports = {
     activities: [],
     advertisementKind: 'twoAdv'
   },
+  LINK22: {
+    companyId: 'threeCompany',
+    edition: 'oneEdition',
+    created: new Date(),
+    token: 'fourToken',
+    valid: true,
+    participationDays: 2,
+    activities: [],
+    advertisementKind: 'twoAdv'
+  },
   INVALID_LINK: {
     companyId: 'noesis',
     edition: 'someEdition',
     created: new Date(),
-    token: 'someToken',
+    token: 'fiveToken',
     valid: false,
     participationDays: 3,
     activities: [],

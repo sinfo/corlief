@@ -13,7 +13,18 @@ module.exports = [
       tags: ['api'],
       description: 'Check token validation',
       handler: async (request, h) => {
-        return request.auth.credentials
+        try {
+          const credentials = request.auth.credentials
+          const link = await request.server.methods.link.find({
+            companyId: credentials.company,
+            edition: credentials.edition
+          })
+          const response = Object.assign(credentials, { participationDays: link[0].participationDays })
+          return response
+        } catch (err) {
+          logger.error(err)
+          return Boom.boomify(err)
+        }
       },
       validate: {
         headers: Joi.object({

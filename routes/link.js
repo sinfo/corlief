@@ -48,6 +48,57 @@ module.exports = [
   },
   {
     method: 'GET',
+    path: '/link/company/{companyId}/edition/{edition}/validity',
+    config: {
+      auth: 'sinfo',
+      tags: ['api'],
+      description: 'Checks the validity of a link from a company in a given edition',
+      notes: 'Returns the corresponding expirationDate',
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
+        params: {
+          companyId: Joi.string()
+            .required().min(1).max(50)
+            .description('Company identifier'),
+          edition: Joi.string()
+            .required().min(1).max(30)
+            .description('Edition identifier')
+        }
+      },
+      handler: async (request, h) => {
+        try {
+          const link = await request.server.methods.link.find(request.params)
+
+          if (!link[0]) {
+            return Boom.badData('Link not found')
+          } else if (!link[0].valid) {
+            return Boom.badData('Link not valid')
+          }
+
+          const token = await request.server.methods.jwt.verify(link[0].token)
+
+          if (token.exp * 1000 - new Date().getTime() <= 0) {
+            await request.server.methods.link.revoke(request.params.companyId, request.params.edition)
+            return Boom.badData('Token expired')
+          }
+
+          const expirationDate = new Date(token.exp * 1000)
+
+          return token === null ? Boom.badData('No token associated') : expirationDate.toJSON()
+        } catch (err) {
+          logger.error(err.message)
+          return Boom.boomify(err)
+        }
+      },
+      response: {
+        schema: helpers.joi.expirationDate
+      }
+    }
+  },
+  {
+    method: 'GET',
     path: '/link/missing',
     config: {
       auth: 'sinfo',
