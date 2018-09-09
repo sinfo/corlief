@@ -81,7 +81,8 @@ let credentials = Joi.object().keys({
   exp: Joi.number().required(),
   company: Joi.string().required(),
   edition: Joi.string().required(),
-  iat: Joi.number()
+  iat: Joi.number(),
+  participationDays: Joi.number().required()
 })
 
 module.exports.credentials = credentials
