@@ -128,6 +128,57 @@ describe('link', async function () {
     })
   })
 
+  describe('validity', async function () {
+    it('should return a 422 error if valid field is false', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link/company/${mocks.INVALID_LINK.companyId}/edition/${mocks.INVALID_LINK.edition}/validity`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      expect(response.statusCode).to.eql(422)
+      expect(response.result.error).to.eql('Unprocessable Entity')
+      expect(response.result.message).to.eql('Link not valid')
+    })
+
+    it('should return a 422 error if link not found', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/validity`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      expect(response.statusCode).to.eql(422)
+      expect(response.result.error).to.eql('Unprocessable Entity')
+      expect(response.result.message).to.eql('Link not found')
+    })
+
+    it.only('should return expirationDate if link valid', async function () {
+      const edition = mocks.LINK22.edition
+      const companyId = mocks.LINK22.companyId
+      const expirationDate = new Date().getTime() + 1000 * 60 * 60 * 24 // 1 day
+      const params = { companyId: companyId, edition: edition }
+
+      const token = await server.methods.jwt.generate(edition, companyId, expirationDate)
+      await server.methods.link.setToken(params, token)
+
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link/company/${mocks.LINK22.companyId}/edition/${mocks.LINK22.edition}/validity`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      expect(response.statusCode).to.eql(200)
+      expect(new Date(response.result).toLocaleString()).to.eql(new Date(expirationDate).toLocaleString())
+    })
+  })
+
   describe('create', async function () {
     const EXPIRATION = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
     const MARGIN = 1000 * 5 // 5 seconds
