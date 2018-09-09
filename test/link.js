@@ -129,18 +129,9 @@ describe('link', async function () {
   })
 
   describe('validity', async function () {
-    it('should return a 422 error if valid field is false', async function () {
-      let response = await server.inject({
-        method: 'GET',
-        url: `/link/company/${mocks.INVALID_LINK.companyId}/edition/${mocks.INVALID_LINK.edition}/validity`,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      expect(response.statusCode).to.eql(422)
-      expect(response.result.error).to.eql('Unprocessable Entity')
-      expect(response.result.message).to.eql('Link not valid')
+    before('adding link to db', async function () {
+      await new Link(mocks.INVALID_LINK).save()
+      await new Link(mocks.LINK22).save()
     })
 
     it('should return a 422 error if link not found', async function () {
@@ -157,7 +148,21 @@ describe('link', async function () {
       expect(response.result.message).to.eql('Link not found')
     })
 
-    it.only('should return expirationDate if link valid', async function () {
+    it('should return a 422 error if valid field is false', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/link/company/${mocks.INVALID_LINK.companyId}/edition/${mocks.INVALID_LINK.edition}/validity`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      expect(response.statusCode).to.eql(422)
+      expect(response.result.error).to.eql('Unprocessable Entity')
+      expect(response.result.message).to.eql('Link not valid')
+    })
+
+    it('should return expirationDate if link valid', async function () {
       const edition = mocks.LINK22.edition
       const companyId = mocks.LINK22.companyId
       const expirationDate = new Date().getTime() + 1000 * 60 * 60 * 24 // 1 day
