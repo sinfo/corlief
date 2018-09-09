@@ -78,6 +78,11 @@ module.exports = [
           }
 
           const token = await request.server.methods.jwt.verify(link[0].token)
+
+          if (token.exp * 1000 - new Date().getTime() <= 0) {
+            return Boom.badData('Token expired')
+          }
+
           const expirationDate = new Date(token.exp * 1000)
 
           return token === null ? Boom.badData('No token associated') : expirationDate.toJSON()
