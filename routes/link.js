@@ -80,6 +80,7 @@ module.exports = [
           const token = await request.server.methods.jwt.verify(link[0].token)
 
           if (token.exp * 1000 - new Date().getTime() <= 0) {
+            await request.server.methods.link.revoke(request.params.companyId, request.params.edition)
             return Boom.badData('Token expired')
           }
 
