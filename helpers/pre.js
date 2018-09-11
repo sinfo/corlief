@@ -121,3 +121,18 @@ module.exports.companies = {
   },
   assign: 'companies'
 }
+
+module.exports.company = {
+  method: async (request, h) => {
+    const valid = request.pre.isCompanyValid
+
+    if (valid !== undefined && !valid) { return null }
+
+    const companyId = request.payload.companyId
+    const user = request.auth.credentials.user
+    const token = request.auth.credentials.token
+    let company = await request.server.methods.deck.getCompany(companyId, user, token)
+    return company
+  },
+  assign: 'company'
+}

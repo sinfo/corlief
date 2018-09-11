@@ -196,7 +196,9 @@ module.exports = [
           let advertisementKind = request.payload.advertisementKind
 
           let link = await request.server.methods.link.update(
-            companyId, edition, participationDays, advertisementKind)
+            companyId, edition, participationDays, advertisementKind
+          )
+
           return link === null ? Boom.badData('no link associated') : link.toJSON()
         } catch (err) {
           logger.error(err.message)
@@ -221,7 +223,10 @@ module.exports = [
           helpers.pre.edition,
           helpers.pre.isCompanyValid
         ],
-        helpers.pre.token
+        [
+          helpers.pre.company,
+          helpers.pre.token
+        ]
       ],
       validate: {
         headers: Joi.object({
@@ -253,14 +258,15 @@ module.exports = [
       handler: async (request, h) => {
         try {
           const { companyId, participationDays, advertisementKind, activities } = request.payload
-          const { edition, token, isCompanyValid } = request.pre
+          const { edition, token, isCompanyValid, company } = request.pre
 
           if (isCompanyValid === false) {
             return Boom.badData('CompanyId does not exist')
           }
 
           let link = await request.server.methods.link.create(
-            companyId, edition, token, participationDays, activities, advertisementKind)
+            companyId, company.name, edition, token, participationDays, activities, advertisementKind
+          )
 
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {

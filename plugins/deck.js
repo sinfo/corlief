@@ -103,6 +103,19 @@ async function getCompanies (edition, user, token) {
   return result
 }
 
+async function getCompany (companyId, user, token) {
+  this.validateToken(user, token)
+
+  const companies = await request({
+    method: 'GET',
+    uri: `${URL}/companies/${companyId}`,
+    json: true,
+    jar: true
+  })
+
+  return companies
+}
+
 module.exports = {
   name: 'deck',
   version: '1.0.0',
@@ -111,5 +124,6 @@ module.exports = {
     server.method('deck.validateCompanyId', validateCompanyId)
     server.method('deck.getLatestEdition', getLatestEdition)
     server.method('deck.getCompanies', getCompanies)
+    server.method('deck.getCompany', getCompany)
   }
 }

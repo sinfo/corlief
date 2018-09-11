@@ -19,7 +19,12 @@ module.exports = [
             companyId: credentials.company,
             edition: credentials.edition
           })
-          const response = Object.assign(credentials, { participationDays: link[0].participationDays })
+
+          const response = Object.assign(credentials, {
+            participationDays: link[0].participationDays,
+            companyName: link[0].companyName
+          })
+
           return response
         } catch (err) {
           logger.error(err)

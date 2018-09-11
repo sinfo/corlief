@@ -47,6 +47,7 @@ module.exports.venues = venues
 
 let link = Joi.object().keys({
   companyId: Joi.string().required(),
+  companyName: Joi.string(),
   edition: Joi.string().required(),
   created: Joi.date().required(),
   token: Joi.string().required(),
@@ -80,6 +81,7 @@ module.exports.configs = configs
 let credentials = Joi.object().keys({
   exp: Joi.number().required(),
   company: Joi.string().required(),
+  companyName: Joi.string(),
   edition: Joi.string().required(),
   iat: Joi.number(),
   participationDays: Joi.number().required()

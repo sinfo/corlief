@@ -4,6 +4,10 @@ let linkSchema = mongoose.Schema({
   companyId: {
     type: String
   },
+  companyName: {
+    type: String,
+    required: false
+  },
   edition: {
     type: String
   },

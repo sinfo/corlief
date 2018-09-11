@@ -1,9 +1,10 @@
 let path = require('path')
 let Link = require(path.join(__dirname, '..', 'models', 'link'))
 
-module.exports.create = async (companyId, edition, token, participationDays, activities, advertisementKind) => {
+module.exports.create = async (companyId, companyName, edition, token, participationDays, activities, advertisementKind) => {
   return Link.create({
     companyId: companyId,
+    companyName: companyName,
     edition: edition,
     created: new Date(),
     token: token,
@@ -35,8 +36,8 @@ module.exports.revoke = async (companyId, edition) => {
   )
 }
 
-module.exports.arrayToJSON = (venues) => {
-  return venues.map(venue => venue.toJSON())
+module.exports.arrayToJSON = (links) => {
+  return links.map(link => link.toJSON())
 }
 
 module.exports.setToken = async (query, token) => {
