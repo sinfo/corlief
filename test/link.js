@@ -129,58 +129,98 @@ describe('link', async function () {
   })
 
   describe('validity', async function () {
+    const EXPIRATION = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
+
     before('adding link to db', async function () {
-      await new Link(mocks.INVALID_LINK).save()
-      await new Link(mocks.LINK22).save()
+      await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.INVALID_LINK.companyId,
+          participationDays: mocks.INVALID_LINK.participationDays,
+          activities: mocks.INVALID_LINK.activities,
+          advertisementKind: mocks.INVALID_LINK.advertisementKind,
+          expirationDate: EXPIRATION
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      await Link.findOneAndUpdate(
+        { companyId: mocks.INVALID_LINK.companyId },
+        { $set: { valid: false } }
+      )
+
+      await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK.companyId,
+          participationDays: mocks.LINK.participationDays,
+          activities: mocks.LINK.activities,
+          advertisementKind: mocks.LINK.advertisementKind,
+          expirationDate: EXPIRATION
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
     })
 
     it('should return a 422 error if link not found', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/link/company/${mocks.LINK.companyId}/edition/${mocks.LINK.edition}/validity`,
+        url: `/link/company/${mocks.LINK2.companyId}/validity`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       expect(response.statusCode).to.eql(422)
-      expect(response.result.error).to.eql('Unprocessable Entity')
       expect(response.result.message).to.eql('Link not found')
     })
 
-    it('should return a 422 error if valid field is false', async function () {
+    it('should return a 410 error if valid field is false', async function () {
       let response = await server.inject({
         method: 'GET',
-        url: `/link/company/${mocks.INVALID_LINK.companyId}/edition/${mocks.INVALID_LINK.edition}/validity`,
+        url: `/link/company/${mocks.INVALID_LINK.companyId}/validity`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
-      expect(response.statusCode).to.eql(422)
-      expect(response.result.error).to.eql('Unprocessable Entity')
+      expect(response.statusCode).to.eql(410)
       expect(response.result.message).to.eql('Link not valid')
     })
 
     it('should return expirationDate if link valid', async function () {
-      const edition = mocks.LINK22.edition
-      const companyId = mocks.LINK22.companyId
-      const expirationDate = new Date().getTime() + 1000 * 60 * 60 * 24 // 1 day
+      const edition = mocks.LINK.edition
+      const companyId = mocks.LINK.companyId
       const params = { companyId: companyId, edition: edition }
 
-      const token = await server.methods.jwt.generate(edition, companyId, expirationDate)
+      const token = await server.methods.jwt.generate(edition, companyId, EXPIRATION)
       await server.methods.link.setToken(params, token)
 
       let response = await server.inject({
         method: 'GET',
-        url: `/link/company/${mocks.LINK22.companyId}/edition/${mocks.LINK22.edition}/validity`,
+        url: `/link/company/${mocks.LINK.companyId}/validity`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       expect(response.statusCode).to.eql(200)
-      expect(new Date(response.result).toLocaleString()).to.eql(new Date(expirationDate).toLocaleString())
+      expect(new Date(response.result.expirationDate)
+        .toLocaleString()).to.eql(new Date(EXPIRATION).toLocaleString())
+    })
+
+    after('removing links', async function () {
+      try {
+        await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
     })
   })
 

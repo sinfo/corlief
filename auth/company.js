@@ -10,7 +10,9 @@ module.exports = server => {
 
         let decoded = await request.server.methods.jwt.verify(token)
 
-        return { isValid: true, credentials: decoded, artifacts: token }
+        return decoded
+          ? { isValid: true, credentials: decoded, artifacts: token }
+          : { isValid: false, credentials: token, artifacts: token }
       } catch (err) {
         return { isValid: false, credentials: token, artifacts: token }
       }

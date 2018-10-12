@@ -23,7 +23,11 @@ async function generate (edition, company, expirationDate) {
 }
 
 async function verify (token) {
-  return jwt.verify(token, publicKey)
+  try {
+    return jwt.verify(token, publicKey)
+  } catch (err) {
+    return null
+  }
 }
 
 module.exports = {

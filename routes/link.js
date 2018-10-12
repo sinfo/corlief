@@ -48,7 +48,48 @@ module.exports = [
   },
   {
     method: 'GET',
-    path: '/link/company/{companyId}/edition/{edition}/validity',
+    path: '/link/validity',
+    config: {
+      auth: 'sinfo',
+      tags: ['api'],
+      description: 'Checks the validity of all still supposedly valid links',
+      notes: 'Returns all the current editions\'s links',
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
+      pre: [
+        helpers.pre.edition
+      ],
+      handler: async (request, h) => {
+        try {
+          const edition = request.pre.edition
+          const links = await request.server.methods.link.find({ valid: true })
+
+          for (const link of links) {
+            const token = await request.server.methods.jwt.verify(link.token)
+
+            if (token === null || token.exp * 1000 - new Date().getTime() <= 0) {
+              await request.server.methods.link.revoke(link.companyId, link.edition)
+            }
+          }
+
+          const result = await request.server.methods.link.find({ edition: edition })
+          return await request.server.methods.link.arrayToJSON(result)
+        } catch (err) {
+          logger.error(err.message)
+          return Boom.boomify(err)
+        }
+      },
+      response: {
+        schema: helpers.joi.links
+      }
+    }
+  },
+  {
+    method: 'GET',
+    path: '/link/company/{companyId}/validity',
     config: {
       auth: 'sinfo',
       tags: ['api'],
@@ -61,32 +102,38 @@ module.exports = [
         params: {
           companyId: Joi.string()
             .required().min(1).max(50)
-            .description('Company identifier'),
-          edition: Joi.string()
-            .required().min(1).max(30)
-            .description('Edition identifier')
+            .description('Company identifier')
         }
       },
+      pre: [
+        helpers.pre.edition
+      ],
       handler: async (request, h) => {
         try {
-          const link = await request.server.methods.link.find(request.params)
+          const edition = request.pre.edition
+          const companyId = request.params.companyId
+          const link = await request.server.methods.link.find(
+            { edition: edition, companyId: companyId }
+          )
 
-          if (!link[0]) {
+          if (!link.length) {
             return Boom.badData('Link not found')
-          } else if (!link[0].valid) {
-            return Boom.badData('Link not valid')
+          }
+
+          if (!link[0].valid) {
+            return Boom.resourceGone('Link not valid')
           }
 
           const token = await request.server.methods.jwt.verify(link[0].token)
 
-          if (token.exp * 1000 - new Date().getTime() <= 0) {
-            await request.server.methods.link.revoke(request.params.companyId, request.params.edition)
-            return Boom.badData('Token expired')
+          if (token && token.exp * 1000 - new Date().getTime() <= 0) {
+            await request.server.methods.link.revoke(companyId, edition)
+            return Boom.resourceGone('Token expired')
           }
 
-          const expirationDate = new Date(token.exp * 1000)
-
-          return token === null ? Boom.badData('No token associated') : expirationDate.toJSON()
+          return token === null
+            ? Boom.resourceGone('Token expired')
+            : { expirationDate: new Date(token.exp * 1000).toJSON() }
         } catch (err) {
           logger.error(err.message)
           return Boom.boomify(err)

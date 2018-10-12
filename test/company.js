@@ -115,17 +115,20 @@ describe('company', async function () {
     })
 
     it('should fail authentication if expired', async function () {
-      setTimeout(async function () {
-        let response = await server.inject({
-          method: 'GET',
-          url: `/company/auth`,
-          headers: {
-            Authorization: `bearer ${toExpireToken}`
-          }
-        })
+      function sleep (ms) {
+        return new Promise(resolve => setTimeout(resolve, ms))
+      }
 
-        expect(response.statusCode).to.eql(401)
-      }, 2000)
+      await sleep(2000)
+      let response = await server.inject({
+        method: 'GET',
+        url: `/company/auth`,
+        headers: {
+          Authorization: `bearer ${toExpireToken}`
+        }
+      })
+
+      expect(response.statusCode).to.eql(401)
     })
 
     it('should fail authentication if invalidated by team', async function () {

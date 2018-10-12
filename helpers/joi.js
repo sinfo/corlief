@@ -154,6 +154,8 @@ let companies = Joi.array().items(company).min(0)
 
 module.exports.companies = companies
 
-let expirationDate = Joi.date().required()
+let expirationDate = Joi.object().keys({
+  expirationDate: Joi.date().required()
+})
 
 module.exports.expirationDate = expirationDate

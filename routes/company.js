@@ -15,20 +15,23 @@ module.exports = [
       handler: async (request, h) => {
         try {
           const credentials = request.auth.credentials
+
           const link = await request.server.methods.link.find({
             companyId: credentials.company,
             edition: credentials.edition
           })
 
-          const response = Object.assign(credentials, {
+          let response = {}
+
+          Object.assign(response, credentials, {
             participationDays: link[0].participationDays,
             companyName: link[0].companyName
           })
 
           return response
         } catch (err) {
-          logger.error(err)
-          return Boom.boomify(err)
+          logger.error('Hello!')
+          return Boom.unauthorized(err)
         }
       },
       validate: {
