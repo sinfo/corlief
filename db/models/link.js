@@ -8,6 +8,16 @@ let linkSchema = mongoose.Schema({
     type: String,
     required: false
   },
+  contacts: {
+    company: {
+      type: String,
+      required: false
+    },
+    member: {
+      type: String,
+      required: true
+    }
+  },
   edition: {
     type: String
   },

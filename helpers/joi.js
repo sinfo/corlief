@@ -48,6 +48,10 @@ module.exports.venues = venues
 let link = Joi.object().keys({
   companyId: Joi.string().required(),
   companyName: Joi.string(),
+  contacts: Joi.object().keys({
+    company: Joi.string(),
+    member: Joi.string().required()
+  }),
   edition: Joi.string().required(),
   created: Joi.date().required(),
   token: Joi.string().required(),

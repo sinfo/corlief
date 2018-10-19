@@ -28,6 +28,7 @@ describe('company', async function () {
       url: `/link`,
       payload: {
         companyId: mocks.LINK.companyId,
+        companyEmail: mocks.LINK.contacts.company,
         participationDays: mocks.LINK.participationDays,
         activities: mocks.LINK.activities,
         advertisementKind: mocks.LINK.advertisementKind,
@@ -43,6 +44,7 @@ describe('company', async function () {
       url: `/link`,
       payload: {
         companyId: mocks.LINK2.companyId,
+        companyEmail: mocks.LINK2.contacts.company,
         participationDays: mocks.LINK2.participationDays,
         activities: mocks.LINK2.activities,
         advertisementKind: mocks.LINK2.advertisementKind,
@@ -58,6 +60,7 @@ describe('company', async function () {
       url: `/link`,
       payload: {
         companyId: mocks.INVALID_LINK.companyId,
+        companyEmail: mocks.INVALID_LINK.contacts.company,
         participationDays: mocks.INVALID_LINK.participationDays,
         activities: mocks.INVALID_LINK.activities,
         advertisementKind: mocks.INVALID_LINK.advertisementKind,
@@ -73,6 +76,7 @@ describe('company', async function () {
       url: `/link`,
       payload: {
         companyId: mocks.LINK3.companyId,
+        companyEmail: mocks.LINK3.contacts.company,
         participationDays: mocks.LINK3.participationDays,
         activities: mocks.LINK3.activities,
         advertisementKind: mocks.LINK3.advertisementKind,

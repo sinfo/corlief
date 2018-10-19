@@ -144,6 +144,7 @@ describe('reservation', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.LINK.companyId,
+          companyEmail: mocks.LINK.contacts.company,
           participationDays: mocks.LINK.participationDays,
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
@@ -159,6 +160,7 @@ describe('reservation', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.LINK3.companyId,
+          companyEmail: mocks.LINK.contacts.company,
           participationDays: mocks.LINK3.participationDays,
           activities: mocks.LINK3.activities,
           advertisementKind: mocks.LINK3.advertisementKind,
@@ -359,6 +361,7 @@ describe('reservation', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.LINK.companyId,
+          companyEmail: mocks.LINK.contacts.company,
           participationDays: mocks.LINK.participationDays,
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
@@ -374,6 +377,7 @@ describe('reservation', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.LINK3.companyId,
+          companyEmail: mocks.LINK3.contacts.company,
           participationDays: mocks.LINK3.participationDays,
           activities: mocks.LINK3.activities,
           advertisementKind: mocks.LINK3.advertisementKind,
@@ -559,6 +563,7 @@ describe('reservation', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.LINK.companyId,
+          companyEmail: mocks.LINK.contacts.company,
           participationDays: mocks.LINK.participationDays,
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
@@ -574,6 +579,7 @@ describe('reservation', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.LINK3.companyId,
+          companyEmail: mocks.LINK3.contacts.company,
           participationDays: mocks.LINK3.participationDays,
           activities: mocks.LINK3.activities,
           advertisementKind: mocks.LINK3.advertisementKind,

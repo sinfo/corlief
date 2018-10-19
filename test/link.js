@@ -137,6 +137,7 @@ describe('link', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.INVALID_LINK.companyId,
+          companyEmail: mocks.INVALID_LINK.contacts.company,
           participationDays: mocks.INVALID_LINK.participationDays,
           activities: mocks.INVALID_LINK.activities,
           advertisementKind: mocks.INVALID_LINK.advertisementKind,
@@ -157,6 +158,7 @@ describe('link', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.LINK.companyId,
+          companyEmail: mocks.LINK.contacts.company,
           participationDays: mocks.LINK.participationDays,
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
@@ -235,6 +237,7 @@ describe('link', async function () {
         url: `/link`,
         payload: {
           companyId: mocks.LINK.companyId,
+          companyEmail: mocks.LINK.contacts.company,
           participationDays: mocks.LINK.participationDays,
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
@@ -249,6 +252,7 @@ describe('link', async function () {
 
       expect(response.statusCode).to.eql(200)
       expect(link.companyId).to.eql(mocks.LINK.companyId)
+      expect(link.contacts.company).to.eql(mocks.LINK.contacts.company)
       expect(link.edition).to.not.be.null
       expect(link.created.getTime() > now).to.be.true
       expect((link.created.getTime() - now) < MARGIN).to.be.true
@@ -350,6 +354,7 @@ describe('link', async function () {
           url: `/link`,
           payload: {
             companyId: mocks.LINK.companyId,
+            companyEmail: mocks.LINK.contacts.company,
             participationDays: mocks.LINK.participationDays,
             activities: mocks.LINK.activities,
             advertisementKind: mocks.LINK.advertisementKind,
@@ -371,6 +376,7 @@ describe('link', async function () {
           url: `/link`,
           payload: {
             companyId: 'nonExistingCompany',
+            companyEmail: mocks.LINK.contacts.company,
             participationDays: mocks.LINK.participationDays,
             activities: mocks.LINK.activities,
             advertisementKind: mocks.LINK.advertisementKind,
@@ -592,13 +598,6 @@ describe('link', async function () {
         if (key !== 'token' && key !== 'valid') {
           expect(response.result[key]).to.eql(mocks.LINK[key])
         }
-      })
-
-      // check if database equals response
-      const databaseLink = await Link.findOne({ companyId: mocks.LINK.companyId, edition: mocks.LINK.edition })
-
-      Object.keys(response.result).forEach(key => {
-        expect(response.result[key]).to.eql(databaseLink[key])
       })
     })
 

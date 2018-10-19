@@ -48,6 +48,8 @@
   "dependencies": {
     "aws-sdk": "^2.278.1",
     "boom": "^7.2.0",
+    "email-validator": "^2.0.4",
+    "handlebars": "^4.0.12",
     "hapi": "^17.5.2",
     "hapi-auth-bearer-token": "^6.0.1",
     "hapi-router": "^4.0.0",
@@ -56,6 +58,7 @@
     "joi": "^13.4.0",
     "jsonwebtoken": "^8.3.0",
     "logger": "git+https://github.com/sinfo/logger.git",
+    "mailgun-js": "^0.21.0",
     "mime-types": "^2.1.19",
     "mongoose": "^5.2.3",
     "request": "^2.87.0",
