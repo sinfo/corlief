@@ -116,6 +116,17 @@ async function getCompany (companyId, user, token) {
   return companies
 }
 
+async function getMember (memberId) {
+  const member = await request({
+    method: 'GET',
+    uri: `${URL}/members/${memberId}`,
+    json: true,
+    jar: true
+  })
+
+  return member
+}
+
 module.exports = {
   name: 'deck',
   version: '1.0.0',
@@ -125,5 +136,6 @@ module.exports = {
     server.method('deck.getLatestEdition', getLatestEdition)
     server.method('deck.getCompanies', getCompanies)
     server.method('deck.getCompany', getCompany)
+    server.method('deck.getMember', getMember)
   }
 }

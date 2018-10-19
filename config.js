@@ -1,13 +1,3 @@
-const logger = process.env.CORLIEF_LOGENTRIES_TOKEN &&
-  process.env.CORLIEF_MAILGUN_API_KEY &&
-  process.env.NODE_ENV === 'production'
-  ? require('logger').getLogger(
-    process.env.CORLIEF_LOGENTRIES_TOKEN,
-    process.env.CORLIEF_MAILGUN_API_KEY,
-    'Corlief'
-  )
-  : require('logger').getLogger()
-
 const config = {
   HOST: process.env.CORLIEF_HOST || 'localhost',
   PORT: process.env.CORLIEF_PORT || 8888,
@@ -36,8 +26,25 @@ const config = {
   DECK: {
     HOST: process.env.NODE_ENV === 'production' ? 'https://deck.sinfo.org' : 'http://localhost',
     PORT: process.env.NODE_ENV === 'production' ? 443 : 8080
+  },
+
+  COORDINATION_EMAIL: 'coordination@sinfo.org',
+
+  MAILGUN: {
+    API_KEY: process.env.CORLIEF_MAILGUN_API_KEY,
+    DOMAIN: 'sinfo.org'
   }
 }
+
+const logger = process.env.CORLIEF_LOGENTRIES_TOKEN &&
+  config.MAILGUN.API_KEY &&
+  process.env.NODE_ENV === 'production'
+  ? require('logger').getLogger(
+    process.env.CORLIEF_LOGENTRIES_TOKEN,
+    config.MAILGUN.API_KEY,
+    'Corlief'
+  )
+  : require('logger').getLogger()
 
 module.exports = config
 
@@ -52,6 +59,11 @@ module.exports.validate = () => {
 
     if (config.LOGENTRIES_TOKEN === undefined) {
       logger.warn('Production mode without logentries token given')
+    }
+
+    if (config.MAILGUN.API_KEY === undefined) {
+      logger.error('Env var of CORLIEF_MAILGUN_API_KEY not defined')
+      process.exit(1)
     }
   }
 

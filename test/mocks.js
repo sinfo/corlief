@@ -1,6 +1,10 @@
 module.exports = {
   LINK: {
     companyId: 'accenture',
+    contacts: {
+      member: 'ze@sinfo.org',
+      company: 'ze@accenture.pt'
+    },
     edition: 'someEdition',
     created: new Date(),
     token: 'someToken',
@@ -14,6 +18,10 @@ module.exports = {
   },
   LINK2: {
     companyId: 'link',
+    contacts: {
+      member: 'ze@sinfo.org',
+      company: 'ze@accenture.pt'
+    },
     edition: 'someEdition',
     created: new Date(),
     token: 'someToken',
@@ -24,6 +32,10 @@ module.exports = {
   },
   LINK3: {
     companyId: 'deloitte',
+    contacts: {
+      member: 'ze@sinfo.org',
+      company: 'ze@accenture.pt'
+    },
     edition: 'someEdition',
     created: new Date(),
     token: 'someToken',
@@ -34,6 +46,10 @@ module.exports = {
   },
   LINK11: {
     companyId: 'oneCompany',
+    contacts: {
+      member: 'ze@sinfo.org',
+      company: 'ze@accenture.pt'
+    },
     edition: 'oneEdition',
     created: new Date(),
     token: 'oneToken',
@@ -44,6 +60,10 @@ module.exports = {
   },
   LINK12: {
     companyId: 'oneCompany',
+    contacts: {
+      member: 'ze@sinfo.org',
+      company: 'ze@accenture.pt'
+    },
     edition: 'twoEdition',
     created: new Date(),
     token: 'twoToken',
@@ -54,6 +74,10 @@ module.exports = {
   },
   LINK21: {
     companyId: 'twoCompany',
+    contacts: {
+      member: 'ze@sinfo.org',
+      company: 'ze@accenture.pt'
+    },
     edition: 'oneEdition',
     created: new Date(),
     token: 'threeToken',
@@ -64,6 +88,10 @@ module.exports = {
   },
   LINK22: {
     companyId: 'threeCompany',
+    contacts: {
+      member: 'ze@sinfo.org',
+      company: 'ze@accenture.pt'
+    },
     edition: 'oneEdition',
     created: new Date(),
     token: 'fourToken',
@@ -74,6 +102,10 @@ module.exports = {
   },
   INVALID_LINK: {
     companyId: 'noesis',
+    contacts: {
+      member: 'ze@sinfo.org',
+      company: 'ze@accenture.pt'
+    },
     edition: 'someEdition',
     created: new Date(),
     token: 'fiveToken',

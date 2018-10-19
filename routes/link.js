@@ -3,6 +3,7 @@ const Boom = require('boom')
 const Joi = require('joi')
 const path = require('path')
 const helpers = require(path.join(__dirname, '..', 'helpers'))
+const validator = require('email-validator')
 
 module.exports = [
   {
@@ -272,6 +273,7 @@ module.exports = [
         ],
         [
           helpers.pre.company,
+          helpers.pre.member,
           helpers.pre.token
         ]
       ],
@@ -283,6 +285,9 @@ module.exports = [
           companyId: Joi.string()
             .required().min(1).max(50)
             .description('Company identifier'),
+          companyEmail: Joi.string()
+            .optional().min(1).max(50)
+            .description('Email contact of the company\'s employer'),
           participationDays: Joi.number()
             .required().min(1).max(5)
             .description('Amount of days company will participate in edition'),
@@ -304,15 +309,21 @@ module.exports = [
       },
       handler: async (request, h) => {
         try {
-          const { companyId, participationDays, advertisementKind, activities } = request.payload
-          const { edition, token, isCompanyValid, company } = request.pre
+          const { companyId, participationDays, advertisementKind, activities, companyEmail } = request.payload
+          const { edition, token, isCompanyValid, company, member } = request.pre
 
           if (isCompanyValid === false) {
             return Boom.badData('CompanyId does not exist')
           }
 
+          if (!validator.validate(companyEmail)) {
+            return Boom.badData('Invalid email')
+          }
+
           let link = await request.server.methods.link.create(
-            companyId, company.name, edition, token, participationDays, activities, advertisementKind
+            companyId, company.name, edition,
+            member.mails.main, token, participationDays,
+            activities, advertisementKind, companyEmail
           )
 
           return link === null ? Boom.badData('No link associated') : link.toJSON()

@@ -136,3 +136,12 @@ module.exports.company = {
   },
   assign: 'company'
 }
+
+module.exports.member = {
+  method: async (request, h) => {
+    const memberId = request.auth.credentials.user
+    const member = await request.server.methods.deck.getMember(memberId)
+    return member
+  },
+  assign: 'member'
+}

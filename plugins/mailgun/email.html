@@ -1,0 +1,14 @@
+<div>
+  <h1>New reservation made</h1>
+
+  {{#each reservation.stands}}
+  <div>
+    <span><b>Day:</b> {{day}}</span>
+    <span><b>Stand:</b> {{standId}}</span>
+  </div>
+  {{/each}}
+
+  <p><b>Issued:</b> {{reservation.issued}} </p>
+
+  <b>PLEASE DO NOT REPLY TO THIS EMAIL</b>
+</div>

@@ -4,5 +4,6 @@ module.exports = [
   require('./mongo'),
   require('./deck'),
   require('./files'),
-  require('hapi-auth-bearer-token')
+  require('hapi-auth-bearer-token'),
+  require('./mailgun')
 ]

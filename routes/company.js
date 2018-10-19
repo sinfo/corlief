@@ -122,7 +122,8 @@ module.exports = [
             })
           }
 
-          let canMakeReservation = await request.server.methods.reservation.canMakeReservation(companyId, edition)
+          let canMakeReservation = await request.server.methods.reservation
+            .canMakeReservation(companyId, edition)
 
           if (!canMakeReservation.result) {
             return Boom.locked(canMakeReservation.error)
@@ -149,7 +150,14 @@ module.exports = [
           }
           */
 
-          let reservation = await request.server.methods.reservation.addStands(companyId, edition, stands)
+          let reservation = await request.server.methods.reservation
+            .addStands(companyId, edition, stands)
+
+          const receivers = link.contacts.company
+            ? [ link.contacts.member, link.contacts.company ]
+            : [ link.contacts.member ]
+
+          request.server.methods.mailgun.sendNewReservation(receivers, reservation)
 
           return reservation.toJSON()
         } catch (err) {
