@@ -13,7 +13,11 @@ const server = Hapi.server({
   host: config.HOST,
   port: config.PORT,
   routes: {
-    cors: true
+    cors: {
+      origin: ['*'],
+      headers: ['Accept', 'Content-Type'],
+      additionalHeaders: ['X-Requested-With']
+    }
   }
 })
 
