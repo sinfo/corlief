@@ -14,9 +14,7 @@ const server = Hapi.server({
   port: config.PORT,
   routes: {
     cors: {
-      origin: ['*'],
-      headers: ['Accept', 'Content-Type'],
-      additionalHeaders: ['X-Requested-With']
+      origin: ['*']
     }
   }
 })
