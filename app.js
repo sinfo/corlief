@@ -14,7 +14,7 @@ const server = Hapi.server({
   port: config.PORT,
   routes: {
     cors: {
-      origin: ['*sinfo.org']
+      origin: config.CORS
     }
   }
 })

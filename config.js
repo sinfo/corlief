@@ -33,7 +33,11 @@ const config = {
   MAILGUN: {
     API_KEY: process.env.CORLIEF_MAILGUN_API_KEY,
     DOMAIN: 'sinfo.org'
-  }
+  },
+
+  CORS: process.env.NODE_ENV === 'production'
+    ? ['*sinfo.org']
+    : ['*']
 }
 
 const logger = process.env.CORLIEF_LOGENTRIES_TOKEN &&
