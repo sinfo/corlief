@@ -1,5 +1,5 @@
 <div>
-  <h1>New reservation made</h1>
+  <h1>New reservation made for {{link.companyName}}</h1>
 
   {{#each reservation.stands}}
   <div>
@@ -8,7 +8,9 @@
   </div>
   {{/each}}
 
-  <p><b>Issued:</b> {{reservation.issued}} </p>
+  <p><b>Issued:</b> {{reservation.issued}}</p>
+
+  <p>Click <a href="https://corlief.sinfo.org/token/{{link.token}}">here</a> to go to company's page</p>
 
   <b>PLEASE DO NOT REPLY TO THIS EMAIL</b>
 </div>

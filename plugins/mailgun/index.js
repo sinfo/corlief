@@ -40,35 +40,37 @@ function send (receivers, templateData) {
   })
 }
 
-function sendConfirmation (receivers, reservation) {
+function sendConfirmation (receivers, reservation, link) {
   if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
     state: 'CONFIRM',
-    reservation: reservation
+    reservation: reservation,
+    link: link
   }
 
   send(receivers, data)
 }
 
-function sendCancellation (receivers, reservation) {
+function sendCancellation (receivers, reservation, link) {
   if (process.env.NODE_ENV !== 'production') { }
 
   let data = {
     state: 'CANCEL',
-    reservation: reservation
+    reservation: reservation,
+    link: link
   }
 
   send(receivers, data)
 }
 
-function sendNewReservation (receivers, reservation) {
-  logger.info(reservation)
+function sendNewReservation (receivers, reservation, link) {
   if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
     state: 'PENDING',
-    reservation: reservation
+    reservation: reservation,
+    link: link
   }
 
   send(receivers, data)
