@@ -5,8 +5,6 @@ const Inert = require('inert')
 const Vision = require('vision')
 const HapiSwagger = require('hapi-swagger')
 const Pack = require('./package')
-const plugins = require('./plugins')
-const auth = require('./auth')
 
 // Create a server with a host and port
 const server = Hapi.server({
@@ -20,8 +18,8 @@ const server = Hapi.server({
 })
 
 async function register () {
-  await server.register(plugins)
-  auth(server)
+  await server.register(require('./plugins'))
+  require('./auth')(server)
   await server.register([
     {
       plugin: hapiRouter,

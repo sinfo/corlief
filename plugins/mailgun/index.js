@@ -63,6 +63,7 @@ function sendCancellation (receivers, reservation) {
 }
 
 function sendNewReservation (receivers, reservation) {
+  logger.info(reservation)
   if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
