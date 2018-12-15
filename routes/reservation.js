@@ -119,8 +119,8 @@ module.exports = [
     }
   },
   {
-    method: 'DELETE',
-    path: '/reservation/company/{companyId}',
+    method: 'GET',
+    path: '/reservation/company/{companyId}/cancel',
     config: {
       auth: 'sinfo',
       tags: ['api'],
@@ -145,6 +145,47 @@ module.exports = [
           const member = request.auth.credentials.user
 
           const reservation = await request.server.methods.reservation.cancel(companyId, edition, member)
+
+          return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
+        } catch (err) {
+          return Boom.boomify(err)
+        }
+      },
+      response: {
+        schema: helpers.joi.reservation
+      }
+    }
+  },
+  {
+    method: 'DELETE',
+    path: '/reservation/{reservationId}/company/{companyId}',
+    config: {
+      auth: 'sinfo',
+      tags: ['api'],
+      description: 'Remove company\'s reservation from latest edition',
+      pre: [
+        helpers.pre.edition
+      ],
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown(),
+        params: Joi.object({
+          reservationId: Joi.number().required()
+            .min(0)
+            .description('Reservation identifier'),
+          companyId: Joi.string().required()
+            .min(1).max(50)
+            .description('Company identifier')
+        })
+      },
+      handler: async (request, h) => {
+        try {
+          const companyId = request.params.companyId
+          const edition = request.pre.edition
+          const reservationId = request.params.reservationId
+
+          const reservation = await request.server.methods.reservation.remove(companyId, edition, reservationId)
 
           return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
         } catch (err) {

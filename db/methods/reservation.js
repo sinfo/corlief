@@ -162,6 +162,14 @@ async function cancel (companyId, edition, member) {
   return member ? latest.cancel(member) : latest.cancel(member)
 }
 
+async function remove (companyId, edition, reservationId) {
+  return Reservation.findOneAndRemove({
+    companyId: companyId,
+    edition: edition,
+    id: reservationId
+  })
+}
+
 async function getLatestReservations (edition, companyId) {
   if (companyId === undefined) {
     return Reservation.getAllLatest(edition)
@@ -184,3 +192,4 @@ module.exports.companyReservations = companyReservations
 module.exports.getLatestReservations = getLatestReservations
 module.exports.confirm = confirm
 module.exports.cancel = cancel
+module.exports.remove = remove

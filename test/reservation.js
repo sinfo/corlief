@@ -482,8 +482,8 @@ describe('reservation', async function () {
 
     it('should be able to cancel a reservation', async function () {
       let res = await server.inject({
-        method: 'DELETE',
-        url: `/reservation/company/${mocks.LINK.companyId}`,
+        method: 'GET',
+        url: `/reservation/company/${mocks.LINK.companyId}/cancel`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -502,8 +502,8 @@ describe('reservation', async function () {
       )
 
       let res = await server.inject({
-        method: 'DELETE',
-        url: `/reservation/company/${mocks.LINK.companyId}`,
+        method: 'GET',
+        url: `/reservation/company/${mocks.LINK.companyId}/cancel`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -519,8 +519,8 @@ describe('reservation', async function () {
       await Reservation.findOneAndRemove({ companyId: mocks.LINK.companyId })
 
       let res = await server.inject({
-        method: 'DELETE',
-        url: `/reservation/company/${mocks.LINK.companyId}`,
+        method: 'GET',
+        url: `/reservation/company/${mocks.LINK.companyId}/cancel`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -748,8 +748,8 @@ describe('reservation', async function () {
       })
 
       let res2 = await server.inject({
-        method: 'DELETE',
-        url: `/reservation/company/${mocks.LINK.companyId}`,
+        method: 'GET',
+        url: `/reservation/company/${mocks.LINK.companyId}/cancel`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -959,6 +959,171 @@ describe('reservation', async function () {
       try {
         await Venue.collection.drop()
         await Link.collection.drop()
+      } catch (err) {
+        // do nothing
+      }
+    })
+  })
+
+  describe('remove reservation', async function () {
+    const ON_TIME = new Date().getTime() + 1000 * 60 * 60 * 24 * 31 * 5 // 5 months
+    let token1, token2
+
+    let stands = [
+      mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
+    ]
+
+    let venue, stands1, stands2
+    let reservation
+
+    before('create links, venue and reservations', async function () {
+      let res1 = await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK.companyId,
+          companyEmail: mocks.LINK.contacts.company,
+          participationDays: mocks.LINK.participationDays,
+          activities: mocks.LINK.activities,
+          advertisementKind: mocks.LINK.advertisementKind,
+          expirationDate: ON_TIME
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      let res4 = await server.inject({
+        method: 'POST',
+        url: `/link`,
+        payload: {
+          companyId: mocks.LINK3.companyId,
+          companyEmail: mocks.LINK3.contacts.company,
+          participationDays: mocks.LINK3.participationDays,
+          activities: mocks.LINK3.activities,
+          advertisementKind: mocks.LINK3.advertisementKind,
+          expirationDate: ON_TIME
+        },
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      await Link.findOneAndUpdate({
+        companyId: mocks.INVALID_LINK.companyId
+      }, { $set: { valid: false } }, { new: true })
+
+      token1 = res1.result.token
+      token2 = res4.result.token
+
+      let form = new FormData()
+      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
+
+      let payload = await streamToPromise(form)
+      let headers = form.getHeaders()
+
+      Object.assign(headers, headers, { Authorization: sinfoCredentials.authenticator })
+
+      let res = await server.inject({
+        method: 'POST',
+        url: `/venue/image`,
+        headers: headers,
+        payload: payload
+      })
+
+      expect(res.statusCode).to.eql(200)
+
+      for (let stand of stands) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/stand`,
+          payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
+      stands1 = [
+        {
+          day: 1,
+          standId: venue.stands[0].id
+        },
+        {
+          day: 2,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 3,
+          standId: venue.stands[2].id
+        }
+      ]
+
+      stands2 = [
+        {
+          day: 4,
+          standId: venue.stands[1].id
+        },
+        {
+          day: 5,
+          standId: venue.stands[2].id
+        }
+      ]
+
+      let res5 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: stands1
+      })
+
+      let res6 = await server.inject({
+        method: 'POST',
+        url: `/company/reservation`,
+        headers: {
+          Authorization: `bearer ${token2}`
+        },
+        payload: stands2
+      })
+
+      reservation = res5.result
+
+      expect(res1.statusCode).to.eql(200)
+      expect(res4.statusCode).to.eql(200)
+      expect(res5.statusCode).to.eql(200)
+      expect(res6.statusCode).to.eql(200)
+    })
+
+    it('should be able to remove reservations', async function () {
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/reservation/${reservation.id}/company/${reservation.companyId}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      const deleted = await Reservation.findOne(reservation)
+
+      expect(response.statusCode).to.eql(200)
+      expect(response.result.companyId).to.eql(reservation.companyId)
+      expect(response.result.edition).to.eql(reservation.edition)
+      expect(response.result.feedback).to.eql(reservation.feedback)
+      expect(response.result.issued).to.eql(reservation.issued)
+      expect(deleted).to.eql(null)
+    })
+
+    after('removing links, venue and reservations from db', async function () {
+      try {
+        await Venue.collection.drop()
+        await Link.collection.drop()
+        await Reservation.collection.drop()
       } catch (err) {
         // do nothing
       }
