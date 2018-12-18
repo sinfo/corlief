@@ -38,7 +38,7 @@ module.exports = [
             : link.toJSON()
           return result === null ? Boom.badData('No link associated') : result
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -79,7 +79,7 @@ module.exports = [
           const result = await request.server.methods.link.find({ edition: edition })
           return await request.server.methods.link.arrayToJSON(result)
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -136,7 +136,7 @@ module.exports = [
             ? Boom.resourceGone('Token expired')
             : { expirationDate: new Date(token.exp * 1000).toJSON() }
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -165,7 +165,7 @@ module.exports = [
         try {
           return request.pre.companies
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -202,7 +202,7 @@ module.exports = [
           const link = await request.server.methods.link.delete(companyId, edition)
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -249,7 +249,7 @@ module.exports = [
 
           return link === null ? Boom.badData('no link associated') : link.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -328,7 +328,7 @@ module.exports = [
 
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -408,7 +408,7 @@ module.exports = [
           const link = await request.server.methods.link.setToken(request.params, token)
           return (link) ? link.toJSON() : Boom.badData('No link associated')
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       }

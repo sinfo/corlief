@@ -29,7 +29,7 @@ module.exports = server => {
 
           return h.authenticated({ credentials: { user: user, token: token } })
         } catch (err) {
-          logger.error(err)
+          logger.error({ info: request.info, error: err })
           throw Boom.unauthorized(null, 'custom-sinfo')
         }
       }

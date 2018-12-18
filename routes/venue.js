@@ -18,7 +18,7 @@ module.exports = [
           let result = await request.server.methods.venue.arrayToJSON(venues)
           return result
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -48,7 +48,7 @@ module.exports = [
           let venue = await request.server.methods.venue.find({ edition: edition })
           return venue === null ? Boom.notFound('No venue found') : venue.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -74,7 +74,7 @@ module.exports = [
           let venue = await request.server.methods.venue.find(request.params)
           return venue === null ? Boom.notFound('No venue associated') : venue.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -122,7 +122,7 @@ module.exports = [
 
           return venue === null ? Boom.badData('Invalid data for the venue') : venue.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -181,7 +181,7 @@ module.exports = [
             ? Boom.badData('No venue associated with this event or with image')
             : venue.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -214,7 +214,7 @@ module.exports = [
             ? Boom.badData('No stand with this id in the venue')
             : venue.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -261,7 +261,7 @@ module.exports = [
             ? Boom.badData('No venue associated with this event or with image')
             : venue.toJSON()
         } catch (err) {
-          logger.error(err.message)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },

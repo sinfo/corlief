@@ -30,7 +30,7 @@ module.exports = [
 
           return response
         } catch (err) {
-          logger.error('Hello!')
+          logger.error({ info: request.info, error: err })
           return Boom.unauthorized(err)
         }
       },
@@ -73,7 +73,7 @@ module.exports = [
           let confirmedReservation = await request.server.methods.reservation.getConfirmedReservations(edition)
           return venue.getStandsAvailability(confirmedReservation, duration)
         } catch (err) {
-          logger.error(err)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
@@ -161,7 +161,7 @@ module.exports = [
 
           return reservation.toJSON()
         } catch (err) {
-          logger.error(err)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },
