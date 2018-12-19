@@ -60,7 +60,7 @@
     "logger": "git+https://github.com/sinfo/logger.git",
     "mailgun-js": "^0.21.0",
     "mime-types": "^2.1.19",
-    "mongoose": "^5.2.3",
+    "mongoose": "^5.2.12",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "tough-cookie": "^2.4.3",
