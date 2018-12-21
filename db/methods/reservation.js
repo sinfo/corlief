@@ -80,10 +80,20 @@ async function areConsecutive (stands) {
   return true
 }
 
-async function isStandAvailable (confirmedStands, stand) {
-  if (confirmedStands.length === 0) { return true }
+async function isStandAvailable (confirmedStands, pendingStands, stand) {
+  if (confirmedStands.length === 0 && pendingStands.length === 0) { return true }
 
   for (let reservation of confirmedStands) {
+    let stands = reservation.stands
+
+    for (let s of stands) {
+      if (s.day === stand.day && s.standId === stand.standId) {
+        return false
+      }
+    }
+  }
+
+  for (let reservation of pendingStands) {
     let stands = reservation.stands
 
     for (let s of stands) {
@@ -96,12 +106,19 @@ async function isStandAvailable (confirmedStands, stand) {
   return true
 }
 
-async function areAvailable (edition, stands) {
-  let confirmed = await Reservation.getConfirmedReservations(edition)
+async function areAvailable (edition, stands, forConfirmation = false) {
+  const confirmed = await Reservation.getConfirmedReservations(edition)
+  let pending = !forConfirmation ? await Reservation.getPendingReservations(edition) : null
 
   for (let stand of stands) {
-    if (!await isStandAvailable(confirmed, stand)) {
-      return false
+    if (forConfirmation) {
+      if (!await isStandAvailable(confirmed, [], stand)) {
+        return false
+      }
+    } else {
+      if (!await isStandAvailable(confirmed, pending, stand)) {
+        return false
+      }
     }
   }
 
@@ -141,7 +158,7 @@ async function confirm (companyId, edition, member) {
     return result
   }
 
-  let available = await areAvailable(edition, latest.stands)
+  let available = await areAvailable(edition, latest.stands, true)
 
   if (!available) {
     result.error = 'Stands are no longer available'
@@ -188,6 +205,7 @@ module.exports.areConsecutive = areConsecutive
 module.exports.areAvailable = areAvailable
 module.exports.areValid = areValid
 module.exports.getConfirmedReservations = Reservation.getConfirmedReservations
+module.exports.getPendingReservations = Reservation.getPendingReservations
 module.exports.companyReservations = companyReservations
 module.exports.getLatestReservations = getLatestReservations
 module.exports.confirm = confirm

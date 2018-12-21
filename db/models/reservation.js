@@ -141,4 +141,8 @@ reservationSchema.static('getConfirmedReservations', async function (edition) {
   return this.find({ edition: edition, 'feedback.status': 'CONFIRMED' })
 })
 
+reservationSchema.static('getPendingReservations', async function (edition) {
+  return this.find({ edition: edition, 'feedback.status': 'PENDING' })
+})
+
 module.exports = mongoose.model('Reservation', reservationSchema)

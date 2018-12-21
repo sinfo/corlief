@@ -63,7 +63,7 @@ venueSchema.methods.getIds = function () {
   return this.stands.map(stand => stand.id)
 }
 
-venueSchema.methods.getStandsAvailability = function (confirmedStands, duration) {
+venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingStands, duration) {
   let response = {
     venue: this.toJSON(),
     availability: []
@@ -89,7 +89,16 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, duration)
         return false
       }).length > 0
 
-      if (isConfirmed) {
+      let isPending = pendingStands.filter(pending => {
+        for (let stand of pending.stands) {
+          if (stand.day === day && stand.standId === id) {
+            return true
+          }
+        }
+        return false
+      }).length > 0
+
+      if (isConfirmed || isPending) {
         result.free = false
       }
 

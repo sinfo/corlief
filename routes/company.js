@@ -71,7 +71,8 @@ module.exports = [
           }
 
           let confirmedReservation = await request.server.methods.reservation.getConfirmedReservations(edition)
-          return venue.getStandsAvailability(confirmedReservation, duration)
+          let pendingReservation = await request.server.methods.reservation.getPendingReservations(edition)
+          return venue.getStandsAvailability(confirmedReservation, pendingReservation, duration)
         } catch (err) {
           logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
