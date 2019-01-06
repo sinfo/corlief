@@ -330,11 +330,8 @@ module.exports = [
             activities, advertisementKind, companyEmail
           )
 
-          console.log(link);
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {
-          console.log("got to the error")
-          console.log(err)
           logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
