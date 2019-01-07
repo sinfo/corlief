@@ -310,7 +310,7 @@ module.exports = [
       handler: async (request, h) => {
         try {
           const { companyId, participationDays, advertisementKind, activities, companyEmail } = request.payload
-          const { edition, token, isCompanyValid, company, member } = request.pre
+          const { edition, isCompanyValid, token, company, member } = request.pre
 
           if (isCompanyValid === false) {
             return Boom.badData('CompanyId does not exist')
@@ -318,6 +318,10 @@ module.exports = [
 
           if (!validator.validate(companyEmail)) {
             return Boom.badData('Invalid email')
+          }
+
+          if (member.mails.main === undefined) {
+            return Boom.badData('The member (SINFO Organizer) doesn\'t have his/her main email setup. This email should be something like john.doe@sinfo.org')
           }
 
           let link = await request.server.methods.link.create(
