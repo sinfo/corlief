@@ -107,6 +107,17 @@ module.exports = [
           const member = request.auth.credentials.user
 
           const reservation = await request.server.methods.reservation.confirm(companyId, edition, member)
+          const link = await request.server.methods.link.find({ companyId: companyId, edition: edition })
+
+          if (link === null || link.length === 0) {
+            return Boom.badData('Could not find the link for this company')
+          }
+
+          const receivers = link[0].contacts.company
+            ? [ link[0].contacts.member, link[0].contacts.company ]
+            : [ link[0].contacts.member ]
+
+          request.server.methods.mailgun.sendConfirmation(receivers, reservation, link)
 
           return reservation.data === null ? Boom.badData(reservation.error) : reservation.data.toJSON()
         } catch (err) {
@@ -145,6 +156,17 @@ module.exports = [
           const member = request.auth.credentials.user
 
           const reservation = await request.server.methods.reservation.cancel(companyId, edition, member)
+          const link = await request.server.methods.link.find({ companyId: companyId, edition: edition })
+
+          if (link === null || link.length === 0) {
+            return Boom.badData('Could not find the link for this company')
+          }
+
+          const receivers = link[0].contacts.company
+            ? [ link[0].contacts.member, link[0].contacts.company ]
+            : [ link[0].contacts.member ]
+
+          request.server.methods.mailgun.sendCancellation(receivers, reservation, link)
 
           return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
         } catch (err) {

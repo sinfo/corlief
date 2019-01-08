@@ -16,8 +16,11 @@ module.exports.sinfoCredentials = () => {
       const member = db.collection('members')
 
       member.findOne({ $where: 'this.loginCodes.length>0' }, (err, results) => {
-        if (err) { return }
+        if (err) { reject(err); return }
         let user = results
+        if (user === null) {
+          reject(new Error('No user found with login code')); return
+        }
 
         resolve({
           id: user.id,
