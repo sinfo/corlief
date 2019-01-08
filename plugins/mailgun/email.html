@@ -1,10 +1,10 @@
 <div>
-  <h1>New reservation made for {{link.companyName}}</h1>
+  <h1>Reservation state update for {{link.companyName}}: <b>{{state}}</b></h1>
 
   {{#each reservation.stands}}
   <div>
-    <span><b>Day:</b> {{day}}</span>
-    <span><b>Stand:</b> {{standId}}</span>
+    <p><b>Day:</b> {{day}}</p>
+    <p><b>Stand:</b> {{standId}}</p>
   </div>
   {{/each}}
 
