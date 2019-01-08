@@ -25,6 +25,7 @@ fs.readFile(path.join(__dirname, 'email.html'), { encoding: 'UTF-8' }, (err, dat
 
 function send (receivers, templateData) {
   receivers.push(config.COORDINATION_EMAIL)
+  templateData.reservation.stands.map(stand => { stand.standId++; return stand })
 
   receivers.forEach(receiver => {
     let data = {
