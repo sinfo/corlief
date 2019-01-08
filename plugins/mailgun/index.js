@@ -30,7 +30,7 @@ function send (receivers, templateData) {
     let data = {
       from: 'Mailgun <mailgun@sinfo.org>',
       to: receiver,
-      subject: '[SINFO] Stand reservation update',
+      subject: `[SINFO] ${templateData.link.companyName} stand reservation update`,
       html: template(templateData)
     }
 
@@ -45,7 +45,7 @@ function sendConfirmation (receivers, reservation, link) {
 
   let data = {
     state: 'CONFIRMED',
-    reservation: reservation,
+    reservation: reservation.data,
     link: link
   }
 
@@ -53,7 +53,7 @@ function sendConfirmation (receivers, reservation, link) {
 }
 
 function sendCancellation (receivers, reservation, link) {
-  if (process.env.NODE_ENV !== 'production') { }
+  if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
     state: 'CANCELLED',

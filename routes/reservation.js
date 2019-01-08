@@ -107,15 +107,17 @@ module.exports = [
           const member = request.auth.credentials.user
 
           const reservation = await request.server.methods.reservation.confirm(companyId, edition, member)
-          const link = await request.server.methods.link.find({ companyId: companyId, edition: edition })
+          const links = await request.server.methods.link.find({ companyId: companyId, edition: edition })
 
-          if (link === null || link.length === 0) {
+          if (links === null || links.length === 0) {
             return Boom.badData('Could not find the link for this company')
           }
 
-          const receivers = link[0].contacts.company
-            ? [ link[0].contacts.member, link[0].contacts.company ]
-            : [ link[0].contacts.member ]
+          const link = links[0]
+
+          const receivers = link.contacts.company
+            ? [ link.contacts.member, link.contacts.company ]
+            : [ link.contacts.member ]
 
           request.server.methods.mailgun.sendConfirmation(receivers, reservation, link)
 
@@ -156,15 +158,17 @@ module.exports = [
           const member = request.auth.credentials.user
 
           const reservation = await request.server.methods.reservation.cancel(companyId, edition, member)
-          const link = await request.server.methods.link.find({ companyId: companyId, edition: edition })
+          const links = await request.server.methods.link.find({ companyId: companyId, edition: edition })
 
-          if (link === null || link.length === 0) {
+          if (links === null || links.length === 0) {
             return Boom.badData('Could not find the link for this company')
           }
 
-          const receivers = link[0].contacts.company
-            ? [ link[0].contacts.member, link[0].contacts.company ]
-            : [ link[0].contacts.member ]
+          const link = links[0]
+
+          const receivers = link.contacts.company
+            ? [ link.contacts.member, link.contacts.company ]
+            : [ link.contacts.member ]
 
           request.server.methods.mailgun.sendCancellation(receivers, reservation, link)
 
