@@ -44,7 +44,7 @@ function sendConfirmation (receivers, reservation, link) {
   if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
-    state: 'CONFIRM',
+    state: 'CONFIRMED',
     reservation: reservation,
     link: link
   }
@@ -56,7 +56,7 @@ function sendCancellation (receivers, reservation, link) {
   if (process.env.NODE_ENV !== 'production') { }
 
   let data = {
-    state: 'CANCEL',
+    state: 'CANCELLED',
     reservation: reservation,
     link: link
   }
