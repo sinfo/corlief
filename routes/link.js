@@ -233,7 +233,12 @@ module.exports = [
           participationDays: Joi.number().integer().min(1).max(5)
             .description('Number of days company is participanting'),
           advertisementKind: Joi.string().min(1).max(100)
-            .description('Type of package')
+            .description('Type of package'),
+          companyContact: Joi.string().min(1).max(100)
+            .description('Company contact'),
+          memberContact: Joi.string().min(1).max(100)
+            .description('Member contact')
+
         }
       },
       handler: async (request, h) => {
@@ -242,9 +247,11 @@ module.exports = [
           let edition = request.params.edition
           let participationDays = request.payload.participationDays
           let advertisementKind = request.payload.advertisementKind
+          let companyContact = request.payload.companyContact
+          let memberContact = request.payload.memberContact
 
           let link = await request.server.methods.link.update(
-            companyId, edition, participationDays, advertisementKind
+            companyId, edition, participationDays, advertisementKind, companyContact, memberContact
           )
 
           return link === null ? Boom.badData('no link associated') : link.toJSON()
