@@ -61,6 +61,7 @@
     "mailgun-js": "^0.21.0",
     "mime-types": "^2.1.19",
     "mongoose": "^5.2.12",
+    "prettyjson": "^1.2.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "tough-cookie": "^2.4.3",
