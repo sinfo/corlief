@@ -1,0 +1,20 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - handlebars > async > lodash:
+        patched: '2020-05-01T01:18:39.353Z'
+    - mailgun-js > async > lodash:
+        patched: '2020-05-01T01:18:39.353Z'
+    - request-promise > request-promise-core > lodash:
+        patched: '2020-05-01T01:18:39.353Z'
+    - hapi-swagger > handlebars > async > lodash:
+        patched: '2020-05-01T01:18:39.353Z'
+    - logger > mailgun-js > async > lodash:
+        patched: '2020-05-01T01:18:39.353Z'
+    - logger > winston > async > lodash:
+        patched: '2020-05-01T01:18:39.353Z'
+    - mongoose > async > lodash:
+        patched: '2020-05-01T01:18:39.353Z'
