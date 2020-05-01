@@ -12,7 +12,9 @@
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --file ./test/prepareServer ./test/* --exit --timeout 10000 --slow 1000",
     "lint": "./node_modules/.bin/eslint --ext .js .",
     "gen-keys": "mkdir -p keys; ssh-keygen -t rsa -b 4096 -f ./keys/jwtRS256.key -q -N \"\"; openssl rsa -in ./keys/jwtRS256.key -pubout -outform PEM -out ./keys/jwtRS256.key.pub",
-    "production": "NODE_ENV=production node index.js"
+    "production": "NODE_ENV=production node index.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "pre-commit": [
     "lint",
@@ -65,6 +67,8 @@
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
     "tough-cookie": "^2.4.3",
-    "vision": "^5.3.3"
-  }
+    "vision": "^5.3.3",
+    "snyk": "^1.316.1"
+  },
+  "snyk": true
 }
