@@ -1,4 +1,5 @@
 let path = require('path')
+const logger = require('logger').getLogger()
 let Venue = require(path.join(__dirname, '..', 'models', 'venue'))
 
 function arrayToJSON(venues) {
@@ -181,7 +182,89 @@ async function replaceWorkshops(edition, workshops) {
 
   for (let ws of workshops) {
     let wsWithId = Object.assign(ws, { id: id })
-    venue.stands.push(wsWithId)
+    venue.workshops.push(wsWithId)
+    id += 1
+  }
+
+  return venue.save()
+}
+
+async function addPresentation(edition, day, start, end) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  let dayPres = venue.presentations.filter((pres) => pres.day === day)
+  for (let pres of dayPres) {
+    if ((start >= pres.start && start <= pres.end) || (end >= pres.start && end <= pres.end)) {
+      return null
+    }
+  }
+
+  let presId = venue.presentations.map(pres => +pres.id).sort((a, b) => a - b)
+  let newId = 0
+  let prevId = -1
+
+  for (let currId of presId) {
+    newId = prevId + 1
+    if (newId < currId) {
+      break
+    }
+    prevId = currId
+    newId += 1
+  }
+
+  venue.presentations.push({
+    id: newId,
+    day: day,
+    start: start,
+    end: end
+  })
+
+  return venue.save()
+}
+
+async function removePresentation(edition, id) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  // find presentation with presentation.id == id
+  let index = 0
+  let found = false
+  for (index = 0; !found && index < venue.presentations.length; index++) {
+    if (venue.presentations[index].id === id) {
+      found = true
+    }
+  }
+
+  if (!found) {
+    return null
+  }
+
+  // remove element
+  venue.presentations.splice(index - 1, 1)
+
+  return venue.save()
+}
+
+async function replacePresentations(edition, presentations) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  venue.presentations = []
+  let id = 0
+
+  for (let pres of presentations) {
+    let presWithId = Object.assign(pres, { id: id })
+    venue.presentations.push(presWithId)
     id += 1
   }
 
@@ -197,3 +280,6 @@ module.exports.replaceStands = replaceStands
 module.exports.addWorkshop = addWorkshop
 module.exports.removeWorkshop = removeWorkshop
 module.exports.replaceWorkshops = replaceWorkshops
+module.exports.addPresentation = addPresentation
+module.exports.removePresentation = removePresentation
+module.exports.replacePresentations = replacePresentations

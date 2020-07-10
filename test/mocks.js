@@ -204,5 +204,30 @@ module.exports = {
       status: 'PENDING',
       member: ''
     }
+  },
+  ACTIVITY1: {
+    day: 1,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  ACTIVITY2: {
+    day: 2,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  ACTIVITY3: {
+    day: 3,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  ACTIVITY4: {
+    day: 4,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  ACTIVITY5: {
+    day: 5,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
   }
 }

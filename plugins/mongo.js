@@ -55,6 +55,12 @@ module.exports = {
     server.method('venue.addStand', mongoMethods.venue.addStand)
     server.method('venue.removeStand', mongoMethods.venue.removeStand)
     server.method('venue.replaceStands', mongoMethods.venue.replaceStands)
+    server.method('venue.addWorkshop', mongoMethods.venue.addWorkshop)
+    server.method('venue.removeWorkshop', mongoMethods.venue.removeWorkshop)
+    server.method('venue.replaceWorkshops', mongoMethods.venue.replaceWorkshops)
+    server.method('venue.addPresentation', mongoMethods.venue.addPresentation)
+    server.method('venue.removePresentation', mongoMethods.venue.removePresentation)
+    server.method('venue.replacePresentations', mongoMethods.venue.replacePresentations)
 
     server.method('config.find', mongoMethods.config.find)
     server.method('config.findByEdition', mongoMethods.config.findByEdition)

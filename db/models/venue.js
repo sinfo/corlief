@@ -67,7 +67,32 @@ let venueSchema = mongoose.Schema({
         type: Date,
         required: true
       }
-    }]
+    }],
+    default: []
+  },
+  presentations: {
+    type: [{
+      id: {
+        type: Number,
+        min: 0,
+        required: true
+      },
+      day: {
+        type: Number,
+        min: 1,
+        max: 5,
+        required: true
+      },
+      start: {
+        type: Date,
+        required: true
+      },
+      end: {
+        type: Date,
+        required: true
+      }
+    }],
+    default: []
   }
 }, {
   toJSON: {
@@ -75,6 +100,14 @@ let venueSchema = mongoose.Schema({
       delete ret._id
       delete ret.__v
       ret.stands.forEach(stand => {
+        delete stand._id
+        delete stand.__v
+      })
+      ret.workshops.forEach(stand => {
+        delete stand._id
+        delete stand.__v
+      })
+      ret.presentations.forEach(stand => {
         delete stand._id
         delete stand.__v
       })

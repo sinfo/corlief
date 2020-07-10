@@ -310,7 +310,7 @@ module.exports = [
           let link = await request.server.methods.link.create(
             companyId, company.name, edition,
             member.mails.main, token, participationDays,
-            activities, advertisementKind, companyEmail
+            activities, advertisementKind, companyEmail, workshop, presentation
           )
 
           return link === null ? Boom.badData('No link associated') : link.toJSON()

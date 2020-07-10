@@ -28,7 +28,7 @@ let standPayload = Joi.object().keys({
 
 let standsPayload = Joi.array().items(standPayload)
 
-let workshop = Joi.object().keys({
+let activity = Joi.object().keys({
   id: Joi.number().min(0).required(),
 
   day: Joi.number().min(1).max(5).required(),
@@ -38,7 +38,7 @@ let workshop = Joi.object().keys({
   end: Joi.date().required()
 })
 
-let workshopPayload = Joi.object().keys({
+let activityPayload = Joi.object().keys({
 
   day: Joi.number().min(1).max(5).required(),
 
@@ -47,7 +47,7 @@ let workshopPayload = Joi.object().keys({
   end: Joi.date().required()
 })
 
-let workshopsPayload = Joi.array().items(workshopPayload)
+let activitiesPayload = Joi.array().items(activityPayload)
 
 let venue = Joi.object().keys({
   edition: Joi.string().required(),
@@ -55,15 +55,16 @@ let venue = Joi.object().keys({
   stands: Joi.array().items(
     stand.optional()
   ).label('stand'),
-  workshops: Joi.array().items(workshop.optional()).label('workshop')
+  workshops: Joi.array().items(activity.optional()).label('workshop'),
+  presentations: Joi.array().items(activity.optional()).label('presentation')
 }).label('venue')
 
 let venues = Joi.array().items(venue).min(0)
 
 module.exports.standPayload = standPayload
 module.exports.standsPayload = standsPayload
-module.exports.workshopPayload = workshopPayload
-module.exports.workshopsPayload = workshopsPayload
+module.exports.activityPayload = activityPayload
+module.exports.activitiesPayload = activitiesPayload
 module.exports.stand = stand
 
 module.exports.venue = venue
@@ -160,7 +161,7 @@ let standReservation = Joi.object().keys({
   standId: Joi.number().required().min(0).max(100)
 })
 
-let workshopReservation = Joi.object().keys({
+let activityReservation = Joi.object().keys({
   day: Joi.number().required().min(1).max(5),
   slotId: Joi.number().required().min(0).max(100)
 })
@@ -170,7 +171,8 @@ let standsReservation = Joi.object().keys({
     .min(1).unique((s1, s2) => {
       return s1.day === s2.day
     }),
-  workshop: workshopReservation.optional()
+  workshop: activityReservation.optional(),
+  presentation: activityReservation.optional()
 })
 
 module.exports.standReservation = standReservation
@@ -185,7 +187,8 @@ let reservation = Joi.object().keys({
     .min(1).unique((s1, s2) => {
       return s1.day === s2.day
     }),
-  workshop: workshopReservation,
+  workshop: activityReservation,
+  presentation: activityReservation,
   feedback: Joi.object().keys({
     status: Joi.string().required(),
     member: Joi.string().optional()
