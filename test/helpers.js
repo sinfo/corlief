@@ -15,7 +15,7 @@ module.exports.sinfoCredentials = () => {
 
       const member = db.collection('members')
 
-      member.findOne({ $where: 'this.loginCodes.length>0' }, (err, results) => {
+      member.findOne({ $where: 'this.loginCodes && this.loginCodes.length>0' }, (err, results) => {
         if (err) { reject(err); return }
         let user = results
         if (user === null) {

@@ -28,18 +28,42 @@ let standPayload = Joi.object().keys({
 
 let standsPayload = Joi.array().items(standPayload)
 
+let workshop = Joi.object().keys({
+  id: Joi.number().min(0).required(),
+
+  day: Joi.number().min(1).max(5).required(),
+
+  start: Joi.date().required(),
+
+  end: Joi.date().required()
+})
+
+let workshopPayload = Joi.object().keys({
+
+  day: Joi.number().min(1).max(5).required(),
+
+  start: Joi.date().required(),
+
+  end: Joi.date().required()
+})
+
+let workshopsPayload = Joi.array().items(workshopPayload)
+
 let venue = Joi.object().keys({
   edition: Joi.string().required(),
   image: Joi.string(),
   stands: Joi.array().items(
     stand.optional()
-  ).label('stand')
+  ).label('stand'),
+  workshops: Joi.array().items(workshop.optional()).label('workshop')
 }).label('venue')
 
 let venues = Joi.array().items(venue).min(0)
 
 module.exports.standPayload = standPayload
 module.exports.standsPayload = standsPayload
+module.exports.workshopPayload = workshopPayload
+module.exports.workshopsPayload = workshopsPayload
 module.exports.stand = stand
 
 module.exports.venue = venue
@@ -63,13 +87,44 @@ let link = Joi.object().keys({
       date: Joi.date().required()
     }).label('activities')
   ),
-  advertisementKind: Joi.string().required()
+  advertisementKind: Joi.string().required(),
+  workshop: Joi.bool(),
+  presentation: Joi.bool()
 }).label('link')
 
 let links = Joi.array().items(link).min(0)
 
+let linkPayload = Joi.object().keys({
+  companyId: Joi.string()
+    .required().min(1).max(50)
+    .description('Company identifier'),
+  companyEmail: Joi.string()
+    .optional().min(1).max(50)
+    .description('Email contact of the company\'s employer'),
+  participationDays: Joi.number()
+    .required().min(1).max(5)
+    .description('Amount of days company will participate in edition'),
+  advertisementKind: Joi.string()
+    .required().min(1).max(100)
+    .description('Company advertisement package in edition'),
+  activities: Joi.array()
+    .items(Joi.object({
+      kind: Joi.string()
+        .min(1).max(30)
+        .description('Type of activity'),
+      date: Joi.date()
+        .description('Date of realization of such activity')
+    })),
+  expirationDate: Joi.date()
+    .required().min(new Date())
+    .description('Date of link expiration'),
+  workshop: Joi.bool().description('Company has workshop'),
+  presentation: Joi.bool().description('Company has presentation')
+})
+
 module.exports.link = link
 module.exports.links = links
+module.exports.linkPayload = linkPayload
 
 let config = Joi.object().keys({
   edition: Joi.string().required(),
@@ -105,10 +160,18 @@ let standReservation = Joi.object().keys({
   standId: Joi.number().required().min(0).max(100)
 })
 
-let standsReservation = Joi.array().items(standReservation)
-  .min(1).unique((s1, s2) => {
-    return s1.day === s2.day
-  })
+let workshopReservation = Joi.object().keys({
+  day: Joi.number().required().min(1).max(5),
+  slotId: Joi.number().required().min(0).max(100)
+})
+
+let standsReservation = Joi.object().keys({
+  stands: Joi.array().items(standReservation)
+    .min(1).unique((s1, s2) => {
+      return s1.day === s2.day
+    }),
+  workshop: workshopReservation.optional()
+})
 
 module.exports.standReservation = standReservation
 module.exports.standsReservation = standsReservation
@@ -118,7 +181,11 @@ let reservation = Joi.object().keys({
   companyId: Joi.string().required(),
   edition: Joi.string().required(),
   issued: Joi.date().required(),
-  stands: standsReservation,
+  stands: Joi.array().items(standReservation)
+    .min(1).unique((s1, s2) => {
+      return s1.day === s2.day
+    }),
+  workshop: workshopReservation,
   feedback: Joi.object().keys({
     status: Joi.string().required(),
     member: Joi.string().optional()

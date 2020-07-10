@@ -1,15 +1,15 @@
 let path = require('path')
 let Venue = require(path.join(__dirname, '..', 'models', 'venue'))
 
-function arrayToJSON (venues) {
+function arrayToJSON(venues) {
   return venues.map(venue => venue.toJSON())
 }
 
-async function find (filter) {
+async function find(filter) {
   return filter ? Venue.findOne(filter) : Venue.find()
 }
 
-async function updateImage (edition, image) {
+async function updateImage(edition, image) {
   return Venue.findOneAndUpdate(
     {
       edition: edition
@@ -26,7 +26,7 @@ async function updateImage (edition, image) {
   )
 }
 
-async function addStand (edition, topLeft, bottomRight) {
+async function addStand(edition, topLeft, bottomRight) {
   let venue = await find({ edition: edition })
 
   if (venue === null || venue.image.length === 0) {
@@ -61,7 +61,7 @@ async function addStand (edition, topLeft, bottomRight) {
   return venue.save()
 }
 
-async function removeStand (edition, id) {
+async function removeStand(edition, id) {
   let venue = await find({ edition: edition })
 
   if (venue === null || venue.image.length === 0) {
@@ -87,7 +87,7 @@ async function removeStand (edition, id) {
   return venue.save()
 }
 
-async function replaceStands (edition, stands) {
+async function replaceStands(edition, stands) {
   let venue = await find({ edition: edition })
 
   if (venue === null || venue.image.length === 0) {
@@ -106,9 +106,94 @@ async function replaceStands (edition, stands) {
   return venue.save()
 }
 
+async function addWorkshop(edition, day, start, end) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  let dayWS = venue.workshops.filter((ws) => ws.day === day)
+  for (let ws of dayWS) {
+    if ((start >= ws.start && start <= ws.end) || (end >= ws.start && end <= ws.end)) {
+      return null
+    }
+  }
+
+  let wsId = venue.workshops.map(workshop => +workshop.id).sort((a, b) => a - b)
+  let newId = 0
+  let prevId = -1
+
+  for (let currId of wsId) {
+    newId = prevId + 1
+    if (newId < currId) {
+      break
+    }
+    prevId = currId
+    newId += 1
+  }
+
+  venue.workshops.push({
+    id: newId,
+    day: day,
+    start: start,
+    end: end
+  })
+
+  return venue.save()
+}
+
+async function removeWorkshop(edition, id) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  // find stand with stand.id == id
+  let index = 0
+  let found = false
+  for (index = 0; !found && index < venue.workshops.length; index++) {
+    if (venue.workshops[index].id === id) {
+      found = true
+    }
+  }
+
+  if (!found) {
+    return null
+  }
+
+  // remove element
+  venue.workshops.splice(index - 1, 1)
+
+  return venue.save()
+}
+
+async function replaceWorkshops(edition, workshops) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  venue.workshops = []
+  let id = 0
+
+  for (let ws of workshops) {
+    let wsWithId = Object.assign(ws, { id: id })
+    venue.stands.push(wsWithId)
+    id += 1
+  }
+
+  return venue.save()
+}
+
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.updateImage = updateImage
 module.exports.addStand = addStand
 module.exports.removeStand = removeStand
 module.exports.replaceStands = replaceStands
+module.exports.addWorkshop = addWorkshop
+module.exports.removeWorkshop = removeWorkshop
+module.exports.replaceWorkshops = replaceWorkshops

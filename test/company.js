@@ -1,6 +1,6 @@
 const path = require('path')
 const { before, after, it, describe, afterEach } = require('mocha')
-const {expect} = require('chai')
+const { expect } = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const Venue = require(path.join('..', 'db', 'models', 'venue'))
 const Reservation = require(path.join('..', 'db', 'models', 'reservation'))
@@ -119,7 +119,7 @@ describe('company', async function () {
     })
 
     it('should fail authentication if expired', async function () {
-      function sleep (ms) {
+      function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms))
       }
 
@@ -261,7 +261,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -270,7 +270,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       let reservation1 = res1.result
@@ -298,7 +298,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       await Reservation.findOneAndUpdate(
@@ -311,7 +311,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       expect(res1.statusCode).to.eql(200)
@@ -325,7 +325,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: []
+        payload: { stands: [] }
       })
 
       expect(res0.statusCode).to.eql(400)
@@ -338,7 +338,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: [ stands1[0] ]
+        payload: { stands: [stands1[0]] }
       })
 
       let res2 = await server.inject({
@@ -347,7 +347,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: [ stands1[0], stands1[1] ]
+        payload: { stands: [stands1[0], stands1[1]] }
       })
 
       let res4 = await server.inject({
@@ -356,7 +356,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: [ stands1[0], stands1[1], stands2[0], stands2[1] ]
+        payload: { stands: [stands1[0], stands1[1], stands2[0], stands2[1]] }
       })
 
       expect(res1.statusCode).to.eql(422)
@@ -371,7 +371,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -380,7 +380,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       expect(res1.statusCode).to.eql(200)
@@ -394,7 +394,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       await Reservation.findOneAndUpdate(
@@ -407,7 +407,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       expect(res1.statusCode).to.eql(200)
@@ -430,7 +430,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: invalidStands
+        payload: { stands: invalidStands }
       })
 
       expect(res.statusCode).to.eql(422)
@@ -443,7 +443,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -452,7 +452,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       expect(res1.statusCode).to.eql(200)
@@ -539,7 +539,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -570,7 +570,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -612,7 +612,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       await Reservation.findOneAndUpdate(
@@ -625,7 +625,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       expect(res1.statusCode).to.eql(200)
@@ -735,7 +735,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -744,7 +744,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       let reservation1 = res1.result
@@ -791,7 +791,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -800,7 +800,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       let res = await server.inject({
@@ -843,7 +843,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -852,7 +852,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       let reservation1 = res1.result
@@ -980,7 +980,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
     })
 

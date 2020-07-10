@@ -106,10 +106,11 @@ module.exports = [
       ],
       handler: async (request, h) => {
         let companyId = request.auth.credentials.company
-        let stands = request.payload
+        let stands = request.payload.stands
         let edition = request.pre.edition
         let link = request.pre.link
         let venue = request.pre.venue
+        let workshop = request.payload.workshop
 
         try {
           if (venue === null) {
@@ -152,11 +153,11 @@ module.exports = [
           */
 
           let reservation = await request.server.methods.reservation
-            .addStands(companyId, edition, stands)
+            .addStands(companyId, edition, stands, workshop)
 
           const receivers = link.contacts.company
-            ? [ link.contacts.member, link.contacts.company ]
-            : [ link.contacts.member ]
+            ? [link.contacts.member, link.contacts.company]
+            : [link.contacts.member]
 
           request.server.methods.mailgun.sendNewReservation(receivers, reservation, link)
 
