@@ -7,5 +7,5 @@ Changelog:
   + Links now have 2 additional boolean fields, workshop and presentation. These represent wheter or not that company can make a reservation for a workshop and/or presentation :heavy_check_mark:
   + Links have no new endpoint but POST and PUT have been modified to accomodate the new changes
   + Reservations now have 2 additional optional fields, workshop and presentation, and are represented by the activity id.
-  + As with the links, no new endpoints have been made but changes to previously existing ones, such as POST and PUT, were made
+  + As with the links, no new endpoints have been made for reservations but changes to previously existing ones, such as POST and PUT, were made
    
