@@ -32,7 +32,9 @@ let linkSchema = mongoose.Schema({
     kind: String,
     date: Date
   }],
-  advertisementKind: String
+  advertisementKind: String,
+  workshop: Boolean,
+  presentation: Boolean
 }, {
   toJSON: {
     transform: function (doc, ret) {

@@ -1,6 +1,6 @@
 const logger = require('logger').getLogger()
 
-function getDataFromStream (stream) {
+function getDataFromStream(stream) {
   return new Promise((resolve, reject) => {
     let data = []
 
@@ -42,7 +42,6 @@ module.exports.duration = {
 module.exports.isCompanyValid = {
   method: async (request, h) => {
     const companyId = request.payload.companyId
-
     return request.server.methods.deck.validateCompanyId(companyId)
   },
   assign: 'isCompanyValid'

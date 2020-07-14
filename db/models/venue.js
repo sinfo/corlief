@@ -45,6 +45,54 @@ let venueSchema = mongoose.Schema({
       }
     }],
     default: []
+  },
+  workshops: {
+    type: [{
+      id: {
+        type: Number,
+        min: 0,
+        required: true
+      },
+      day: {
+        type: Number,
+        min: 1,
+        max: 5,
+        required: true
+      },
+      start: {
+        type: Date,
+        required: true
+      },
+      end: {
+        type: Date,
+        required: true
+      }
+    }],
+    default: []
+  },
+  presentations: {
+    type: [{
+      id: {
+        type: Number,
+        min: 0,
+        required: true
+      },
+      day: {
+        type: Number,
+        min: 1,
+        max: 5,
+        required: true
+      },
+      start: {
+        type: Date,
+        required: true
+      },
+      end: {
+        type: Date,
+        required: true
+      }
+    }],
+    default: []
   }
 }, {
   toJSON: {
@@ -55,12 +103,28 @@ let venueSchema = mongoose.Schema({
         delete stand._id
         delete stand.__v
       })
+      ret.workshops.forEach(stand => {
+        delete stand._id
+        delete stand.__v
+      })
+      ret.presentations.forEach(stand => {
+        delete stand._id
+        delete stand.__v
+      })
     }
   }
 })
 
 venueSchema.methods.getIds = function () {
   return this.stands.map(stand => stand.id)
+}
+
+venueSchema.methods.getWsIds = function () {
+  return this.workshops.map(ws => ws.id)
+}
+
+venueSchema.methods.getPresIds = function () {
+  return this.presentations.map(pres => pres.id)
 }
 
 venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingStands, duration) {

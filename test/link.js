@@ -1,6 +1,6 @@
 const path = require('path')
 const { before, after, it, describe } = require('mocha')
-const {expect} = require('chai')
+const { expect } = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
@@ -241,7 +241,9 @@ describe('link', async function () {
           participationDays: mocks.LINK.participationDays,
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
-          expirationDate: EXPIRATION
+          expirationDate: EXPIRATION,
+          workshop: true,
+          presentation: true
         },
         headers: {
           Authorization: sinfoCredentials.authenticator
@@ -655,7 +657,7 @@ describe('link', async function () {
     })
   })
 
-  function expectToContain (list, obj) {
+  function expectToContain(list, obj) {
     const element = list.find((element) => (element.token === obj.token))
     expect(element).to.not.eql(undefined)
     Object.keys(obj).forEach(key => {

@@ -158,8 +158,8 @@ module.exports = [
         }).unknown()
       },
       pre: [
-        [ helpers.pre.edition ],
-        [ helpers.pre.companies ]
+        [helpers.pre.edition],
+        [helpers.pre.companies]
       ],
       handler: async (request, h) => {
         try {
@@ -288,35 +288,11 @@ module.exports = [
         headers: Joi.object({
           'Authorization': Joi.string()
         }).unknown(),
-        payload: {
-          companyId: Joi.string()
-            .required().min(1).max(50)
-            .description('Company identifier'),
-          companyEmail: Joi.string()
-            .optional().min(1).max(50)
-            .description('Email contact of the company\'s employer'),
-          participationDays: Joi.number()
-            .required().min(1).max(5)
-            .description('Amount of days company will participate in edition'),
-          advertisementKind: Joi.string()
-            .required().min(1).max(100)
-            .description('Company advertisement package in edition'),
-          activities: Joi.array()
-            .items(Joi.object({
-              kind: Joi.string()
-                .min(1).max(30)
-                .description('Type of activity'),
-              date: Joi.date()
-                .description('Date of realization of such activity')
-            })),
-          expirationDate: Joi.date()
-            .required().min(new Date())
-            .description('Date of link expiration')
-        }
+        payload: helpers.joi.linkPayload
       },
       handler: async (request, h) => {
         try {
-          const { companyId, participationDays, advertisementKind, activities, companyEmail } = request.payload
+          const { companyId, companyEmail, participationDays, advertisementKind, activities, workshop, presentation } = request.payload
           const { edition, isCompanyValid, token, company, member } = request.pre
 
           if (isCompanyValid === false) {
@@ -334,7 +310,7 @@ module.exports = [
           let link = await request.server.methods.link.create(
             companyId, company.name, edition,
             member.mails.main, token, participationDays,
-            activities, advertisementKind, companyEmail
+            activities, advertisementKind, companyEmail, workshop, presentation
           )
 
           return link === null ? Boom.badData('No link associated') : link.toJSON()
@@ -371,7 +347,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         try {
-          const {companyId, edition} = request.params
+          const { companyId, edition } = request.params
           const link = await request.server.methods.link.revoke(companyId, edition)
           return link === null ? Boom.badData('No link associated') : link.toJSON()
         } catch (err) {

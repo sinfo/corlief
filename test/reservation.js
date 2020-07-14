@@ -1,6 +1,6 @@
 const path = require('path')
 const { before, after, it, describe, afterEach, beforeEach } = require('mocha')
-const {expect} = require('chai')
+const { expect } = require('chai')
 const mocks = require('./mocks')
 const Reservation = require(path.join('..', 'db', 'models', 'reservation'))
 const Link = require(path.join('..', 'db', 'models', 'link'))
@@ -119,7 +119,7 @@ describe('reservation', async function () {
       }
     })
 
-    function expectToContain (list, obj) {
+    function expectToContain(list, obj) {
       const element = list.find((element) => (element.id === obj.id && element.companyId === obj.companyId && element.edition === obj.edition))
       expect(element).to.not.eql(undefined)
       Object.keys(obj).forEach(key => {
@@ -242,7 +242,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res3 = await server.inject({
@@ -251,7 +251,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       expect(res2.statusCode).to.eql(200)
@@ -464,7 +464,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res3 = await server.inject({
@@ -473,7 +473,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       expect(res2.statusCode).to.eql(200)
@@ -680,7 +680,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -707,7 +707,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -744,7 +744,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -761,7 +761,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res4 = await server.inject({
@@ -791,7 +791,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -808,7 +808,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       let res4 = await server.inject({
@@ -840,7 +840,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -857,7 +857,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       let res4 = await server.inject({
@@ -898,7 +898,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res2 = await server.inject({
@@ -915,7 +915,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       let res4 = await server.inject({
@@ -952,7 +952,7 @@ describe('reservation', async function () {
     afterEach('remove reservations', async function () {
       try {
         await Reservation.collection.drop()
-      } catch (err) {}
+      } catch (err) { }
     })
 
     after('removing all from db', async function () {
@@ -1080,7 +1080,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token1}`
         },
-        payload: stands1
+        payload: { stands: stands1 }
       })
 
       let res6 = await server.inject({
@@ -1089,7 +1089,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: stands2
+        payload: { stands: stands2 }
       })
 
       reservation = res5.result

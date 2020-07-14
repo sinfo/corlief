@@ -35,6 +35,14 @@ let reservationSchema = mongoose.Schema({
     required: true,
     default: []
   },
+  workshop: {
+    type: Number,
+    min: 0
+  },
+  presentation: {
+    type: Number,
+    min: 0
+  },
   feedback: {
     type: {
       status: {
@@ -74,10 +82,13 @@ reservationSchema.methods.addStand = function (stand) {
   return stands
 }
 
-reservationSchema.methods.addStands = function (stands) {
+reservationSchema.methods.addStands = function (stands, workshop, presentation) {
   for (let s of stands) {
     this.stands = this.addStand(s)
   }
+
+  if (workshop) { this.workshop = workshop }
+  if (presentation) { this.presentation = presentation }
 
   return this.save()
 }

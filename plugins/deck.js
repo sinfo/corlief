@@ -9,7 +9,7 @@ const config = require(path.join(__dirname, '..', 'config'))
 
 const URL = `${config.DECK.HOST}:${config.DECK.PORT}/api`
 
-async function validateToken (user, token) {
+async function validateToken(user, token) {
   try {
     await request({
       method: 'GET',
@@ -28,7 +28,7 @@ async function validateToken (user, token) {
   }
 }
 
-async function getLatestEdition () {
+async function getLatestEdition() {
   const events = await request({
     method: 'GET',
     uri: `${URL}/events`,
@@ -49,7 +49,7 @@ async function getLatestEdition () {
   return latestEvent
 }
 
-async function validateCompanyId (companyId) {
+async function validateCompanyId(companyId) {
   try {
     await request({
       method: 'GET',
@@ -68,7 +68,7 @@ async function validateCompanyId (companyId) {
   }
 }
 
-async function getCompanies (edition, user, token) {
+async function getCompanies(edition, user, token) {
   this.validateToken(user, token)
 
   let companies = await request({
@@ -103,7 +103,7 @@ async function getCompanies (edition, user, token) {
   return result
 }
 
-async function getCompany (companyId, user, token) {
+async function getCompany(companyId, user, token) {
   this.validateToken(user, token)
 
   const companies = await request({
@@ -116,14 +116,13 @@ async function getCompany (companyId, user, token) {
   return companies
 }
 
-async function getMember (memberId) {
+async function getMember(memberId) {
   const member = await request({
     method: 'GET',
     uri: `${URL}/members/${memberId}`,
     json: true,
     jar: true
   })
-
   return member
 }
 
