@@ -111,6 +111,7 @@ module.exports = [
         let link = request.pre.link
         let venue = request.pre.venue
         let workshop = request.payload.workshop
+        let presentation = request.payload.presentation
 
         try {
           if (venue === null) {
@@ -124,6 +125,20 @@ module.exports = [
             })
           }
 
+          // Note: Workshop and Presentation can be 0 and valid. Only null and undef are considered invalid
+          if (link.workshop == null && workshop != null) {
+            return Boom.badData('Not entitled to workshop')
+          }
+          if (link.presentation == null && presentation != null) {
+            return Boom.badData('Not entitled to presentation')
+          }
+          if (link.workshop != null && workshop == null) {
+            return Boom.badData('Workshop reservation missing')
+          }
+          if (link.presentation != null && presentation == null) {
+            return Boom.badData('Presentation reservation missing')
+          }
+
           let canMakeReservation = await request.server.methods.reservation
             .canMakeReservation(companyId, edition)
 
@@ -131,16 +146,16 @@ module.exports = [
             return Boom.locked(canMakeReservation.error)
           }
 
-          let areValid = await request.server.methods.reservation.areValid(venue, stands)
+          let areValid = await request.server.methods.reservation.areValid(venue, stands, workshop, presentation)
 
           if (!areValid) {
             return Boom.badData('Stand(s) not registered in venue')
           }
 
-          let areAvailable = await request.server.methods.reservation.areAvailable(edition, stands)
+          let areAvailable = await request.server.methods.reservation.areAvailable(edition, stands, workshop, presentation)
 
           if (!areAvailable) {
-            return Boom.conflict('Stand(s) not available', stands)
+            return Boom.conflict('Conflicting reservation: Something not available', { stands: stands, workshop: workshop, presentation: presentation })
           }
 
           // TODO
@@ -153,7 +168,7 @@ module.exports = [
           */
 
           let reservation = await request.server.methods.reservation
-            .addStands(companyId, edition, stands, workshop)
+            .addStands(companyId, edition, stands, workshop, presentation)
 
           const receivers = link.contacts.company
             ? [link.contacts.member, link.contacts.company]

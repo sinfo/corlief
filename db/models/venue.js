@@ -119,6 +119,14 @@ venueSchema.methods.getIds = function () {
   return this.stands.map(stand => stand.id)
 }
 
+venueSchema.methods.getWsIds = function () {
+  return this.workshops.map(ws => ws.id)
+}
+
+venueSchema.methods.getPresIds = function () {
+  return this.presentations.map(pres => pres.id)
+}
+
 venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingStands, duration) {
   let response = {
     venue: this.toJSON(),

@@ -1,5 +1,6 @@
 let path = require('path')
 let Reservation = require(path.join(__dirname, '..', 'models', 'reservation'))
+const logger = require('logger').getLogger()
 
 function arrayToJSON(reservations) {
   return reservations.map(reservation => reservation.toJSON())
@@ -17,20 +18,20 @@ async function findOne(id, companyId, edition) {
   })
 }
 
-async function addReservation(newId, companyId, edition, stands, workshop) {
+async function addReservation(newId, companyId, edition, stands, workshop, presentation) {
   let newReservation = new Reservation({
     id: newId,
     companyId: companyId,
     edition: edition,
-    stands: stands
+    stands: stands,
+    workshop: workshop,
+    presentation: presentation
   })
-
-  if (workshop) { newReservation['workshop'] = workshop }
 
   return newReservation.save()
 }
 
-async function addStands(companyId, edition, stands, workshop) {
+async function addStands(companyId, edition, stands, workshop, presentation) {
   let latest = await Reservation.getLatest(companyId, edition)
 
   if (latest === null || latest.feedback.status === 'CANCELLED') {
@@ -38,9 +39,9 @@ async function addStands(companyId, edition, stands, workshop) {
       ? latest.id + 1
       : 0
 
-    return addReservation(newId, companyId, edition, stands, workshop)
+    return addReservation(newId, companyId, edition, stands, workshop, presentation)
   }
-  return latest.addStands(stands, workshop)
+  return latest.addStands(stands, workshop, presentation)
 }
 
 async function canMakeReservation(companyId, edition) {
@@ -108,7 +109,7 @@ async function isStandAvailable(confirmedStands, pendingStands, stand) {
   return true
 }
 
-async function areAvailable(edition, stands, forConfirmation = false) {
+async function areAvailable(edition, stands, workshop, presentation, forConfirmation = false) {
   const confirmed = await Reservation.getConfirmedReservations(edition)
   let pending = !forConfirmation ? await Reservation.getPendingReservations(edition) : null
 
@@ -124,16 +125,50 @@ async function areAvailable(edition, stands, forConfirmation = false) {
     }
   }
 
+  if (workshop != null) {
+    if (forConfirmation) {
+      if (confirmed.map(res => res.workshop).includes(workshop)) {
+        return false
+      }
+    } else {
+      if (confirmed.map(res => res.workshop).includes(workshop) || pending.map(res => res.workshop).includes(workshop)) {
+        return false
+      }
+    }
+  }
+
+  if (presentation != null) {
+    if (forConfirmation) {
+      if (confirmed.map(res => res.presentation).includes(presentation)) {
+        return false
+      }
+    } else {
+      if (confirmed.map(res => res.presentation).includes(presentation) || pending.map(res => res.presentation).includes(presentation)) {
+        return false
+      }
+    }
+  }
+
   return true
 }
 
-async function areValid(venue, stands) {
+async function areValid(venue, stands, workshop, presentation) {
   let ids = venue.getIds()
 
   for (let stand of stands) {
     if (!ids.includes(stand.standId)) {
       return false
     }
+  }
+
+  if (workshop != null) {
+    ids = venue.getWsIds()
+    if (!ids.includes(workshop)) { return false }
+  }
+
+  if (presentation != null) {
+    ids = venue.getPresIds()
+    if (!ids.includes(presentation)) { return false }
   }
 
   return true
@@ -160,7 +195,7 @@ async function confirm(companyId, edition, member) {
     return result
   }
 
-  let available = await areAvailable(edition, latest.stands, true)
+  let available = await areAvailable(edition, latest.stands, latest.workshop, latest.presentation, true)
 
   if (!available) {
     result.error = 'Stands are no longer available'

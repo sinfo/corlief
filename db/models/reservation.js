@@ -36,32 +36,12 @@ let reservationSchema = mongoose.Schema({
     default: []
   },
   workshop: {
-    type: {
-      day: {
-        type: Number,
-        min: 1,
-        required: true
-      },
-      slotId: {
-        type: Number,
-        min: 0,
-        required: true
-      }
-    }
+    type: Number,
+    min: 0
   },
   presentation: {
-    type: {
-      day: {
-        type: Number,
-        min: 1,
-        required: true
-      },
-      slotId: {
-        type: Number,
-        min: 0,
-        required: true
-      }
-    }
+    type: Number,
+    min: 0
   },
   feedback: {
     type: {

@@ -161,18 +161,13 @@ let standReservation = Joi.object().keys({
   standId: Joi.number().required().min(0).max(100)
 })
 
-let activityReservation = Joi.object().keys({
-  day: Joi.number().required().min(1).max(5),
-  slotId: Joi.number().required().min(0).max(100)
-})
-
 let standsReservation = Joi.object().keys({
   stands: Joi.array().items(standReservation)
     .min(1).unique((s1, s2) => {
       return s1.day === s2.day
     }),
-  workshop: activityReservation.optional(),
-  presentation: activityReservation.optional()
+  workshop: Joi.number().min(0),
+  presentation: Joi.number().min(0)
 })
 
 module.exports.standReservation = standReservation
@@ -187,8 +182,8 @@ let reservation = Joi.object().keys({
     .min(1).unique((s1, s2) => {
       return s1.day === s2.day
     }),
-  workshop: activityReservation,
-  presentation: activityReservation,
+  workshop: Joi.number().min(0),
+  presentation: Joi.number().min(0),
   feedback: Joi.object().keys({
     status: Joi.string().required(),
     member: Joi.string().optional()

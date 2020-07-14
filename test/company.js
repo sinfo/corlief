@@ -80,7 +80,8 @@ describe('company', async function () {
         participationDays: mocks.LINK3.participationDays,
         activities: mocks.LINK3.activities,
         advertisementKind: mocks.LINK3.advertisementKind,
-        expirationDate: ON_TIME
+        expirationDate: ON_TIME,
+        workshop: true
       },
       headers: {
         Authorization: sinfoCredentials.authenticator
@@ -192,6 +193,10 @@ describe('company', async function () {
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]
 
+    let activities = [
+      mocks.ACTIVITY1, mocks.ACTIVITY2, mocks.ACTIVITY3, mocks.ACTIVITY4
+    ]
+
     let venue, stands1, stands2
 
     before('prepare venue and stands', async function () {
@@ -217,6 +222,21 @@ describe('company', async function () {
           method: 'POST',
           url: `/venue/stand`,
           payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
+      for (let activity of activities) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/workshop`,
+          payload: activity,
           headers: {
             Authorization: sinfoCredentials.authenticator
           }
@@ -270,7 +290,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, workshop: venue.workshops[1].id }
       })
 
       let reservation1 = res1.result
@@ -288,6 +308,7 @@ describe('company', async function () {
       expect(reservation2.id).to.eql(0)
       expect(reservation2.companyId).to.eql(mocks.LINK3.companyId)
       expect(reservation2.stands).to.eql(stands2)
+      expect(reservation2.workshop).to.eql(venue.workshops[1].id)
       expect(reservation2.feedback.status).to.eql('PENDING')
     })
 
@@ -701,6 +722,17 @@ describe('company', async function () {
         expect(res.statusCode).to.eql(200)
       }
 
+      res = await server.inject({
+        method: 'POST',
+        url: `/venue/workshop`,
+        payload: mocks.ACTIVITY1,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      venue = res.result
+
       stands1 = [
         {
           day: 1,
@@ -744,7 +776,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, workshop: venue.workshops[0].id }
       })
 
       let reservation1 = res1.result
@@ -800,7 +832,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, workshop: venue.workshops[0].id }
       })
 
       let res = await server.inject({
@@ -852,7 +884,7 @@ describe('company', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, workshop: venue.workshops[0].id }
       })
 
       let reservation1 = res1.result
