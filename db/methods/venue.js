@@ -114,13 +114,6 @@ async function addWorkshop(edition, day, start, end) {
     return null
   }
 
-  let dayWS = venue.workshops.filter((ws) => ws.day === day)
-  for (let ws of dayWS) {
-    if ((start >= ws.start && start <= ws.end) || (end >= ws.start && end <= ws.end)) {
-      return null
-    }
-  }
-
   let wsId = venue.workshops.map(workshop => +workshop.id).sort((a, b) => a - b)
   let newId = 0
   let prevId = -1
@@ -194,13 +187,6 @@ async function addPresentation(edition, day, start, end) {
 
   if (venue === null) {
     return null
-  }
-
-  let dayPres = venue.presentations.filter((pres) => pres.day === day)
-  for (let pres of dayPres) {
-    if ((start >= pres.start && start <= pres.end) || (end >= pres.start && end <= pres.end)) {
-      return null
-    }
   }
 
   let presId = venue.presentations.map(pres => +pres.id).sort((a, b) => a - b)
