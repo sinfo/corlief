@@ -144,7 +144,9 @@ let credentials = Joi.object().keys({
   companyName: Joi.string(),
   edition: Joi.string().required(),
   iat: Joi.number(),
-  participationDays: Joi.number().required()
+  participationDays: Joi.number().required(),
+  workshop: Joi.boolean().required(),
+  presentation: Joi.boolean().required()
 })
 
 module.exports.credentials = credentials
@@ -203,6 +205,26 @@ let venueAvailability = Joi.object().keys({
         Joi.object().keys({
           id: Joi.number().integer().min(0),
           free: Joi.boolean()
+        })
+      ).unique((s1, s2) => {
+        return s1.id === s2.id
+      }),
+      workshops: Joi.array().items(
+        Joi.object().keys({
+          id: Joi.number().integer().min(0),
+          free: Joi.boolean(),
+          start: Joi.date(),
+          end: Joi.date()
+        })
+      ).unique((s1, s2) => {
+        return s1.id === s2.id
+      }),
+      presentations: Joi.array().items(
+        Joi.object().keys({
+          id: Joi.number().integer().min(0),
+          free: Joi.boolean(),
+          start: Joi.date(),
+          end: Joi.date()
         })
       ).unique((s1, s2) => {
         return s1.id === s2.id

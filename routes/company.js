@@ -25,7 +25,9 @@ module.exports = [
 
           Object.assign(response, credentials, {
             participationDays: link[0].participationDays,
-            companyName: link[0].companyName
+            companyName: link[0].companyName,
+            workshop: link[0].workshop,
+            presentation: link[0].presentation
           })
 
           return response

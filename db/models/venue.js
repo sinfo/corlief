@@ -137,6 +137,8 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
 
   for (let day = 1; day <= duration; day++) {
     let stands = []
+    let ws = []
+    let pres = []
 
     for (let id of standsIds) {
       let result = {
@@ -169,9 +171,76 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
       stands.push(result)
     }
 
+    for (let w of this.workshops.filter(ws => ws.day === day)) {
+      let result = {
+        id: w.id,
+        free: true,
+        start: w.start,
+        end: w.end
+      }
+
+      let isConfirmed = confirmedStands.filter(confirmed => {
+        for (let wss of confirmed.workshops) {
+          if (wss.day === day && wss.id === w.id) {
+            return true
+          }
+        }
+        return false
+      }).length > 0
+
+      let isPending = pendingStands.filter(confirmed => {
+        for (let wss of confirmed.workshops) {
+          if (wss.day === day && wss.id === w.id) {
+            return true
+          }
+        }
+        return false
+      }).length > 0
+
+      if (isConfirmed || isPending) {
+        result.free = false
+      }
+
+      ws.push(result)
+    }
+
+    for (let w of this.presentations.filter(p => p.day === day)) {
+      let result = {
+        id: w.id,
+        free: true,
+        start: w.start,
+        end: w.end
+      }
+
+      let isConfirmed = confirmedStands.filter(confirmed => {
+        for (let wss of confirmed.presentations) {
+          if (wss.day === day && wss.id === w.id) {
+            return true
+          }
+        }
+        return false
+      }).length > 0
+
+      let isPending = pendingStands.filter(confirmed => {
+        for (let wss of confirmed.presentations) {
+          if (wss.day === day && wss.id === w.id) {
+            return true
+          }
+        }
+        return false
+      }).length > 0
+
+      if (isConfirmed || isPending) {
+        result.free = false
+      }
+      pres.push(result)
+    }
+
     response.availability.push({
       day: day,
-      stands: stands
+      stands: stands,
+      workshops: ws,
+      presentations: pres
     })
   }
 
