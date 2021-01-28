@@ -165,7 +165,7 @@ let standReservation = Joi.object().keys({
 
 let standsReservation = Joi.object().keys({
   stands: Joi.array().items(standReservation)
-    .min(1).unique((s1, s2) => {
+    .min(0).unique((s1, s2) => {
       return s1.day === s2.day
     }),
   workshop: Joi.number().min(0),
@@ -181,7 +181,7 @@ let reservation = Joi.object().keys({
   edition: Joi.string().required(),
   issued: Joi.date().required(),
   stands: Joi.array().items(standReservation)
-    .min(1).unique((s1, s2) => {
+    .min(0).unique((s1, s2) => {
       return s1.day === s2.day
     }),
   workshop: Joi.number().min(0),

@@ -120,7 +120,7 @@ module.exports = [
             return Boom.forbidden('No venue created')
           }
 
-          if (stands.length !== link.participationDays) {
+          if (stands.length !== link.participationDays && venue.stands.length !== 0) {
             return Boom.badData('Wrong ammount of stands in reservation', {
               stands: stands.length,
               participationDays: link.participationDays
@@ -128,16 +128,16 @@ module.exports = [
           }
 
           // Note: Workshop and Presentation can be 0 and valid. Only null and undef are considered invalid
-          if (link.workshop == null && workshop != null) {
+          if (!link.workshop && (workshop !== null && workshop !== undefined)) {
             return Boom.badData('Not entitled to workshop')
           }
-          if (link.presentation == null && presentation != null) {
+          if (!link.presentation && (presentation !== null && presentation !== undefined)) {
             return Boom.badData('Not entitled to presentation')
           }
-          if (link.workshop != null && workshop == null) {
+          if (link.workshop && (workshop === null || workshop === undefined)) {
             return Boom.badData('Workshop reservation missing')
           }
-          if (link.presentation != null && presentation == null) {
+          if (link.presentation && (presentation === null || presentation === undefined)) {
             return Boom.badData('Presentation reservation missing')
           }
 
@@ -261,7 +261,7 @@ module.exports = [
           }
           return reservation.length === undefined ? [reservation.toJSON()] : request.server.methods.reservation.arrayToJSON(reservation)
         } catch (err) {
-          console.error(err)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },

@@ -32,7 +32,9 @@ describe('company', async function () {
         participationDays: mocks.LINK.participationDays,
         activities: mocks.LINK.activities,
         advertisementKind: mocks.LINK.advertisementKind,
-        expirationDate: ON_TIME
+        expirationDate: ON_TIME,
+        workshop: false,
+        presentation: false
       },
       headers: {
         Authorization: sinfoCredentials.authenticator
@@ -349,7 +351,7 @@ describe('company', async function () {
         payload: { stands: [] }
       })
 
-      expect(res0.statusCode).to.eql(400)
+      expect(res0.statusCode).to.eql(422)
     })
 
     it('should fail if the number of reservations does not match the participation days', async function () {

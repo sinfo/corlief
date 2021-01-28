@@ -179,23 +179,9 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
         end: w.end
       }
 
-      let isConfirmed = confirmedStands.filter(confirmed => {
-        for (let wss of confirmed.workshops) {
-          if (wss.day === day && wss.id === w.id) {
-            return true
-          }
-        }
-        return false
-      }).length > 0
+      let isConfirmed = confirmedStands.filter(confirmed => confirmed.workshop === w.id).length > 0
 
-      let isPending = pendingStands.filter(confirmed => {
-        for (let wss of confirmed.workshops) {
-          if (wss.day === day && wss.id === w.id) {
-            return true
-          }
-        }
-        return false
-      }).length > 0
+      let isPending = pendingStands.filter(pending => pending.workshop === w.id).length > 0
 
       if (isConfirmed || isPending) {
         result.free = false
@@ -212,23 +198,9 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
         end: w.end
       }
 
-      let isConfirmed = confirmedStands.filter(confirmed => {
-        for (let wss of confirmed.presentations) {
-          if (wss.day === day && wss.id === w.id) {
-            return true
-          }
-        }
-        return false
-      }).length > 0
+      let isConfirmed = confirmedStands.filter(confirmed => confirmed.presentation === w.id).length > 0
 
-      let isPending = pendingStands.filter(confirmed => {
-        for (let wss of confirmed.presentations) {
-          if (wss.day === day && wss.id === w.id) {
-            return true
-          }
-        }
-        return false
-      }).length > 0
+      let isPending = pendingStands.filter(pending => pending.presentation === w.id).length > 0
 
       if (isConfirmed || isPending) {
         result.free = false
