@@ -28,8 +28,7 @@ let reservationSchema = mongoose.Schema({
       },
       standId: {
         type: Number,
-        min: 0,
-        required: true
+        min: 0
       }
     }],
     required: true,
@@ -40,6 +39,10 @@ let reservationSchema = mongoose.Schema({
     min: 0
   },
   presentation: {
+    type: Number,
+    min: 0
+  },
+  lunchTalk: {
     type: Number,
     min: 0
   },

@@ -93,6 +93,30 @@ let venueSchema = mongoose.Schema({
       }
     }],
     default: []
+  },
+  lunchTalks: {
+    type: [{
+      id: {
+        type: Number,
+        min: 0,
+        required: true
+      },
+      day: {
+        type: Number,
+        min: 1,
+        max: 5,
+        required: true
+      },
+      start: {
+        type: Date,
+        required: true
+      },
+      end: {
+        type: Date,
+        required: true
+      }
+    }],
+    default: []
   }
 }, {
   toJSON: {
@@ -108,6 +132,10 @@ let venueSchema = mongoose.Schema({
         delete stand.__v
       })
       ret.presentations.forEach(stand => {
+        delete stand._id
+        delete stand.__v
+      })
+      ret.lunchTalks.forEach(stand => {
         delete stand._id
         delete stand.__v
       })
@@ -127,6 +155,10 @@ venueSchema.methods.getPresIds = function () {
   return this.presentations.map(pres => pres.id)
 }
 
+venueSchema.methods.getLunchTalkIds = function () {
+  return this.lunchTalks.map(pres => pres.id)
+}
+
 venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingStands, duration) {
   let response = {
     venue: this.toJSON(),
@@ -139,6 +171,7 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
     let stands = []
     let ws = []
     let pres = []
+    let lt = []
 
     for (let id of standsIds) {
       let result = {
@@ -208,11 +241,30 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
       pres.push(result)
     }
 
+    for (let w of this.lunchTalks.filter(p => p.day === day)) {
+      let result = {
+        id: w.id,
+        free: true,
+        start: w.start,
+        end: w.end
+      }
+
+      let isConfirmed = confirmedStands.filter(confirmed => confirmed.lunchTalk === w.id).length > 0
+
+      let isPending = pendingStands.filter(pending => pending.lunchTalk === w.id).length > 0
+
+      if (isConfirmed || isPending) {
+        result.free = false
+      }
+      lt.push(result)
+    }
+
     response.availability.push({
       day: day,
       stands: stands,
       workshops: ws,
-      presentations: pres
+      presentations: pres,
+      lunchTalks: lt
     })
   }
 

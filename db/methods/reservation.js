@@ -1,6 +1,6 @@
+/* eslint-disable space-before-function-paren */
 let path = require('path')
 let Reservation = require(path.join(__dirname, '..', 'models', 'reservation'))
-const logger = require('logger').getLogger()
 
 function arrayToJSON(reservations) {
   return reservations.map(reservation => reservation.toJSON())
@@ -18,20 +18,21 @@ async function findOne(id, companyId, edition) {
   })
 }
 
-async function addReservation(newId, companyId, edition, stands, workshop, presentation) {
+async function addReservation(newId, companyId, edition, stands, workshop, presentation, lunchTalk) {
   let newReservation = new Reservation({
     id: newId,
     companyId: companyId,
     edition: edition,
     stands: stands,
     workshop: workshop,
-    presentation: presentation
+    presentation: presentation,
+    lunchTalk: lunchTalk
   })
 
   return newReservation.save()
 }
 
-async function addStands(companyId, edition, stands, workshop, presentation) {
+async function addStands(companyId, edition, stands, workshop, presentation, lunchTalk) {
   let latest = await Reservation.getLatest(companyId, edition)
 
   if (latest === null || latest.feedback.status === 'CANCELLED') {
@@ -39,9 +40,9 @@ async function addStands(companyId, edition, stands, workshop, presentation) {
       ? latest.id + 1
       : 0
 
-    return addReservation(newId, companyId, edition, stands, workshop, presentation)
+    return addReservation(newId, companyId, edition, stands, workshop, presentation, lunchTalk)
   }
-  return latest.addStands(stands, workshop, presentation)
+  return latest.addStands(stands, workshop, presentation, lunchTalk)
 }
 
 async function canMakeReservation(companyId, edition) {
@@ -109,18 +110,20 @@ async function isStandAvailable(confirmedStands, pendingStands, stand) {
   return true
 }
 
-async function areAvailable(edition, stands, workshop, presentation, forConfirmation = false) {
+async function areAvailable(edition, stands, workshop, presentation, lunchTalk, venue, forConfirmation = false) {
   const confirmed = await Reservation.getConfirmedReservations(edition)
   let pending = !forConfirmation ? await Reservation.getPendingReservations(edition) : null
 
-  for (let stand of stands) {
-    if (forConfirmation) {
-      if (!await isStandAvailable(confirmed, [], stand)) {
-        return false
-      }
-    } else {
-      if (!await isStandAvailable(confirmed, pending, stand)) {
-        return false
+  if (venue.stands.length !== 0) { // If no stands in venue, "unlimited" stands per day
+    for (let stand of stands) {
+      if (forConfirmation) {
+        if (!await isStandAvailable(confirmed, [], stand)) {
+          return false
+        }
+      } else {
+        if (!await isStandAvailable(confirmed, pending, stand)) {
+          return false
+        }
       }
     }
   }
@@ -149,15 +152,29 @@ async function areAvailable(edition, stands, workshop, presentation, forConfirma
     }
   }
 
+  if (lunchTalk != null) {
+    if (forConfirmation) {
+      if (confirmed.map(res => res.lunchTalk).includes(lunchTalk)) {
+        return false
+      }
+    } else {
+      if (confirmed.map(res => res.lunchTalk).includes(lunchTalk) || pending.map(res => res.lunchTalk).includes(lunchTalk)) {
+        return false
+      }
+    }
+  }
+
   return true
 }
 
-async function areValid(venue, stands, workshop, presentation) {
+async function areValid(venue, stands, workshop, presentation, lunchTalk) {
   let ids = venue.getIds()
 
-  for (let stand of stands) {
-    if (!ids.includes(stand.standId)) {
-      return false
+  if (venue.stands.length !== 0) { // If no stands, reservation only contains day
+    for (let stand of stands) {
+      if (!ids.includes(stand.standId)) {
+        return false
+      }
     }
   }
 
@@ -171,6 +188,11 @@ async function areValid(venue, stands, workshop, presentation) {
     if (!ids.includes(presentation)) { return false }
   }
 
+  if (lunchTalk != null) {
+    ids = venue.getLunchTalkIds()
+    if (!ids.includes(lunchTalk)) { return false }
+  }
+
   return true
 }
 
@@ -182,7 +204,7 @@ async function companyReservations(companyId, edition, latest) {
   return latest ? Reservation.getLatest(companyId, edition) : find(filter)
 }
 
-async function confirm(companyId, edition, member) {
+async function confirm(companyId, edition, member, venue) {
   let result = {
     data: null,
     error: null
@@ -195,7 +217,7 @@ async function confirm(companyId, edition, member) {
     return result
   }
 
-  let available = await areAvailable(edition, latest.stands, latest.workshop, latest.presentation, true)
+  let available = await areAvailable(edition, latest.stands, latest.workshop, latest.presentation, latest.lunchTalk, venue, true)
 
   if (!available) {
     result.error = 'Stands are no longer available'

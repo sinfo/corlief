@@ -34,7 +34,8 @@ describe('company', async function () {
         advertisementKind: mocks.LINK.advertisementKind,
         expirationDate: ON_TIME,
         workshop: false,
-        presentation: false
+        presentation: false,
+        lunchTalk: false
       },
       headers: {
         Authorization: sinfoCredentials.authenticator
@@ -50,7 +51,10 @@ describe('company', async function () {
         participationDays: mocks.LINK2.participationDays,
         activities: mocks.LINK2.activities,
         advertisementKind: mocks.LINK2.advertisementKind,
-        expirationDate: TO_EXPIRE
+        expirationDate: TO_EXPIRE,
+        workshop: false,
+        presentation: false,
+        lunchTalk: false
       },
       headers: {
         Authorization: sinfoCredentials.authenticator
@@ -66,7 +70,10 @@ describe('company', async function () {
         participationDays: mocks.INVALID_LINK.participationDays,
         activities: mocks.INVALID_LINK.activities,
         advertisementKind: mocks.INVALID_LINK.advertisementKind,
-        expirationDate: ON_TIME
+        expirationDate: ON_TIME,
+        workshop: false,
+        presentation: false,
+        lunchTalk: false
       },
       headers: {
         Authorization: sinfoCredentials.authenticator
@@ -83,7 +90,9 @@ describe('company', async function () {
         activities: mocks.LINK3.activities,
         advertisementKind: mocks.LINK3.advertisementKind,
         expirationDate: ON_TIME,
-        workshop: true
+        workshop: true,
+        presentation: false,
+        lunchTalk: false
       },
       headers: {
         Authorization: sinfoCredentials.authenticator

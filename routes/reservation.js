@@ -88,7 +88,12 @@ module.exports = [
       tags: ['api'],
       description: 'Confirm latest company\'s reservation',
       pre: [
-        helpers.pre.edition
+        [
+          helpers.pre.edition
+        ],
+        [
+          helpers.pre.venue
+        ]
       ],
       validate: {
         headers: Joi.object({
@@ -105,8 +110,9 @@ module.exports = [
           const companyId = request.params.companyId
           const edition = request.pre.edition
           const member = request.auth.credentials.user
+          const venue = request.pre.venue
 
-          const reservation = await request.server.methods.reservation.confirm(companyId, edition, member)
+          const reservation = await request.server.methods.reservation.confirm(companyId, edition, member, venue)
           const links = await request.server.methods.link.find({ companyId: companyId, edition: edition })
 
           if (links === null || links.length === 0) {
@@ -116,8 +122,8 @@ module.exports = [
           const link = links[0]
 
           const receivers = link.contacts.company
-            ? [ link.contacts.member, link.contacts.company ]
-            : [ link.contacts.member ]
+            ? [link.contacts.member, link.contacts.company]
+            : [link.contacts.member]
 
           request.server.methods.mailgun.sendConfirmation(receivers, reservation, link)
 
@@ -167,8 +173,8 @@ module.exports = [
           const link = links[0]
 
           const receivers = link.contacts.company
-            ? [ link.contacts.member, link.contacts.company ]
-            : [ link.contacts.member ]
+            ? [link.contacts.member, link.contacts.company]
+            : [link.contacts.member]
 
           request.server.methods.mailgun.sendCancellation(receivers, reservation, link)
 
