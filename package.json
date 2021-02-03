@@ -42,7 +42,7 @@
     "eslint-plugin-standard": "^3.1.0",
     "form-data": "^2.3.2",
     "mocha": "^5.2.0",
-    "mongodb": "^3.1.4",
+    "mongodb": "^3.6.3",
     "nodemon": "^1.18.1",
     "pre-commit": "^1.2.2",
     "stream-to-promise": "^2.2.0"
@@ -51,7 +51,7 @@
     "aws-sdk": "^2.278.1",
     "boom": "^7.2.0",
     "email-validator": "^2.0.4",
-    "handlebars": "^4.0.12",
+    "handlebars": "^4.7.6",
     "hapi": "^17.5.2",
     "hapi-auth-bearer-token": "^6.0.1",
     "hapi-router": "^4.0.0",
@@ -66,9 +66,9 @@
     "prettyjson": "^1.2.1",
     "request": "^2.87.0",
     "request-promise": "^4.2.2",
+    "snyk": "^1.316.1",
     "tough-cookie": "^2.4.3",
-    "vision": "^5.3.3",
-    "snyk": "^1.316.1"
+    "vision": "^5.3.3"
   },
   "snyk": true
 }
