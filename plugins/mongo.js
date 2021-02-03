@@ -61,6 +61,9 @@ module.exports = {
     server.method('venue.addPresentation', mongoMethods.venue.addPresentation)
     server.method('venue.removePresentation', mongoMethods.venue.removePresentation)
     server.method('venue.replacePresentations', mongoMethods.venue.replacePresentations)
+    server.method('venue.addLunchTalk', mongoMethods.venue.addLunchTalk)
+    server.method('venue.removeLunchTalk', mongoMethods.venue.removeLunchTalk)
+    server.method('venue.replaceLunchTalks', mongoMethods.venue.replaceLunchTalks)
 
     server.method('config.find', mongoMethods.config.find)
     server.method('config.findByEdition', mongoMethods.config.findByEdition)

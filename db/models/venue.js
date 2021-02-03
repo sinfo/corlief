@@ -93,6 +93,30 @@ let venueSchema = mongoose.Schema({
       }
     }],
     default: []
+  },
+  lunchTalks: {
+    type: [{
+      id: {
+        type: Number,
+        min: 0,
+        required: true
+      },
+      day: {
+        type: Number,
+        min: 1,
+        max: 5,
+        required: true
+      },
+      start: {
+        type: Date,
+        required: true
+      },
+      end: {
+        type: Date,
+        required: true
+      }
+    }],
+    default: []
   }
 }, {
   toJSON: {
@@ -108,6 +132,10 @@ let venueSchema = mongoose.Schema({
         delete stand.__v
       })
       ret.presentations.forEach(stand => {
+        delete stand._id
+        delete stand.__v
+      })
+      ret.lunchTalks.forEach(stand => {
         delete stand._id
         delete stand.__v
       })
@@ -127,6 +155,10 @@ venueSchema.methods.getPresIds = function () {
   return this.presentations.map(pres => pres.id)
 }
 
+venueSchema.methods.getLunchTalkIds = function () {
+  return this.lunchTalks.map(pres => pres.id)
+}
+
 venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingStands, duration) {
   let response = {
     venue: this.toJSON(),
@@ -137,6 +169,9 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
 
   for (let day = 1; day <= duration; day++) {
     let stands = []
+    let ws = []
+    let pres = []
+    let lt = []
 
     for (let id of standsIds) {
       let result = {
@@ -169,9 +204,67 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
       stands.push(result)
     }
 
+    for (let w of this.workshops.filter(ws => ws.day === day)) {
+      let result = {
+        id: w.id,
+        free: true,
+        start: w.start,
+        end: w.end
+      }
+
+      let isConfirmed = confirmedStands.filter(confirmed => confirmed.workshop === w.id).length > 0
+
+      let isPending = pendingStands.filter(pending => pending.workshop === w.id).length > 0
+
+      if (isConfirmed || isPending) {
+        result.free = false
+      }
+
+      ws.push(result)
+    }
+
+    for (let w of this.presentations.filter(p => p.day === day)) {
+      let result = {
+        id: w.id,
+        free: true,
+        start: w.start,
+        end: w.end
+      }
+
+      let isConfirmed = confirmedStands.filter(confirmed => confirmed.presentation === w.id).length > 0
+
+      let isPending = pendingStands.filter(pending => pending.presentation === w.id).length > 0
+
+      if (isConfirmed || isPending) {
+        result.free = false
+      }
+      pres.push(result)
+    }
+
+    for (let w of this.lunchTalks.filter(p => p.day === day)) {
+      let result = {
+        id: w.id,
+        free: true,
+        start: w.start,
+        end: w.end
+      }
+
+      let isConfirmed = confirmedStands.filter(confirmed => confirmed.lunchTalk === w.id).length > 0
+
+      let isPending = pendingStands.filter(pending => pending.lunchTalk === w.id).length > 0
+
+      if (isConfirmed || isPending) {
+        result.free = false
+      }
+      lt.push(result)
+    }
+
     response.availability.push({
       day: day,
-      stands: stands
+      stands: stands,
+      workshops: ws,
+      presentations: pres,
+      lunchTalks: lt
     })
   }
 

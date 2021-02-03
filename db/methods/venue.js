@@ -1,5 +1,5 @@
+/* eslint-disable space-before-function-paren */
 let path = require('path')
-const logger = require('logger').getLogger()
 let Venue = require(path.join(__dirname, '..', 'models', 'venue'))
 
 function arrayToJSON(venues) {
@@ -114,13 +114,6 @@ async function addWorkshop(edition, day, start, end) {
     return null
   }
 
-  let dayWS = venue.workshops.filter((ws) => ws.day === day)
-  for (let ws of dayWS) {
-    if ((start >= ws.start && start <= ws.end) || (end >= ws.start && end <= ws.end)) {
-      return null
-    }
-  }
-
   let wsId = venue.workshops.map(workshop => +workshop.id).sort((a, b) => a - b)
   let newId = 0
   let prevId = -1
@@ -196,13 +189,6 @@ async function addPresentation(edition, day, start, end) {
     return null
   }
 
-  let dayPres = venue.presentations.filter((pres) => pres.day === day)
-  for (let pres of dayPres) {
-    if ((start >= pres.start && start <= pres.end) || (end >= pres.start && end <= pres.end)) {
-      return null
-    }
-  }
-
   let presId = venue.presentations.map(pres => +pres.id).sort((a, b) => a - b)
   let newId = 0
   let prevId = -1
@@ -271,6 +257,81 @@ async function replacePresentations(edition, presentations) {
   return venue.save()
 }
 
+async function addLunchTalk(edition, day, start, end) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  let ltId = venue.lunchTalks.map(lt => +lt.id).sort((a, b) => a - b)
+  let newId = 0
+  let prevId = -1
+
+  for (let currId of ltId) {
+    newId = prevId + 1
+    if (newId < currId) {
+      break
+    }
+    prevId = currId
+    newId += 1
+  }
+
+  venue.lunchTalks.push({
+    id: newId,
+    day: day,
+    start: start,
+    end: end
+  })
+
+  return venue.save()
+}
+
+async function removeLunchTalk(edition, id) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  // find lunch talk with lunchTalk.id == id
+  let index = 0
+  let found = false
+  for (index = 0; !found && index < venue.lunchTalks.length; index++) {
+    if (venue.lunchTalks[index].id === id) {
+      found = true
+    }
+  }
+
+  if (!found) {
+    return null
+  }
+
+  // remove element
+  venue.lunchTalks.splice(index - 1, 1)
+
+  return venue.save()
+}
+
+async function replaceLunchTalks(edition, lunchTalks) {
+  let venue = await find({ edition: edition })
+
+  if (venue === null) {
+    return null
+  }
+
+  venue.lunchTalks = []
+  let id = 0
+
+  for (let lt of lunchTalks) {
+    let ltWithId = Object.assign(lt, { id: id })
+    venue.lunchTalks.push(ltWithId)
+    id += 1
+  }
+
+  return venue.save()
+}
+
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find
 module.exports.updateImage = updateImage
@@ -283,3 +344,6 @@ module.exports.replaceWorkshops = replaceWorkshops
 module.exports.addPresentation = addPresentation
 module.exports.removePresentation = removePresentation
 module.exports.replacePresentations = replacePresentations
+module.exports.addLunchTalk = addLunchTalk
+module.exports.removeLunchTalk = removeLunchTalk
+module.exports.replaceLunchTalks = replaceLunchTalks

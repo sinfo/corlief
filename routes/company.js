@@ -25,7 +25,10 @@ module.exports = [
 
           Object.assign(response, credentials, {
             participationDays: link[0].participationDays,
-            companyName: link[0].companyName
+            companyName: link[0].companyName,
+            workshop: link[0].workshop,
+            presentation: link[0].presentation,
+            lunchTalk: link[0].lunchTalk
           })
 
           return response
@@ -112,6 +115,7 @@ module.exports = [
         let venue = request.pre.venue
         let workshop = request.payload.workshop
         let presentation = request.payload.presentation
+        let lunchTalk = request.payload.lunchTalk
 
         try {
           if (venue === null) {
@@ -126,17 +130,23 @@ module.exports = [
           }
 
           // Note: Workshop and Presentation can be 0 and valid. Only null and undef are considered invalid
-          if (link.workshop == null && workshop != null) {
+          if (!link.workshop && (workshop !== null && workshop !== undefined)) {
             return Boom.badData('Not entitled to workshop')
           }
-          if (link.presentation == null && presentation != null) {
+          if (!link.presentation && (presentation !== null && presentation !== undefined)) {
             return Boom.badData('Not entitled to presentation')
           }
-          if (link.workshop != null && workshop == null) {
+          if (!link.lunchTalk && (lunchTalk !== null && lunchTalk !== undefined)) {
+            return Boom.badData('Not entitled to lunch talk')
+          }
+          if (link.workshop && (workshop === null || workshop === undefined)) {
             return Boom.badData('Workshop reservation missing')
           }
-          if (link.presentation != null && presentation == null) {
+          if (link.presentation && (presentation === null || presentation === undefined)) {
             return Boom.badData('Presentation reservation missing')
+          }
+          if (link.lunchTalk && (lunchTalk === null || lunchTalk === undefined)) {
+            return Boom.badData('Lunch Talk reservation missing')
           }
 
           let canMakeReservation = await request.server.methods.reservation
@@ -146,13 +156,13 @@ module.exports = [
             return Boom.locked(canMakeReservation.error)
           }
 
-          let areValid = await request.server.methods.reservation.areValid(venue, stands, workshop, presentation)
+          let areValid = await request.server.methods.reservation.areValid(venue, stands, workshop, presentation, lunchTalk)
 
           if (!areValid) {
             return Boom.badData('Stand(s) not registered in venue')
           }
 
-          let areAvailable = await request.server.methods.reservation.areAvailable(edition, stands, workshop, presentation)
+          let areAvailable = await request.server.methods.reservation.areAvailable(edition, stands, workshop, presentation, lunchTalk, venue)
 
           if (!areAvailable) {
             return Boom.conflict('Conflicting reservation: Something not available', { stands: stands, workshop: workshop, presentation: presentation })
@@ -168,7 +178,7 @@ module.exports = [
           */
 
           let reservation = await request.server.methods.reservation
-            .addStands(companyId, edition, stands, workshop, presentation)
+            .addStands(companyId, edition, stands, workshop, presentation, lunchTalk)
 
           const receivers = link.contacts.company
             ? [link.contacts.member, link.contacts.company]
@@ -259,7 +269,7 @@ module.exports = [
           }
           return reservation.length === undefined ? [reservation.toJSON()] : request.server.methods.reservation.arrayToJSON(reservation)
         } catch (err) {
-          console.error(err)
+          logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
         }
       },

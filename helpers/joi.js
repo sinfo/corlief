@@ -56,7 +56,8 @@ let venue = Joi.object().keys({
     stand.optional()
   ).label('stand'),
   workshops: Joi.array().items(activity.optional()).label('workshop'),
-  presentations: Joi.array().items(activity.optional()).label('presentation')
+  presentations: Joi.array().items(activity.optional()).label('presentation'),
+  lunchTalks: Joi.array().items(activity.optional()).label('lunch talk')
 }).label('venue')
 
 let venues = Joi.array().items(venue).min(0)
@@ -90,7 +91,8 @@ let link = Joi.object().keys({
   ),
   advertisementKind: Joi.string().required(),
   workshop: Joi.bool(),
-  presentation: Joi.bool()
+  presentation: Joi.bool(),
+  lunchTalk: Joi.bool()
 }).label('link')
 
 let links = Joi.array().items(link).min(0)
@@ -103,7 +105,7 @@ let linkPayload = Joi.object().keys({
     .optional().min(1).max(50)
     .description('Email contact of the company\'s employer'),
   participationDays: Joi.number()
-    .required().min(1).max(5)
+    .required().min(1)
     .description('Amount of days company will participate in edition'),
   advertisementKind: Joi.string()
     .required().min(1).max(100)
@@ -120,7 +122,8 @@ let linkPayload = Joi.object().keys({
     .required().min(new Date())
     .description('Date of link expiration'),
   workshop: Joi.bool().description('Company has workshop'),
-  presentation: Joi.bool().description('Company has presentation')
+  presentation: Joi.bool().description('Company has presentation'),
+  lunchTalk: Joi.bool().description('Company has lunch talk')
 })
 
 module.exports.link = link
@@ -144,7 +147,10 @@ let credentials = Joi.object().keys({
   companyName: Joi.string(),
   edition: Joi.string().required(),
   iat: Joi.number(),
-  participationDays: Joi.number().required()
+  participationDays: Joi.number().required(),
+  workshop: Joi.boolean().required(),
+  presentation: Joi.boolean().required(),
+  lunchTalk: Joi.boolean().required()
 })
 
 module.exports.credentials = credentials
@@ -157,17 +163,18 @@ let sinfoCredentials = Joi.object().keys({
 module.exports.sinfoCredentials = sinfoCredentials
 
 let standReservation = Joi.object().keys({
-  day: Joi.number().required().min(1).max(5),
-  standId: Joi.number().required().min(0).max(100)
+  day: Joi.number().required().min(1),
+  standId: Joi.number().min(0).max(100)
 })
 
 let standsReservation = Joi.object().keys({
   stands: Joi.array().items(standReservation)
-    .min(1).unique((s1, s2) => {
+    .min(0).unique((s1, s2) => {
       return s1.day === s2.day
     }),
   workshop: Joi.number().min(0),
-  presentation: Joi.number().min(0)
+  presentation: Joi.number().min(0),
+  lunchTalk: Joi.number().min(0)
 })
 
 module.exports.standReservation = standReservation
@@ -179,11 +186,12 @@ let reservation = Joi.object().keys({
   edition: Joi.string().required(),
   issued: Joi.date().required(),
   stands: Joi.array().items(standReservation)
-    .min(1).unique((s1, s2) => {
+    .min(0).unique((s1, s2) => {
       return s1.day === s2.day
     }),
   workshop: Joi.number().min(0),
   presentation: Joi.number().min(0),
+  lunchTalk: Joi.number().min(0),
   feedback: Joi.object().keys({
     status: Joi.string().required(),
     member: Joi.string().optional()
@@ -203,6 +211,36 @@ let venueAvailability = Joi.object().keys({
         Joi.object().keys({
           id: Joi.number().integer().min(0),
           free: Joi.boolean()
+        })
+      ).unique((s1, s2) => {
+        return s1.id === s2.id
+      }),
+      workshops: Joi.array().items(
+        Joi.object().keys({
+          id: Joi.number().integer().min(0),
+          free: Joi.boolean(),
+          start: Joi.date(),
+          end: Joi.date()
+        })
+      ).unique((s1, s2) => {
+        return s1.id === s2.id
+      }),
+      presentations: Joi.array().items(
+        Joi.object().keys({
+          id: Joi.number().integer().min(0),
+          free: Joi.boolean(),
+          start: Joi.date(),
+          end: Joi.date()
+        })
+      ).unique((s1, s2) => {
+        return s1.id === s2.id
+      }),
+      lunchTalks: Joi.array().items(
+        Joi.object().keys({
+          id: Joi.number().integer().min(0),
+          free: Joi.boolean(),
+          start: Joi.date(),
+          end: Joi.date()
         })
       ).unique((s1, s2) => {
         return s1.id === s2.id

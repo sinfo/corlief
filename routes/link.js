@@ -292,7 +292,7 @@ module.exports = [
       },
       handler: async (request, h) => {
         try {
-          const { companyId, companyEmail, participationDays, advertisementKind, activities, workshop, presentation } = request.payload
+          const { companyId, companyEmail, participationDays, advertisementKind, activities, workshop, presentation, lunchTalk } = request.payload
           const { edition, isCompanyValid, token, company, member } = request.pre
 
           if (isCompanyValid === false) {
@@ -310,7 +310,7 @@ module.exports = [
           let link = await request.server.methods.link.create(
             companyId, company.name, edition,
             member.mails.main, token, participationDays,
-            activities, advertisementKind, companyEmail, workshop, presentation
+            activities, advertisementKind, companyEmail, workshop, presentation, lunchTalk
           )
 
           return link === null ? Boom.badData('No link associated') : link.toJSON()
