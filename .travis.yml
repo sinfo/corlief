@@ -1,16 +1,24 @@
 language: node_js
 node_js:
-  - "12.18.2"
+- 12.18.2
 env:
+  matrix:
   - MONGODB=2.7.8
+  global:
+  - secure: f8HQ/+Js3l5Ts58vanVEs8oYkL+nYCKKZt3TbehwNlKJyioCQmoe5+54MsyaPNaAD5UWc1WLi2qWUzgJa6xppXHMMKipRWiA7YAuPhT0tetaLDNJ10mYogKZsD4QJ0bX70ZkJNhyFec+4EbuE1Mjnwzi8wru9zNnyapq2pE4ZaKru9BNsW10PfV5gj4WaB69bRKU+fmKnK4i06dGG9yiN5+ODr6E1Vj6U3P3xLub+c+0D2YZJacbgXjkZNavHRr/E2iOm+MV/W3mHk5qt6Ug8l6JhCxDSqw6Y+ucLnEj2KwabCyHxRSVnV1/vnx5kf2E578LhdWlzreXw8UsDBWBT9bvcfoJDlc1jhRUU++Fucf4Uf/ELbkFR71lSGp8RDu+/PtJ1wHuzDR2evv79bNqelqzNxj9OD5Vdi+ND6NMSPHCFQZ4ocwtl8kuTrkhCIzGychDyaHK+r8dWPz+FrXN2a9hC+8ajN8sV1ebloXG0m2Bg6D7B5fDcDqhtwza8L5Qqfj8a5yfaDEYo+E9XsFyL0K2LuZf4uCo6wEO2aYbNOy2FTq6W766K6rz4ZZhqzS8dStdG0EbXTpuYBsD95K5sAFy0HAns8F2ZRCHFWehM4ql75+Q4iuWPn1a0wycfUsPtviP2MGg2mrO3EP7HfFh4yTA9BBCYFlrflx2ZWnkouA=
+  - secure: QQKlU8AebWclxSV0rGfpSx9cwPLflafeeiuGp6BlCWHAxmtXWBJpP779cD7+EXx+DPmnZv5aeutl7VUG2MgYQBio5OGkNIBQx5jNMPvY7PqjXV7954XCVQhJE5bIWXo/moFTx3BGLa1IMUaxVPEpQuRskXSK9em/KdSZ5Wi7e+nCszTMUcpuvOS/pTiYoaVYi0O2340cN9E6A3+Z/Nj+OehUdlBLdefhftWJfYx6M+iMQTlWik11ssz06RhNFsFiSJy/xaOexJm4y6fc/KPK+qnqavJX1f7pTpCK6U4UbKGF1XPBt675rj8xeqRFDuHJ9RtkdM/dbJSPvTPp/6e8APwCJGH9g8+8NQHg8SoDlRHj+7GCliKaEsvShyYdXYFMFHwZESJ8O8HflqpQw79ZhvL7nvssrEgffbfrj41Eh4DLrKg78wC2HilTBsBRPEovaafbBdYA0lNrbc6wXaim9eWUbkIX3KJ2VE0BU4v1IWEK9fRLabCFT/qEWGugAGXtYNbl0vLDIZNgYh0BbjTTXGeYWQ+8HBnxCxlWr15Jd8mMN4SJx+a/I3n04acXvM79rm+OTAdiiBCtAuM4/WBp8eZ17wae/dvdsd5f+XuDkGp8an/wGzBhb4K6i856HFEd9mwwZzBDpyRsPKbBTs2ErfSr08jmN3iaF7hOttNZreY=
+  - secure: rrs7JipMXohHmKlKtYSewZnLRP0r3uTiU7fJj2GH+P6CQpDjZu/gfQnEShtuOvkUSrUfIxgT5rDsdoZZwrZtQUgNNgxNXrew8BEmnGYK21DWDBHomy9D1a9LBQzGFjkbaRacBxQmEvKGR26nHXiqKriu+Hc/7e9jTRfc2mQ2HcNfmwH4mtdg7tr8DV8aR/3P1UavjyNC33MApoY8cO7ZTPy4OyZH13ldxt6MVcpiCBqwjKj2NgNd0REcw57rNnTWZsIUyeWgWnClOXi8PDByCRDifM9pMpdeLEY8og6JMhX/CnykcRhPfzbpZ3cHMAPaw4rp2FJqKsTkmopGwPlnJmpoK6VDxdRsV4klFGdbmIva3w3w4KnoKBh6jHk7medrA8eYhBn+6egWxvYOeiLnDG8O7LrJPnQPCZ4G4S4zIn03a4OSzhA9v3a20qBoaqjMcFPkO1Y/UnX1x7oMRHsZ3ByW1Gvd4P5JPydAFAfTe35MGW1enr7diWvUUxsS5NOHQTtFL9i630A1ITE7wArJZlMwc4mZJu36Vr/Zsu6/aBAM+0G2LSicpa0yVPZSXphW/yfOP9JOiMf9c4LakFQSbQ5o7DGHCLnYlHhxmFa7UhM8t2I82m7NHsprmwZDRJ2tGZhcZEAwKiDCO03a3L7ZnZLIWTw3U0vNlz2T3FyWlFs=
+  - secure: dRu8SNHHMdXujtvO2ykbZB+0F1CcRGhUh20LtVXj59+9EyoTaqTyAoHKQkqt8kv7D15PzQOL0fvY9NU3+PI61wfnawJ8Z9hUn5NsTaXG0WZEFT0Ae5sbR/zfwVAYaG8umZ89wZaAP4EWIM9J1GNfLN1sncb2B7EdhOlQ6nlWM99ui+sbvGF9K5yDjZVX80uy7Gg8odODPoQnDQHFMdUvto21eFSG2s/EEObUJiC1qjkFVpKlFJ3MSZC6qc8f0Kt07S94vqcFCRv3JLrWPKeXcziypnjuH1ONxv/BOJQ3yJ9XApvTPKa2jyk+ibq4TTNLe/RGJUHJd7tKCU7t958Xrpc9304/P1sLidp7DtHqgKJlJ4uQYcQBLUDYhhHJq1BtkqQJaVjAlgILJMUBvHCyScYkI5WBBNj5GyJhUia/rr50UbDfF4zmeNdbwUx0cb6/z4zg6fN6J+QWjBl+tg4kw+hGAbyrZzZcF541Skk18x5Rgp5ASei2xcyapXJPnP5yXVihBdF/4B7OBZ2QzTVVjRBkd+z4GUz6CHloebO21RNX3YdGqFIUg22q5BmphxdN5SALIIih+HFdRTdMT7APjUcRdwtuq8NyKW6nsFAK26JN5qQUyaR5fTYeagH9OnnB1SRZPQHWGrsvmZnkRlxLdyUjfaZ4GbJTPqsdFglN3ZI=
+  - secure: lWZw+rDiCBvkV5Q9g9yGkOgVqtwql2Z0KyFz3UA971W4E1TzJ8JRWG8mO4LGQWTAq9JHpo49NKiGlD2EcQlG913C8AAgiEMcvBP5o0Jq9p9OfWFEm5EDIr87yXicsfGq1R16pSzlN2WbGhRdiIfiJWct7LXUS10tby69x8OvnofgqOCU1diyYKYc9H2lCfxD/n++jtbsb1m0WBOm5tSBW6bnT+G3XWhilOzzHl8JpWpGJnsMLQo+keyYBDP3Qx9ZlWFCY/c7OaGslg6b72qSLY6gm23olacCcD1Iih4zvLXKd8jxWW2gNv+8c+j6/XQOegbQ1Xo2FqPMDBEa3BAUPH5FefHUG5TOcjxJmNpidEYu9gyLfkHxbqRUmzU8hZ00Vg7Yv/vaYy93Saf1KgyuWPSQahw6w3a4yKvuM2Rat6nsfisD/4BRLLkpVfXQIje3cCnfQmzCJM1gNa7tf0Nn9VUqYia3K5pmUnBnZg8Y7tQPq7CuSB8o/2/WdKiVgVZxH7CyPDRidhkb69+WEZlGOFOvwsKepjS051mHpFp+5XfiZSyEs7+RyfJusnQFG4xIFz/kD4tu8L/8C6G634I1ndizxiJHg4TxrlZGkIkvQz0gT7RdkPNbCMGUnO1x1dKHXcx6etd2Ok/9ozKJ8oYgnuBpT+oC673pti1RCOna9tc=
 install:
-  - wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
-  - tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
-  - ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --version
-  - mongo --version
-  - yarn run env
-  - yarn
+- wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
+- tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
+- "${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --version"
+- mongo --version
+- yarn run env
+- yarn
 before_script:
-  - mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
-  - ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/data --logpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork
-  - npm run gen-keys
+- mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
+- "${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --dbpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
+  --logpath ${PWD}/mongodb-linux-x86_64-${MONGODB}/mongodb.log --fork"
+- npm run gen-keys
