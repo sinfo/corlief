@@ -2,12 +2,13 @@ language: node_js
 node_js:
   - "12.18.2"
 env:
-  - MONGODB=2.6.12
+  - MONGODB=2.7.8
 install:
   - wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
   - tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
   - ${PWD}/mongodb-linux-x86_64-${MONGODB}/bin/mongod --version
   - mongo --version
+  - yarn run env
   - yarn
 before_script:
   - mkdir ${PWD}/mongodb-linux-x86_64-${MONGODB}/data
