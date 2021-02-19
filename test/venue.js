@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+
 const path = require('path')
 const { before, after, afterEach, it, describe } = require('mocha')
 const { expect } = require('chai')

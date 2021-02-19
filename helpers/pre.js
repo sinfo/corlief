@@ -1,6 +1,6 @@
 const logger = require('logger').getLogger()
 
-function getDataFromStream(stream) {
+function getDataFromStream (stream) {
   return new Promise((resolve, reject) => {
     let data = []
 
