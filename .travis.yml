@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "12.18.2"
 env:
-  - MONGODB=3.6.3
+  - MONGODB=2.6.12
 install:
   - wget http://fastdl.mongodb.org/linux/mongodb-linux-x86_64-${MONGODB}.tgz
   - tar xzf mongodb-linux-x86_64-${MONGODB}.tgz
