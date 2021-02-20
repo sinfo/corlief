@@ -25,7 +25,9 @@ const config = {
 
   DECK: {
     HOST: process.env.NODE_ENV === 'production' ? 'https://deck.sinfo.org' : 'http://localhost',
-    PORT: process.env.NODE_ENV === 'production' ? 443 : 8080
+    PORT: process.env.NODE_ENV === 'production' ? 443 : 8080,
+    USER: process.env.DECK_USER,
+    TOKEN: process.env.DECK_TOKEN
   },
 
   COORDINATION_EMAIL: 'coordination@sinfo.org',

@@ -1,4 +1,6 @@
 const MongoClient = require('mongodb').MongoClient
+const path = require('path')
+const config = require(path.join(__dirname, '..', 'config'))
 
 const url = 'mongodb://localhost:27017'
 const dbName = 'deck'
@@ -19,6 +21,14 @@ module.exports.sinfoCredentials = () => {
         if (err) { reject(err); return }
         let user = results
         if (user === null) {
+          if (config.DECK.USER !== undefined && config.DECK.TOKEN !== undefined) {
+            resolve({
+              id: config.DECK.USER,
+              token: config.DECK.TOKEN,
+              authenticator: `${config.DECK.USER} ${config.DECK.TOKEN}`
+            })
+            return
+          }
           reject(new Error('No user found with login code')); return
         }
 
