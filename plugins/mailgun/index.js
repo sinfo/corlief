@@ -13,8 +13,10 @@ const mailgun = require('mailgun-js')({
 })
 
 let template
+const filename = path.join(__dirname, 'email.html')
 
-fs.readFile(path.join(__dirname, 'email.html'), { encoding: 'UTF-8' }, (err, data) => {
+// eslint-disable-next-line security/detect-non-literal-fs-filename
+fs.readFile(filename, { encoding: 'UTF-8' }, (err, data) => {
   if (err) {
     logger.error(err)
     process.exit(1)

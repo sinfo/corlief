@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+
 const path = require('path')
 const { before, after, it, describe } = require('mocha')
 const { expect } = require('chai')
@@ -657,7 +659,7 @@ describe('link', async function () {
     })
   })
 
-  function expectToContain(list, obj) {
+  function expectToContain (list, obj) {
     const element = list.find((element) => (element.token === obj.token))
     expect(element).to.not.eql(undefined)
     Object.keys(obj).forEach(key => {

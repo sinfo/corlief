@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-expressions */
+
 const path = require('path')
 const { before, after, it, describe, afterEach } = require('mocha')
 const { expect } = require('chai')
@@ -131,7 +133,7 @@ describe('company', async function () {
     })
 
     it('should fail authentication if expired', async function () {
-      function sleep(ms) {
+      function sleep (ms) {
         return new Promise(resolve => setTimeout(resolve, ms))
       }
 

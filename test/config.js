@@ -1,6 +1,8 @@
+/* eslint-disable no-unused-expressions */
+
 const path = require('path')
 const { before, afterEach, it, describe } = require('mocha')
-const {expect} = require('chai')
+const { expect } = require('chai')
 const Config = require(path.join('..', 'db', 'models', 'config'))
 const server = require(path.join(__dirname, '..', 'app')).server
 const helpers = require('./helpers')

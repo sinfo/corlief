@@ -172,6 +172,7 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
     let ws = []
     let pres = []
     let lt = []
+    let nStands = 0
 
     for (let id of standsIds) {
       let result = {
@@ -203,6 +204,14 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
 
       stands.push(result)
     }
+
+    confirmedStands.forEach(res => {
+      for (let stand of res.stands) {
+        if (stand.day === day) {
+          nStands++
+        }
+      }
+    })
 
     for (let w of this.workshops.filter(ws => ws.day === day)) {
       let result = {
@@ -261,6 +270,7 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
 
     response.availability.push({
       day: day,
+      nStands: nStands,
       stands: stands,
       workshops: ws,
       presentations: pres,

@@ -207,6 +207,7 @@ let venueAvailability = Joi.object().keys({
   availability: Joi.array().items(
     Joi.object().keys({
       day: Joi.number().integer().min(1).max(5).required(),
+      nStands: Joi.number().integer(),
       stands: Joi.array().items(
         Joi.object().keys({
           id: Joi.number().integer().min(0),
