@@ -46,74 +46,32 @@ let venueSchema = mongoose.Schema({
     }],
     default: []
   },
-  workshops: {
+  activities: {
     type: [{
-      id: {
-        type: Number,
-        min: 0,
-        required: true
-      },
-      day: {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: true
-      },
-      start: {
-        type: Date,
-        required: true
-      },
-      end: {
-        type: Date,
-        required: true
-      }
-    }],
-    default: []
-  },
-  presentations: {
-    type: [{
-      id: {
-        type: Number,
-        min: 0,
-        required: true
-      },
-      day: {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: true
-      },
-      start: {
-        type: Date,
-        required: true
-      },
-      end: {
-        type: Date,
-        required: true
-      }
-    }],
-    default: []
-  },
-  lunchTalks: {
-    type: [{
-      id: {
-        type: Number,
-        min: 0,
-        required: true
-      },
-      day: {
-        type: Number,
-        min: 1,
-        max: 5,
-        required: true
-      },
-      start: {
-        type: Date,
-        required: true
-      },
-      end: {
-        type: Date,
-        required: true
+      kind: String,
+      slots: {
+        type: [{
+          id: {
+            type: Number,
+            min: 0,
+            required: true
+          },
+          day: {
+            type: Number,
+            min: 1,
+            max: 5,
+            required: true
+          },
+          start: {
+            type: Date,
+            required: true
+          },
+          end: {
+            type: Date,
+            required: true
+          }
+        }],
+        default: []
       }
     }],
     default: []
@@ -127,17 +85,13 @@ let venueSchema = mongoose.Schema({
         delete stand._id
         delete stand.__v
       })
-      ret.workshops.forEach(stand => {
-        delete stand._id
-        delete stand.__v
-      })
-      ret.presentations.forEach(stand => {
-        delete stand._id
-        delete stand.__v
-      })
-      ret.lunchTalks.forEach(stand => {
-        delete stand._id
-        delete stand.__v
+      ret.activities.forEach(activity => {
+        delete activity._id
+        delete activity.__v
+        activity.slots.forEach(slot => {
+          delete slot._id
+          delete slot.__v
+        })
       })
     }
   }
@@ -147,16 +101,9 @@ venueSchema.methods.getIds = function () {
   return this.stands.map(stand => stand.id)
 }
 
-venueSchema.methods.getWsIds = function () {
-  return this.workshops.map(ws => ws.id)
-}
-
-venueSchema.methods.getPresIds = function () {
-  return this.presentations.map(pres => pres.id)
-}
-
-venueSchema.methods.getLunchTalkIds = function () {
-  return this.lunchTalks.map(pres => pres.id)
+venueSchema.methods.getActivityIds = function (kind) {
+  const activity = this.activities.find(a => a.kind === kind)
+  return activity.slots.map(a => a.id)
 }
 
 venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingStands, duration) {
@@ -169,10 +116,8 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
 
   for (let day = 1; day <= duration; day++) {
     let stands = []
-    let ws = []
-    let pres = []
-    let lt = []
     let nStands = 0
+    let activities = []
 
     for (let id of standsIds) {
       let result = {
@@ -213,68 +158,42 @@ venueSchema.methods.getStandsAvailability = function (confirmedStands, pendingSt
       }
     })
 
-    for (let w of this.workshops.filter(ws => ws.day === day)) {
-      let result = {
-        id: w.id,
-        free: true,
-        start: w.start,
-        end: w.end
+    for (let activity of this.activities) {
+      const res = { kind: activity.kind, slots: [] }
+
+      for (let act of activity.slots.filter(a => a.day === day)) {
+        let result = {
+          id: act.id,
+          free: true,
+          start: act.start,
+          end: act.end
+        }
+
+        let isConfirmed = confirmedStands.filter(confirmed => {
+          const a = confirmed.activities.find(a => a.kind === res.kind)
+          return a && a.id === act.id
+        }).length > 0
+
+        let isPending = pendingStands.filter(confirmed => {
+          const a = confirmed.activities.find(a => a.kind === res.kind)
+          return a && a.id === act.id
+        }).length > 0
+
+        if (isConfirmed || isPending) {
+          result.free = false
+        }
+
+        res.slots.push(result)
       }
 
-      let isConfirmed = confirmedStands.filter(confirmed => confirmed.workshop === w.id).length > 0
-
-      let isPending = pendingStands.filter(pending => pending.workshop === w.id).length > 0
-
-      if (isConfirmed || isPending) {
-        result.free = false
-      }
-
-      ws.push(result)
-    }
-
-    for (let w of this.presentations.filter(p => p.day === day)) {
-      let result = {
-        id: w.id,
-        free: true,
-        start: w.start,
-        end: w.end
-      }
-
-      let isConfirmed = confirmedStands.filter(confirmed => confirmed.presentation === w.id).length > 0
-
-      let isPending = pendingStands.filter(pending => pending.presentation === w.id).length > 0
-
-      if (isConfirmed || isPending) {
-        result.free = false
-      }
-      pres.push(result)
-    }
-
-    for (let w of this.lunchTalks.filter(p => p.day === day)) {
-      let result = {
-        id: w.id,
-        free: true,
-        start: w.start,
-        end: w.end
-      }
-
-      let isConfirmed = confirmedStands.filter(confirmed => confirmed.lunchTalk === w.id).length > 0
-
-      let isPending = pendingStands.filter(pending => pending.lunchTalk === w.id).length > 0
-
-      if (isConfirmed || isPending) {
-        result.free = false
-      }
-      lt.push(result)
+      activities.push(res)
     }
 
     response.availability.push({
       day: day,
       nStands: nStands,
       stands: stands,
-      workshops: ws,
-      presentations: pres,
-      lunchTalks: lt
+      activities: activities
     })
   }
 

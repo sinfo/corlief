@@ -41,7 +41,7 @@ module.exports = {
     token: 'someToken',
     valid: true,
     participationDays: 2,
-    activities: [],
+    activities: ['workshop'],
     advertisementKind: 'someAdv'
   },
   LINK11: {
@@ -226,6 +226,36 @@ module.exports = {
     end: new Date(new Date().setDate(new Date().getDate() + 1))
   },
   ACTIVITY5: {
+    day: 5,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  WORKSHOP1: {
+    kind: 'workshop',
+    day: 1,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  WORKSHOP2: {
+    kind: 'workshop',
+    day: 2,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  WORKSHOP3: {
+    kind: 'workshop',
+    day: 3,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  WORKSHOP4: {
+    kind: 'workshop',
+    day: 4,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  WORKSHOP5: {
+    kind: 'workshop',
     day: 5,
     start: new Date(),
     end: new Date(new Date().setDate(new Date().getDate() + 1))

@@ -26,9 +26,7 @@ module.exports = [
           Object.assign(response, credentials, {
             participationDays: link[0].participationDays,
             companyName: link[0].companyName,
-            workshop: link[0].workshop,
-            presentation: link[0].presentation,
-            lunchTalk: link[0].lunchTalk
+            activities: link[0].activities
           })
 
           return response
@@ -113,59 +111,52 @@ module.exports = [
         let edition = request.pre.edition
         let link = request.pre.link
         let venue = request.pre.venue
-        let workshop = request.payload.workshop
-        let presentation = request.payload.presentation
-        let lunchTalk = request.payload.lunchTalk
+        let activities = request.payload.activities
 
         try {
           if (venue === null) {
+            logger.error('No venue created')
             return Boom.forbidden('No venue created')
           }
 
           if (stands.length !== link.participationDays) {
+            logger.error('Wrong ammount of stands in reservation')
             return Boom.badData('Wrong ammount of stands in reservation', {
               stands: stands.length,
               participationDays: link.participationDays
             })
           }
 
-          // Note: Workshop and Presentation can be 0 and valid. Only null and undef are considered invalid
-          if (!link.workshop && (workshop !== null && workshop !== undefined)) {
-            return Boom.badData('Not entitled to workshop')
-          }
-          if (!link.presentation && (presentation !== null && presentation !== undefined)) {
-            return Boom.badData('Not entitled to presentation')
-          }
-          if (!link.lunchTalk && (lunchTalk !== null && lunchTalk !== undefined)) {
-            return Boom.badData('Not entitled to lunch talk')
-          }
-          if (link.workshop && (workshop === null || workshop === undefined)) {
-            return Boom.badData('Workshop reservation missing')
-          }
-          if (link.presentation && (presentation === null || presentation === undefined)) {
-            return Boom.badData('Presentation reservation missing')
-          }
-          if (link.lunchTalk && (lunchTalk === null || lunchTalk === undefined)) {
-            return Boom.badData('Lunch Talk reservation missing')
+          const activitiesKind = activities.map(a => a.kind)
+          let eq = activitiesKind.length === link.activities.length
+          activitiesKind.forEach(element => {
+            eq = eq && link.activities.includes(element)
+          })
+          if (!eq) {
+            logger.error({ activitiesKind: activitiesKind, activities: link.activities }, 'Activities in reservation do not match activities in link')
+            return Boom.badData('Activities in reservation do not match activities in link')
           }
 
           let canMakeReservation = await request.server.methods.reservation
             .canMakeReservation(companyId, edition)
 
           if (!canMakeReservation.result) {
+            logger.error('locked')
             return Boom.locked(canMakeReservation.error)
           }
 
-          let areValid = await request.server.methods.reservation.areValid(venue, stands, workshop, presentation, lunchTalk)
+          let areValid = await request.server.methods.reservation.areValid(venue, stands, activities)
 
           if (!areValid) {
+            logger.error('Stand(s) not registered in venue')
             return Boom.badData('Stand(s) not registered in venue')
           }
 
-          let areAvailable = await request.server.methods.reservation.areAvailable(edition, stands, workshop, presentation, lunchTalk, venue)
+          let areAvailable = await request.server.methods.reservation.areAvailable(edition, stands, activities, venue)
 
           if (!areAvailable) {
-            return Boom.conflict('Conflicting reservation: Something not available', { stands: stands, workshop: workshop, presentation: presentation })
+            logger.error('Conflicting reservation: Something not available')
+            return Boom.conflict('Conflicting reservation: Something not available', { stands: stands, activities: activities })
           }
 
           // TODO
@@ -178,7 +169,7 @@ module.exports = [
           */
 
           let reservation = await request.server.methods.reservation
-            .addStands(companyId, edition, stands, workshop, presentation, lunchTalk)
+            .addStands(companyId, edition, stands, activities)
 
           const receivers = link.contacts.company
             ? [link.contacts.member, link.contacts.company]
