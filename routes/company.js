@@ -159,7 +159,7 @@ module.exports = [
             return Boom.conflict('Conflicting reservation: Something not available', { stands: stands, activities: activities })
           }
 
-          // TODO
+          // TODO:
           /*
           let consecutiveDaysReservations = config.consecutive_days_reservations
           let areConsecutive = await request.server.methods.reservation.areConsecutive(stands)

@@ -259,5 +259,35 @@ module.exports = {
     day: 5,
     start: new Date(),
     end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  PRESENTATION1: {
+    kind: 'presentation',
+    day: 1,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  PRESENTATION2: {
+    kind: 'presentation',
+    day: 2,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  PRESENTATION3: {
+    kind: 'presentation',
+    day: 3,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  PRESENTATION4: {
+    kind: 'presentation',
+    day: 4,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  PRESENTATION5: {
+    kind: 'presentation',
+    day: 5,
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 1))
   }
 }

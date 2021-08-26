@@ -165,7 +165,7 @@ async function removeActivity(edition, id, kind) {
   }
 
   // remove element
-  activityKind.slots.splice(index - 1, 1)
+  activityKind.slots.splice(index, 1)
 
   return venue.save()
 }

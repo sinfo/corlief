@@ -371,14 +371,16 @@ module.exports = [
 
           for (let activity of activities) {
             if (activity.start >= activity.end) {
+              logger.error('Start date must be before end date')
               return Boom.badData('Start date must be before end date')
             }
             if (activity.kind !== kind) {
+              logger.error(`Activity ${activity.id} has wrong kind`)
               return Boom.badData(`Activity ${activity.id} has wrong kind`)
             }
           }
 
-          let venue = await request.server.methods.venue.replaceWorkshops(request.pre.edition, workshops)
+          let venue = await request.server.methods.venue.replaceActivitySlots(request.pre.edition, activities, kind)
 
           return venue === null
             ? Boom.badData('No venue associated with this event or with image')
