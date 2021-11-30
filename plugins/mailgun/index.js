@@ -6,10 +6,12 @@ const handlebars = require('handlebars')
 
 const API_KEY = config.MAILGUN.API_KEY
 const DOMAIN = config.MAILGUN.DOMAIN
+const HOST = config.MAILGUN.HOST
 
 const mailgun = require('mailgun-js')({
   apiKey: API_KEY,
-  domain: DOMAIN
+  domain: DOMAIN,
+  host: HOST
 })
 
 let template
@@ -26,7 +28,8 @@ fs.readFile(filename, { encoding: 'UTF-8' }, (err, data) => {
 })
 
 function send (receivers, templateData) {
-  receivers.push(config.COORDINATION_EMAIL)
+  // receivers.push(config.COORDINATION_EMAIL)
+  logger.info(mailgun)
   templateData.reservation.stands.map(stand => { stand.standId++; return stand })
 
   receivers.forEach(receiver => {
@@ -44,12 +47,12 @@ function send (receivers, templateData) {
 }
 
 function sendConfirmation (receivers, reservation, link) {
-  if (process.env.NODE_ENV !== 'production') { return }
+  // if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
     state: 'CONFIRMED',
-    reservation: reservation.data,
-    link: link
+    reservation: reservation.data.toJSON(),
+    link: link.toJSON()
   }
 
   send(receivers, data)
@@ -60,8 +63,8 @@ function sendCancellation (receivers, reservation, link) {
 
   let data = {
     state: 'CANCELLED',
-    reservation: reservation,
-    link: link
+    reservation: reservation.toJSON(),
+    link: link.toJSON()
   }
 
   send(receivers, data)
@@ -72,8 +75,8 @@ function sendNewReservation (receivers, reservation, link) {
 
   let data = {
     state: 'PENDING',
-    reservation: reservation,
-    link: link
+    reservation: reservation.toJSON(),
+    link: link.toJSON()
   }
 
   send(receivers, data)
