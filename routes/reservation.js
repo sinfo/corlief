@@ -125,7 +125,7 @@ module.exports = [
             ? [link.contacts.member, link.contacts.company]
             : [link.contacts.member]
 
-          request.server.methods.mailgun.sendConfirmation(receivers, reservation, link)
+          request.server.methods.mailgun.sendConfirmation(receivers, reservation, link, venue)
 
           return reservation.data === null ? Boom.badData(reservation.error) : reservation.data.toJSON()
         } catch (err) {
@@ -144,9 +144,11 @@ module.exports = [
       auth: 'sinfo',
       tags: ['api'],
       description: 'Cancel latest company\'s reservation',
-      pre: [
+      pre: [[
         helpers.pre.edition
-      ],
+      ], [
+        helpers.pre.venue
+      ] ],
       validate: {
         headers: Joi.object({
           'Authorization': Joi.string()
@@ -161,6 +163,7 @@ module.exports = [
         try {
           const companyId = request.params.companyId
           const edition = request.pre.edition
+          const venue = request.pre.venue
           const member = request.auth.credentials.user
 
           const reservation = await request.server.methods.reservation.cancel(companyId, edition, member)
@@ -176,7 +179,7 @@ module.exports = [
             ? [link.contacts.member, link.contacts.company]
             : [link.contacts.member]
 
-          request.server.methods.mailgun.sendCancellation(receivers, reservation, link)
+          request.server.methods.mailgun.sendCancellation(receivers, reservation, link, venue)
 
           return reservation === null ? Boom.badData('No reservation found') : reservation.toJSON()
         } catch (err) {

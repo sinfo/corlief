@@ -35,7 +35,7 @@ const config = {
   MAILGUN: {
     API_KEY: process.env.CORLIEF_MAILGUN_API_KEY,
     DOMAIN: 'sinfo.org',
-    HOST: 'api.eu.mailgun.net'
+    HOST: 'api.mailgun.net'
   },
 
   CORS: process.env.NODE_ENV === 'production'

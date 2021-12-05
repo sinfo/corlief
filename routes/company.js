@@ -175,7 +175,7 @@ module.exports = [
             ? [link.contacts.member, link.contacts.company]
             : [link.contacts.member]
 
-          request.server.methods.mailgun.sendNewReservation(receivers, reservation, link)
+          request.server.methods.mailgun.sendNewReservation(receivers, reservation, link, venue)
 
           return reservation.toJSON()
         } catch (err) {
