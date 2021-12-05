@@ -8,7 +8,7 @@ const config = {
   MONGO: {
     DB: process.env.CORLIEF_MONGO_DB || 'corlief',
     TEST: process.env.CORLIEF_MONGO_DB_TEST || 'corlief_test',
-    PORT: process.env.CORLIEF_MONGO_PORT || 27017
+    HOST: process.env.CORLIEF_MONGO_HOST || 'localhost:27017'
   },
 
   LOGENTRIES_TOKEN: process.env.CORLIEF_LOGENTRIES_TOKEN,
