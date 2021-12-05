@@ -5,4 +5,4 @@ COPY . .
 
 RUN npm install
 RUN npm run gen-keys
-CMD ["npm", "run", "production"]
+ENTRYPOINT ["npm", "run", "production"]
