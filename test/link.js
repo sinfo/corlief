@@ -243,9 +243,7 @@ describe('link', async function () {
           participationDays: mocks.LINK.participationDays,
           activities: mocks.LINK.activities,
           advertisementKind: mocks.LINK.advertisementKind,
-          expirationDate: EXPIRATION,
-          workshop: true,
-          presentation: true
+          expirationDate: EXPIRATION
         },
         headers: {
           Authorization: sinfoCredentials.authenticator

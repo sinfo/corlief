@@ -10,6 +10,7 @@ const fs = require('fs')
 const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
 const helpers = require('./helpers')
+const { WORKSHOP1 } = require('./mocks')
 
 let sinfoCredentials
 
@@ -671,25 +672,29 @@ describe('venue', function () {
     it('should add a new workshop', async function () {
       let res = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY1,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP1,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       let result = res.result
+      let expectedRes = Object.assign({}, mocks.WORKSHOP1, { id: 0 })
+      delete expectedRes.kind
 
       expect(res.statusCode).to.eql(200)
-      expect(result.workshops.length).to.eql(1)
-      expect(result.workshops).to.deep.include(Object.assign({}, mocks.ACTIVITY1, { id: 0 }))
+      expect(result.activities.length).to.eql(1)
+      expect(result.activities[0].kind).to.eql(WORKSHOP1.kind)
+      expect(result.activities[0].slots.length).to.eql(1)
+      expect(result.activities[0].slots[0]).to.deep.eql(expectedRes)
     })
 
     it('should add another workshop with incremented id', async function () {
       let res1 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY1,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP1,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -697,27 +702,33 @@ describe('venue', function () {
 
       let res2 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY2,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP2,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       let result = res2.result
+      let expectedRes1 = Object.assign({}, mocks.WORKSHOP1, { id: 0 })
+      delete expectedRes1.kind
+      let expectedRes2 = Object.assign({}, mocks.WORKSHOP2, { id: 1 })
+      delete expectedRes2.kind
 
       expect(res1.statusCode).to.eql(200)
       expect(res2.statusCode).to.eql(200)
-      expect(result.workshops.length).to.eql(2)
-      expect(result.workshops).to.deep.include(Object.assign({}, mocks.ACTIVITY1, { id: 0 }))
-      expect(result.workshops).to.deep.include(Object.assign({}, mocks.ACTIVITY2, { id: 1 }))
+      expect(result.activities.length).to.eql(1)
+      expect(result.activities[0].kind).to.eql(WORKSHOP1.kind)
+      expect(result.activities[0].slots.length).to.eql(2)
+      expect(result.activities[0].slots[0]).to.deep.eql(expectedRes1)
+      expect(result.activities[0].slots[1]).to.deep.eql(expectedRes2)
     })
 
     it('should add a workshop with id corresponding to the lowest number available', async function () {
       let res1 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY1,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP1,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -725,8 +736,8 @@ describe('venue', function () {
 
       let res2 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY2,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP2,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -734,21 +745,21 @@ describe('venue', function () {
 
       let res3 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY3,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP3,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       let v = await Venue.findOne({ edition: venue.edition })
-      v.workshops = v.workshops.filter(ws => ws.id !== 0 && ws.id !== 1)
+      v.activities[0].slots = v.activities[0].slots.filter(ws => ws.id !== 0 && ws.id !== 1)
       await v.save()
 
       let res4 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY4,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP4,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -756,8 +767,8 @@ describe('venue', function () {
 
       let res5 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY5,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP5,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -771,18 +782,28 @@ describe('venue', function () {
       expect(res4.statusCode).to.eql(200)
       expect(res5.statusCode).to.eql(200)
 
-      expect(result.workshops.length).to.eql(3)
-      expect(result.workshops[0]).to.deep.eql(Object.assign({}, mocks.ACTIVITY3, { id: 2 }))
-      expect(result.workshops[1]).to.deep.eql(Object.assign({}, mocks.ACTIVITY4, { id: 0 }))
-      expect(result.workshops[2]).to.deep.eql(Object.assign({}, mocks.ACTIVITY5, { id: 1 }))
+      let expectedRes1 = Object.assign({}, mocks.WORKSHOP3, { id: 2 })
+      delete expectedRes1.kind
+      let expectedRes2 = Object.assign({}, mocks.WORKSHOP4, { id: 0 })
+      delete expectedRes2.kind
+      let expectedRes3 = Object.assign({}, mocks.WORKSHOP5, { id: 1 })
+      delete expectedRes3.kind
+
+      expect(result.activities.length).to.eql(1)
+      expect(result.activities[0].kind).to.eql(WORKSHOP1.kind)
+      expect(result.activities[0].slots.length).to.eql(3)
+      expect(result.activities[0].slots[0]).to.deep.eql(expectedRes1)
+      expect(result.activities[0].slots[1]).to.deep.eql(expectedRes2)
+      expect(result.activities[0].slots[2]).to.deep.eql(expectedRes3)
     })
 
     it('should give an error if start >= end', async function () {
       let date = new Date()
       let res = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
+        url: `/venue/activity`,
         payload: {
+          kind: 'workshop',
           day: 1,
           start: date,
           end: date
@@ -806,7 +827,7 @@ describe('venue', function () {
     afterEach('delete workshops from venue', async function () {
       await Venue.findOneAndUpdate(
         { edition: venue.edition },
-        { $set: { workshops: [] } }
+        { $set: { activities: [] } }
       )
     })
   })
@@ -836,8 +857,8 @@ describe('venue', function () {
     it('should add a series of workshops and try to remove the one with id 3 (which doesn\'t exist)', async function () {
       let res1 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY1,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP1,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -845,8 +866,8 @@ describe('venue', function () {
 
       let res2 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY2,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP2,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -854,21 +875,21 @@ describe('venue', function () {
 
       let res3 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY3,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP3,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       let v = await Venue.findOne({ edition: venue.edition })
-      v.workshops = v.workshops.filter(ws => ws.id !== 1)
+      v.activities[0].slots = v.activities[0].slots.filter(ws => ws.id !== 1)
       await v.save()
 
       let res4 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY4,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP4,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -876,30 +897,36 @@ describe('venue', function () {
 
       let res5 = await server.inject({
         method: 'DELETE',
-        url: `/venue/workshop/3`,
+        url: `/venue/activity/workshop/3`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       let result = res4.result
+      let expectedRes1 = Object.assign({}, mocks.WORKSHOP1, { id: 0 })
+      delete expectedRes1.kind
+      let expectedRes2 = Object.assign({}, mocks.WORKSHOP3, { id: 2 })
+      delete expectedRes2.kind
+      let expectedRes3 = Object.assign({}, mocks.WORKSHOP4, { id: 1 })
+      delete expectedRes3.kind
 
       expect(res1.statusCode).to.eql(200)
       expect(res2.statusCode).to.eql(200)
       expect(res3.statusCode).to.eql(200)
       expect(res4.statusCode).to.eql(200)
       expect(res5.statusCode).to.eql(422)
-      expect(result.workshops.length).to.eql(3)
-      expect(result.workshops).to.deep.include(Object.assign({}, mocks.ACTIVITY1, { id: 0 }))
-      expect(result.workshops).to.deep.include(Object.assign({}, mocks.ACTIVITY3, { id: 2 }))
-      expect(result.workshops).to.deep.include(Object.assign({}, mocks.ACTIVITY4, { id: 1 }))
+      expect(result.activities[0].slots.length).to.eql(3)
+      expect(result.activities[0].slots).to.deep.include(expectedRes1)
+      expect(result.activities[0].slots).to.deep.include(expectedRes2)
+      expect(result.activities[0].slots).to.deep.include(expectedRes3)
     })
 
     it('should add a series of workshops and remove the one with id 1', async function () {
       let res1 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY1,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP1,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -907,8 +934,8 @@ describe('venue', function () {
 
       let res2 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY2,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP2,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -916,21 +943,21 @@ describe('venue', function () {
 
       let res3 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY3,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP3,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       let v = await Venue.findOne({ edition: venue.edition })
-      v.workshops = v.workshops.filter(ws => ws.id !== 1)
+      v.activities[0].slots = v.activities[0].slots.filter(ws => ws.id !== 1)
       await v.save()
 
       let res4 = await server.inject({
         method: 'POST',
-        url: `/venue/workshop`,
-        payload: mocks.ACTIVITY4,
+        url: `/venue/activity`,
+        payload: mocks.WORKSHOP4,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
@@ -938,22 +965,26 @@ describe('venue', function () {
 
       let res5 = await server.inject({
         method: 'DELETE',
-        url: `/venue/workshop/1`,
+        url: `/venue/activity/workshop/1`,
         headers: {
           Authorization: sinfoCredentials.authenticator
         }
       })
 
       let result = res5.result
+      let expectedRes1 = Object.assign({}, mocks.WORKSHOP1, { id: 0 })
+      delete expectedRes1.kind
+      let expectedRes2 = Object.assign({}, mocks.WORKSHOP3, { id: 2 })
+      delete expectedRes2.kind
 
       expect(res1.statusCode).to.eql(200)
       expect(res2.statusCode).to.eql(200)
       expect(res3.statusCode).to.eql(200)
       expect(res4.statusCode).to.eql(200)
       expect(res5.statusCode).to.eql(200)
-      expect(result.workshops.length).to.eql(2)
-      expect(result.workshops).to.deep.include(Object.assign({}, mocks.ACTIVITY1, { id: 0 }))
-      expect(result.workshops).to.deep.include(Object.assign({}, mocks.ACTIVITY3, { id: 2 }))
+      expect(result.activities[0].slots.length).to.eql(2)
+      expect(result.activities[0].slots).to.deep.include(expectedRes1)
+      expect(result.activities[0].slots).to.deep.include(expectedRes2)
     })
 
     after('cleaning up venues', async function () {
@@ -967,7 +998,7 @@ describe('venue', function () {
     afterEach('delete workshops from venue', async function () {
       await Venue.findOneAndUpdate(
         { edition: venue.edition },
-        { $set: { workshops: [] } }
+        { $set: { activities: [] } }
       )
     })
   })
@@ -993,25 +1024,28 @@ describe('venue', function () {
 
       let res = await server.inject({
         method: 'POST',
-        url: '/venue/workshop',
-        headers: headers,
-        payload: mocks.ACTIVITY1
+        url: '/venue/activity',
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        },
+        payload: mocks.WORKSHOP1
       })
 
       venue = res.result
+      expect(res.statusCode).to.eql(200)
     })
 
     it('should replace the workshop with the new workshops', async function () {
       let workshops = [
-        mocks.ACTIVITY1,
-        mocks.ACTIVITY2,
-        mocks.ACTIVITY3,
-        mocks.ACTIVITY4
+        mocks.WORKSHOP1,
+        mocks.WORKSHOP2,
+        mocks.WORKSHOP3,
+        mocks.WORKSHOP4
       ]
 
       let res = await server.inject({
         method: 'PUT',
-        url: '/venue/workshop',
+        url: '/venue/activity/workshop',
         payload: workshops,
         headers: {
           Authorization: sinfoCredentials.authenticator
@@ -1021,10 +1055,13 @@ describe('venue', function () {
       let result = res.result
 
       expect(res.statusCode).to.eql(200)
-      expect(result.workshops.length).to.eql(4)
+      expect(result.activities.length).to.eql(1)
+      expect(result.activities[0].kind).to.eql(mocks.WORKSHOP1.kind)
+      expect(result.activities[0].slots.length).to.eql(4)
 
-      expect(result.workshops.map(ws => {
+      expect(result.activities[0].slots.map(ws => {
         delete ws.id
+        ws['kind'] = mocks.WORKSHOP1.kind
         return ws
       })).to.eql(workshops)
     })
@@ -1032,18 +1069,43 @@ describe('venue', function () {
     it('should give an error if one of the workshops has start >= end', async function () {
       let date = new Date()
       let workshops = [
-        mocks.ACTIVITY1,
+        mocks.WORKSHOP1,
         {
           day: 2,
           start: date,
-          end: date
+          end: date,
+          kind: mocks.WORKSHOP1.kind
         },
-        mocks.ACTIVITY3
+        mocks.WORKSHOP3
       ]
 
       let res = await server.inject({
         method: 'PUT',
-        url: `/venue/workshop`,
+        url: `/venue/activity/workshop`,
+        payload: workshops,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      expect(res.statusCode).to.eql(422)
+    })
+
+    it('should give an error if one of the workshops has wrong kind', async function () {
+      let workshops = [
+        mocks.WORKSHOP1,
+        {
+          day: 2,
+          start: mocks.WORKSHOP2.start,
+          end: mocks.WORKSHOP2.end,
+          kind: 'wrong'
+        },
+        mocks.WORKSHOP3
+      ]
+
+      let res = await server.inject({
+        method: 'PUT',
+        url: `/venue/activity/workshop`,
         payload: workshops,
         headers: {
           Authorization: sinfoCredentials.authenticator
@@ -1065,429 +1127,6 @@ describe('venue', function () {
       await Venue.findOneAndUpdate(
         { edition: venue.edition },
         { $set: { workshops: [] } }
-      )
-    })
-  })
-
-  describe('add presentation to venue', async function () {
-    let venue
-
-    before('create venue with image', async function () {
-      let form = new FormData()
-      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
-
-      let payload = await streamToPromise(form)
-      let headers = form.getHeaders()
-
-      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
-
-      let res = await server.inject({
-        method: 'POST',
-        url: `/venue/image`,
-        headers: headers,
-        payload: payload
-      })
-
-      venue = res.result
-    })
-
-    it('should add a new presentation', async function () {
-      let res = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY1,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let result = res.result
-
-      expect(res.statusCode).to.eql(200)
-      expect(result.presentations.length).to.eql(1)
-      expect(result.presentations).to.deep.include(Object.assign({}, mocks.ACTIVITY1, { id: 0 }))
-    })
-
-    it('should add another presentation with incremented id', async function () {
-      let res1 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY1,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res2 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY2,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let result = res2.result
-
-      expect(res1.statusCode).to.eql(200)
-      expect(res2.statusCode).to.eql(200)
-      expect(result.presentations.length).to.eql(2)
-      expect(result.presentations).to.deep.include(Object.assign({}, mocks.ACTIVITY1, { id: 0 }))
-      expect(result.presentations).to.deep.include(Object.assign({}, mocks.ACTIVITY2, { id: 1 }))
-    })
-
-    it('should add a presentation with id corresponding to the lowest number available', async function () {
-      let res1 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY1,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res2 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY2,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res3 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY3,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let v = await Venue.findOne({ edition: venue.edition })
-      v.presentations = v.presentations.filter(pres => pres.id !== 0 && pres.id !== 1)
-      await v.save()
-
-      let res4 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY4,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res5 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY5,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let result = res5.result
-
-      expect(res1.statusCode).to.eql(200)
-      expect(res2.statusCode).to.eql(200)
-      expect(res3.statusCode).to.eql(200)
-      expect(res4.statusCode).to.eql(200)
-      expect(res5.statusCode).to.eql(200)
-
-      expect(result.presentations.length).to.eql(3)
-      expect(result.presentations[0]).to.deep.eql(Object.assign({}, mocks.ACTIVITY3, { id: 2 }))
-      expect(result.presentations[1]).to.deep.eql(Object.assign({}, mocks.ACTIVITY4, { id: 0 }))
-      expect(result.presentations[2]).to.deep.eql(Object.assign({}, mocks.ACTIVITY5, { id: 1 }))
-    })
-
-    it('should give an error if start >= end', async function () {
-      let date = new Date()
-      let res = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: {
-          day: 1,
-          start: date,
-          end: date
-        },
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      expect(res.statusCode).to.eql(422)
-    })
-
-    after('cleaning up venues', async function () {
-      try {
-        await Venue.collection.drop()
-      } catch (err) {
-        // do nothing
-      }
-    })
-
-    afterEach('delete presentations from venue', async function () {
-      await Venue.findOneAndUpdate(
-        { edition: venue.edition },
-        { $set: { presentations: [] } }
-      )
-    })
-  })
-
-  describe('delete a presentation in venue', async function () {
-    let venue
-
-    before('create venue with image', async function () {
-      let form = new FormData()
-      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
-
-      let payload = await streamToPromise(form)
-      let headers = form.getHeaders()
-
-      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
-
-      let res = await server.inject({
-        method: 'POST',
-        url: `/venue/image`,
-        headers: headers,
-        payload: payload
-      })
-
-      venue = res.result
-    })
-
-    it('should add a series of presentations and try to remove the one with id 3 (which doesn\'t exist)', async function () {
-      let res1 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY1,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res2 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY2,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res3 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY3,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let v = await Venue.findOne({ edition: venue.edition })
-      v.presentations = v.presentations.filter(pres => pres.id !== 1)
-      await v.save()
-
-      let res4 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY4,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res5 = await server.inject({
-        method: 'DELETE',
-        url: `/venue/presentation/3`,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let result = res4.result
-
-      expect(res1.statusCode).to.eql(200)
-      expect(res2.statusCode).to.eql(200)
-      expect(res3.statusCode).to.eql(200)
-      expect(res4.statusCode).to.eql(200)
-      expect(res5.statusCode).to.eql(422)
-      expect(result.presentations.length).to.eql(3)
-      expect(result.presentations).to.deep.include(Object.assign({}, mocks.ACTIVITY1, { id: 0 }))
-      expect(result.presentations).to.deep.include(Object.assign({}, mocks.ACTIVITY3, { id: 2 }))
-      expect(result.presentations).to.deep.include(Object.assign({}, mocks.ACTIVITY4, { id: 1 }))
-    })
-
-    it('should add a series of presentations and remove the one with id 1', async function () {
-      let res1 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY1,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res2 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY2,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res3 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY3,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let v = await Venue.findOne({ edition: venue.edition })
-      v.presentations = v.presentations.filter(ws => ws.id !== 1)
-      await v.save()
-
-      let res4 = await server.inject({
-        method: 'POST',
-        url: `/venue/presentation`,
-        payload: mocks.ACTIVITY4,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let res5 = await server.inject({
-        method: 'DELETE',
-        url: `/venue/presentation/1`,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let result = res5.result
-
-      expect(res1.statusCode).to.eql(200)
-      expect(res2.statusCode).to.eql(200)
-      expect(res3.statusCode).to.eql(200)
-      expect(res4.statusCode).to.eql(200)
-      expect(res5.statusCode).to.eql(200)
-      expect(result.presentations.length).to.eql(2)
-      expect(result.presentations).to.deep.include(Object.assign({}, mocks.ACTIVITY1, { id: 0 }))
-      expect(result.presentations).to.deep.include(Object.assign({}, mocks.ACTIVITY3, { id: 2 }))
-    })
-
-    after('cleaning up venues', async function () {
-      try {
-        await Venue.collection.drop()
-      } catch (err) {
-        // do nothing
-      }
-    })
-
-    afterEach('delete presentations from venue', async function () {
-      await Venue.findOneAndUpdate(
-        { edition: venue.edition },
-        { $set: { presentations: [] } }
-      )
-    })
-  })
-
-  describe('replace presentations in venue', async function () {
-    let venue
-
-    before('create venue with image and add a presentation', async function () {
-      let form = new FormData()
-      form.append('file', fs.createReadStream(path.join(__dirname, './venue.js'))) // eslint-disable-line security/detect-non-literal-fs-filename
-
-      let payload = await streamToPromise(form)
-      let headers = form.getHeaders()
-
-      Object.assign(headers, { Authorization: sinfoCredentials.authenticator })
-
-      await server.inject({
-        method: 'POST',
-        url: `/venue/image`,
-        headers: headers,
-        payload: payload
-      })
-
-      let res = await server.inject({
-        method: 'POST',
-        url: '/venue/presentation',
-        headers: headers,
-        payload: mocks.ACTIVITY1
-      })
-
-      venue = res.result
-    })
-
-    it('should replace the presentation with the new presentations', async function () {
-      let presentations = [
-        mocks.ACTIVITY1,
-        mocks.ACTIVITY2,
-        mocks.ACTIVITY3,
-        mocks.ACTIVITY4
-      ]
-
-      let res = await server.inject({
-        method: 'PUT',
-        url: '/venue/presentation',
-        payload: presentations,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      let result = res.result
-
-      expect(res.statusCode).to.eql(200)
-      expect(result.presentations.length).to.eql(4)
-
-      expect(result.presentations.map(pres => {
-        delete pres.id
-        return pres
-      })).to.eql(presentations)
-    })
-
-    it('should give an error if one of the presentations has start >= end', async function () {
-      let date = new Date()
-      let presentations = [
-        mocks.ACTIVITY1,
-        {
-          day: 2,
-          start: date,
-          end: date
-        },
-        mocks.ACTIVITY3
-      ]
-
-      let res = await server.inject({
-        method: 'PUT',
-        url: `/venue/presentation`,
-        payload: presentations,
-        headers: {
-          Authorization: sinfoCredentials.authenticator
-        }
-      })
-
-      expect(res.statusCode).to.eql(422)
-    })
-
-    after('cleaning up venues', async function () {
-      try {
-        await Venue.collection.drop()
-      } catch (err) {
-        // do nothing
-      }
-    })
-
-    afterEach('delete presentations from venue', async function () {
-      await Venue.findOneAndUpdate(
-        { edition: venue.edition },
-        { $set: { presentations: [] } }
       )
     })
   })

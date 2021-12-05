@@ -11,6 +11,7 @@ const streamToPromise = require('stream-to-promise')
 const FormData = require('form-data')
 const fs = require('fs')
 const helpers = require('./helpers')
+const { LINK3 } = require('./mocks')
 
 let sinfoCredentials
 
@@ -136,6 +137,9 @@ describe('reservation', async function () {
     let stands = [
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]
+    let activities = [
+      mocks.WORKSHOP1, mocks.WORKSHOP2, mocks.WORKSHOP3, mocks.WORKSHOP4
+    ]
 
     let venue, stands1, stands2
 
@@ -211,6 +215,21 @@ describe('reservation', async function () {
         expect(res.statusCode).to.eql(200)
       }
 
+      for (let activity of activities) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/activity`,
+          payload: activity,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
       stands1 = [
         {
           day: 1,
@@ -252,7 +271,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, activities: [{ kind: LINK3.activities[0], id: venue.activities.find(a => a.kind === activities[0].kind).slots[0].id }] }
       })
 
       expect(res2.statusCode).to.eql(200)
@@ -354,6 +373,10 @@ describe('reservation', async function () {
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]
 
+    let activities = [
+      mocks.WORKSHOP1, mocks.WORKSHOP2, mocks.WORKSHOP3, mocks.WORKSHOP4
+    ]
+
     let venue, stands1, stands2
 
     before('create links and make venue', async function () {
@@ -428,6 +451,21 @@ describe('reservation', async function () {
         expect(res.statusCode).to.eql(200)
       }
 
+      for (let activity of activities) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/activity`,
+          payload: activity,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
       stands1 = [
         {
           day: 1,
@@ -474,7 +512,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, activities: [{ kind: LINK3.activities[0], id: venue.activities.find(a => a.kind === activities[0].kind).slots[0].id }] }
       })
 
       expect(res2.statusCode).to.eql(200)
@@ -556,6 +594,10 @@ describe('reservation', async function () {
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]
 
+    let activities = [
+      mocks.WORKSHOP1, mocks.WORKSHOP2, mocks.WORKSHOP3, mocks.WORKSHOP4
+    ]
+
     let venue, stands1, stands2
 
     before('create links and make venue', async function () {
@@ -620,6 +662,21 @@ describe('reservation', async function () {
           method: 'POST',
           url: `/venue/stand`,
           payload: stand,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
+      for (let activity of activities) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/activity`,
+          payload: activity,
           headers: {
             Authorization: sinfoCredentials.authenticator
           }
@@ -809,7 +866,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, activities: [{ kind: LINK3.activities[0], id: venue.activities.find(a => a.kind === activities[0].kind).slots[0].id }] }
       })
 
       let res4 = await server.inject({
@@ -858,7 +915,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, activities: [{ kind: LINK3.activities[0], id: venue.activities.find(a => a.kind === activities[0].kind).slots[0].id }] }
       })
 
       let res4 = await server.inject({
@@ -916,7 +973,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, activities: [{ kind: LINK3.activities[0], id: venue.activities.find(a => a.kind === activities[0].kind).slots[0].id }] }
       })
 
       let res4 = await server.inject({
@@ -972,6 +1029,10 @@ describe('reservation', async function () {
 
     let stands = [
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
+    ]
+
+    let activities = [
+      mocks.WORKSHOP1, mocks.WORKSHOP2, mocks.WORKSHOP3, mocks.WORKSHOP4
     ]
 
     let venue, stands1, stands2
@@ -1049,6 +1110,21 @@ describe('reservation', async function () {
         expect(res.statusCode).to.eql(200)
       }
 
+      for (let activity of activities) {
+        let res = await server.inject({
+          method: 'POST',
+          url: `/venue/activity`,
+          payload: activity,
+          headers: {
+            Authorization: sinfoCredentials.authenticator
+          }
+        })
+
+        venue = res.result
+
+        expect(res.statusCode).to.eql(200)
+      }
+
       stands1 = [
         {
           day: 1,
@@ -1090,7 +1166,7 @@ describe('reservation', async function () {
         headers: {
           Authorization: `bearer ${token2}`
         },
-        payload: { stands: stands2 }
+        payload: { stands: stands2, activities: [{ kind: LINK3.activities[0], id: venue.activities.find(a => a.kind === activities[0].kind).slots[0].id }] }
       })
 
       reservation = res5.result

@@ -28,14 +28,8 @@ let linkSchema = mongoose.Schema({
   },
   valid: Boolean,
   participationDays: Number,
-  activities: [{
-    kind: String,
-    date: Date
-  }],
-  advertisementKind: String,
-  workshop: Boolean,
-  presentation: Boolean,
-  lunchTalk: Boolean
+  activities: [String],
+  advertisementKind: String
 }, {
   toJSON: {
     transform: function (doc, ret) {

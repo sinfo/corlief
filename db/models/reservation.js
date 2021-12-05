@@ -34,17 +34,14 @@ let reservationSchema = mongoose.Schema({
     required: true,
     default: []
   },
-  workshop: {
-    type: Number,
-    min: 0
-  },
-  presentation: {
-    type: Number,
-    min: 0
-  },
-  lunchTalk: {
-    type: Number,
-    min: 0
+  activities: {
+    type: [{
+      kind: String,
+      id: {
+        type: Number,
+        min: 0
+      }
+    }]
   },
   feedback: {
     type: {
@@ -71,6 +68,10 @@ let reservationSchema = mongoose.Schema({
         delete stand._id
         delete stand.__v
       })
+      ret.activities.forEach(activity => {
+        delete activity._id
+        delete activity.__v
+      })
     }
   }
 })
@@ -85,13 +86,11 @@ reservationSchema.methods.addStand = function (stand) {
   return stands
 }
 
-reservationSchema.methods.addStands = function (stands, workshop, presentation) {
+reservationSchema.methods.addStands = function (stands, activities) {
   for (let s of stands) {
     this.stands = this.addStand(s)
   }
-
-  if (workshop) { this.workshop = workshop }
-  if (presentation) { this.presentation = presentation }
+  this.activities = activities
 
   return this.save()
 }

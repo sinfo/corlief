@@ -18,21 +18,19 @@ async function findOne(id, companyId, edition) {
   })
 }
 
-async function addReservation(newId, companyId, edition, stands, workshop, presentation, lunchTalk) {
+async function addReservation(newId, companyId, edition, stands, activities) {
   let newReservation = new Reservation({
     id: newId,
     companyId: companyId,
     edition: edition,
     stands: stands,
-    workshop: workshop,
-    presentation: presentation,
-    lunchTalk: lunchTalk
+    activities: activities
   })
 
   return newReservation.save()
 }
 
-async function addStands(companyId, edition, stands, workshop, presentation, lunchTalk) {
+async function addStands(companyId, edition, stands, activities) {
   let latest = await Reservation.getLatest(companyId, edition)
 
   if (latest === null || latest.feedback.status === 'CANCELLED') {
@@ -40,9 +38,9 @@ async function addStands(companyId, edition, stands, workshop, presentation, lun
       ? latest.id + 1
       : 0
 
-    return addReservation(newId, companyId, edition, stands, workshop, presentation, lunchTalk)
+    return addReservation(newId, companyId, edition, stands, activities)
   }
-  return latest.addStands(stands, workshop, presentation, lunchTalk)
+  return latest.addStands(stands, activities)
 }
 
 async function canMakeReservation(companyId, edition) {
@@ -110,7 +108,7 @@ async function isStandAvailable(confirmedStands, pendingStands, stand) {
   return true
 }
 
-async function areAvailable(edition, stands, workshop, presentation, lunchTalk, venue, forConfirmation = false) {
+async function areAvailable(edition, stands, activities, venue, forConfirmation = false) {
   const confirmed = await Reservation.getConfirmedReservations(edition)
   let pending = !forConfirmation ? await Reservation.getPendingReservations(edition) : null
 
@@ -128,37 +126,25 @@ async function areAvailable(edition, stands, workshop, presentation, lunchTalk, 
     }
   }
 
-  if (workshop != null) {
-    if (forConfirmation) {
-      if (confirmed.map(res => res.workshop).includes(workshop)) {
-        return false
-      }
-    } else {
-      if (confirmed.map(res => res.workshop).includes(workshop) || pending.map(res => res.workshop).includes(workshop)) {
-        return false
-      }
-    }
-  }
+  for (let activity of activities) {
+    const kind = activity.kind
+    const id = activity.id
 
-  if (presentation != null) {
     if (forConfirmation) {
-      if (confirmed.map(res => res.presentation).includes(presentation)) {
+      if (confirmed.map(res => {
+        const act = res.activities.find(act => act.kind === kind)
+        return act ? act.id : -1
+      }).includes(id)) {
         return false
       }
     } else {
-      if (confirmed.map(res => res.presentation).includes(presentation) || pending.map(res => res.presentation).includes(presentation)) {
-        return false
-      }
-    }
-  }
-
-  if (lunchTalk != null) {
-    if (forConfirmation) {
-      if (confirmed.map(res => res.lunchTalk).includes(lunchTalk)) {
-        return false
-      }
-    } else {
-      if (confirmed.map(res => res.lunchTalk).includes(lunchTalk) || pending.map(res => res.lunchTalk).includes(lunchTalk)) {
+      if (confirmed.map(res => {
+        const act = res.activities.find(act => act.kind === kind)
+        return act ? act.id : -1
+      }).includes(id) || pending.map(res => {
+        const act = res.activities.find(act => act.kind === kind)
+        return act ? act.id : -1
+      }).includes(id)) {
         return false
       }
     }
@@ -167,7 +153,7 @@ async function areAvailable(edition, stands, workshop, presentation, lunchTalk, 
   return true
 }
 
-async function areValid(venue, stands, workshop, presentation, lunchTalk) {
+async function areValid(venue, stands, activities) {
   let ids = venue.getIds()
 
   if (venue.stands.length !== 0) { // If no stands, reservation only contains day
@@ -178,19 +164,8 @@ async function areValid(venue, stands, workshop, presentation, lunchTalk) {
     }
   }
 
-  if (workshop != null) {
-    ids = venue.getWsIds()
-    if (!ids.includes(workshop)) { return false }
-  }
-
-  if (presentation != null) {
-    ids = venue.getPresIds()
-    if (!ids.includes(presentation)) { return false }
-  }
-
-  if (lunchTalk != null) {
-    ids = venue.getLunchTalkIds()
-    if (!ids.includes(lunchTalk)) { return false }
+  for (let activity of activities) {
+    if (!venue.getActivityIds(activity.kind).includes(activity.id)) { return false }
   }
 
   return true
@@ -217,7 +192,7 @@ async function confirm(companyId, edition, member, venue) {
     return result
   }
 
-  let available = await areAvailable(edition, latest.stands, latest.workshop, latest.presentation, latest.lunchTalk, venue, true)
+  let available = await areAvailable(edition, latest.stands, latest.activities, venue, true)
 
   if (!available) {
     result.error = 'Stands are no longer available'

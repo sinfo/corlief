@@ -6,10 +6,12 @@ const handlebars = require('handlebars')
 
 const API_KEY = config.MAILGUN.API_KEY
 const DOMAIN = config.MAILGUN.DOMAIN
+const HOST = config.MAILGUN.HOST
 
 const mailgun = require('mailgun-js')({
   apiKey: API_KEY,
-  domain: DOMAIN
+  domain: DOMAIN,
+  host: HOST
 })
 
 let template
@@ -26,8 +28,25 @@ fs.readFile(filename, { encoding: 'UTF-8' }, (err, data) => {
 })
 
 function send (receivers, templateData) {
-  receivers.push(config.COORDINATION_EMAIL)
+  // receivers.push(config.COORDINATION_EMAIL)
+  const venue = templateData.venue
   templateData.reservation.stands.map(stand => { stand.standId++; return stand })
+  templateData.reservation.activities.map(act => {
+    const activities = venue.activities.find(el => el.kind === act.kind)
+    const slot = activities.slots.find(el => el.id === act.id)
+    act.day = slot.day
+    const start = new Date(slot.start)
+    const end = new Date(slot.end)
+    var shours = start.getUTCHours() < 10 ? '0' + start.getUTCHours() : start.getUTCHours()
+    var sminutes = start.getUTCMinutes() < 10 ? '0' + start.getUTCMinutes() : start.getUTCMinutes()
+    var ehours = end.getUTCHours() < 10 ? '0' + end.getUTCHours() : end.getUTCHours()
+    var eminutes = end.getUTCMinutes() < 10 ? '0' + end.getUTCMinutes() : end.getUTCMinutes()
+    act.start = shours + ':' + sminutes
+    act.end = ehours + ':' + eminutes
+    act.id++
+    return act
+  })
+  templateData.reservation.issued = new Date(templateData.reservation.issued).toUTCString()
 
   receivers.forEach(receiver => {
     let data = {
@@ -43,37 +62,40 @@ function send (receivers, templateData) {
   })
 }
 
-function sendConfirmation (receivers, reservation, link) {
-  if (process.env.NODE_ENV !== 'production') { return }
+function sendConfirmation (receivers, reservation, link, venue) {
+  // if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
     state: 'CONFIRMED',
-    reservation: reservation.data,
-    link: link
+    reservation: reservation.data.toJSON(),
+    link: link.toJSON(),
+    venue: venue
   }
 
   send(receivers, data)
 }
 
-function sendCancellation (receivers, reservation, link) {
+function sendCancellation (receivers, reservation, link, venue) {
   if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
     state: 'CANCELLED',
-    reservation: reservation,
-    link: link
+    reservation: reservation.toJSON(),
+    link: link.toJSON(),
+    venue: venue
   }
 
   send(receivers, data)
 }
 
-function sendNewReservation (receivers, reservation, link) {
+function sendNewReservation (receivers, reservation, link, venue) {
   if (process.env.NODE_ENV !== 'production') { return }
 
   let data = {
     state: 'PENDING',
-    reservation: reservation,
-    link: link
+    reservation: reservation.toJSON(),
+    link: link.toJSON(),
+    venue: venue
   }
 
   send(receivers, data)
