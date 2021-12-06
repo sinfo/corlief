@@ -1,5 +1,10 @@
 const Joi = require('joi')
 
+/** ========================================
+ *  VENUE
+ *  ========================================
+ */
+
 let stand = Joi.object().keys({
   id: Joi.number().min(0).required(),
 
@@ -39,12 +44,34 @@ let activity = Joi.object().keys({
 })
 
 let activityPayload = Joi.object().keys({
+  kind: Joi.string().required(),
 
   day: Joi.number().min(1).max(5).required(),
 
   start: Joi.date().required(),
 
   end: Joi.date().required()
+})
+
+let activities = Joi.object().keys({
+  kind: Joi.string().required(),
+  slots: Joi.array().items(
+    activity
+  )
+})
+
+let activityAvailability = Joi.object().keys({
+  id: Joi.number().integer().min(0),
+  free: Joi.boolean(),
+  start: Joi.date(),
+  end: Joi.date()
+})
+
+let activitiesAvailability = Joi.object().keys({
+  kind: Joi.string(),
+  slots: Joi.array().items(activityAvailability).unique((s1, s2) => {
+    return s1.id === s2.id
+  })
 })
 
 let activitiesPayload = Joi.array().items(activityPayload)
@@ -55,12 +82,32 @@ let venue = Joi.object().keys({
   stands: Joi.array().items(
     stand.optional()
   ).label('stand'),
-  workshops: Joi.array().items(activity.optional()).label('workshop'),
-  presentations: Joi.array().items(activity.optional()).label('presentation'),
-  lunchTalks: Joi.array().items(activity.optional()).label('lunch talk')
+  activities: Joi.array().items(activities.optional())
 }).label('venue')
 
 let venues = Joi.array().items(venue).min(0)
+
+let venueAvailability = Joi.object().keys({
+  venue: venue,
+  availability: Joi.array().items(
+    Joi.object().keys({
+      day: Joi.number().integer().min(1).max(5).required(),
+      nStands: Joi.number().integer(),
+      stands: Joi.array().items(
+        Joi.object().keys({
+          id: Joi.number().integer().min(0),
+          free: Joi.boolean()
+        })
+      ).unique((s1, s2) => {
+        return s1.id === s2.id
+      }),
+      activities: Joi.array().items(activitiesAvailability)
+
+    })
+  )
+})
+
+module.exports.venueAvailability = venueAvailability
 
 module.exports.standPayload = standPayload
 module.exports.standsPayload = standsPayload
@@ -70,6 +117,11 @@ module.exports.stand = stand
 
 module.exports.venue = venue
 module.exports.venues = venues
+
+/** ========================================
+ *  LINK
+ *  ========================================
+ */
 
 let link = Joi.object().keys({
   companyId: Joi.string().required(),
@@ -83,12 +135,10 @@ let link = Joi.object().keys({
   token: Joi.string().required(),
   valid: Joi.boolean().required(),
   participationDays: Joi.number().min(1),
-  activities: Joi.array().items(
-    Joi.object().keys({
-      kind: Joi.string().required(),
-      date: Joi.date().required()
-    }).label('activities')
-  ),
+  activities: Joi.array()
+    .items(Joi.string()
+      .min(1).max(30)
+      .description('Type of activity')),
   advertisementKind: Joi.string().required(),
   workshop: Joi.bool(),
   presentation: Joi.bool(),
@@ -111,24 +161,22 @@ let linkPayload = Joi.object().keys({
     .required().min(1).max(100)
     .description('Company advertisement package in edition'),
   activities: Joi.array()
-    .items(Joi.object({
-      kind: Joi.string()
-        .min(1).max(30)
-        .description('Type of activity'),
-      date: Joi.date()
-        .description('Date of realization of such activity')
-    })),
+    .items(Joi.string()
+      .min(1).max(30)
+      .description('Type of activity')).default([]),
   expirationDate: Joi.date()
     .required().min(new Date())
-    .description('Date of link expiration'),
-  workshop: Joi.bool().description('Company has workshop'),
-  presentation: Joi.bool().description('Company has presentation'),
-  lunchTalk: Joi.bool().description('Company has lunch talk')
+    .description('Date of link expiration')
 })
 
 module.exports.link = link
 module.exports.links = links
 module.exports.linkPayload = linkPayload
+
+/** ========================================
+ *  CONFIG
+ *  ========================================
+ */
 
 let config = Joi.object().keys({
   edition: Joi.string().required(),
@@ -141,6 +189,11 @@ let configs = Joi.array().items(config).min(0)
 module.exports.config = config
 module.exports.configs = configs
 
+/** ========================================
+ *  CREDENTIALS
+ *  ========================================
+ */
+
 let credentials = Joi.object().keys({
   exp: Joi.number().required(),
   company: Joi.string().required(),
@@ -148,9 +201,7 @@ let credentials = Joi.object().keys({
   edition: Joi.string().required(),
   iat: Joi.number(),
   participationDays: Joi.number().required(),
-  workshop: Joi.boolean().required(),
-  presentation: Joi.boolean().required(),
-  lunchTalk: Joi.boolean().required()
+  activities: Joi.array().items(Joi.string())
 })
 
 module.exports.credentials = credentials
@@ -162,6 +213,11 @@ let sinfoCredentials = Joi.object().keys({
 
 module.exports.sinfoCredentials = sinfoCredentials
 
+/** ========================================
+ *  RESERVATIONS
+ *  ========================================
+ */
+
 let standReservation = Joi.object().keys({
   day: Joi.number().required().min(1),
   standId: Joi.number().min(0).max(100)
@@ -172,13 +228,13 @@ let standsReservation = Joi.object().keys({
     .min(0).unique((s1, s2) => {
       return s1.day === s2.day
     }),
-  workshop: Joi.number().min(0),
-  presentation: Joi.number().min(0),
-  lunchTalk: Joi.number().min(0)
+  activities: Joi.array().items(
+    Joi.object().keys({
+      kind: Joi.string().min(0),
+      id: Joi.number().min(0)
+    })
+  ).default([])
 })
-
-module.exports.standReservation = standReservation
-module.exports.standsReservation = standsReservation
 
 let reservation = Joi.object().keys({
   id: Joi.number().required(),
@@ -189,9 +245,12 @@ let reservation = Joi.object().keys({
     .min(0).unique((s1, s2) => {
       return s1.day === s2.day
     }),
-  workshop: Joi.number().min(0),
-  presentation: Joi.number().min(0),
-  lunchTalk: Joi.number().min(0),
+  activities: Joi.array().items(
+    Joi.object().keys({
+      kind: Joi.string().min(0),
+      id: Joi.number().min(0)
+    })
+  ),
   feedback: Joi.object().keys({
     status: Joi.string().required(),
     member: Joi.string().optional()
@@ -202,55 +261,8 @@ let reservations = Joi.array().items(reservation).min(0)
 module.exports.reservation = reservation
 module.exports.reservations = reservations
 
-let venueAvailability = Joi.object().keys({
-  venue: venue,
-  availability: Joi.array().items(
-    Joi.object().keys({
-      day: Joi.number().integer().min(1).max(5).required(),
-      nStands: Joi.number().integer(),
-      stands: Joi.array().items(
-        Joi.object().keys({
-          id: Joi.number().integer().min(0),
-          free: Joi.boolean()
-        })
-      ).unique((s1, s2) => {
-        return s1.id === s2.id
-      }),
-      workshops: Joi.array().items(
-        Joi.object().keys({
-          id: Joi.number().integer().min(0),
-          free: Joi.boolean(),
-          start: Joi.date(),
-          end: Joi.date()
-        })
-      ).unique((s1, s2) => {
-        return s1.id === s2.id
-      }),
-      presentations: Joi.array().items(
-        Joi.object().keys({
-          id: Joi.number().integer().min(0),
-          free: Joi.boolean(),
-          start: Joi.date(),
-          end: Joi.date()
-        })
-      ).unique((s1, s2) => {
-        return s1.id === s2.id
-      }),
-      lunchTalks: Joi.array().items(
-        Joi.object().keys({
-          id: Joi.number().integer().min(0),
-          free: Joi.boolean(),
-          start: Joi.date(),
-          end: Joi.date()
-        })
-      ).unique((s1, s2) => {
-        return s1.id === s2.id
-      })
-    })
-  )
-})
-
-module.exports.venueAvailability = venueAvailability
+module.exports.standReservation = standReservation
+module.exports.standsReservation = standsReservation
 
 let company = Joi.object().keys({
   id: Joi.string().required(),

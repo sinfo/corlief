@@ -4,7 +4,7 @@ let Link = require(path.join(__dirname, '..', 'models', 'link'))
 module.exports.create = async (
   companyId, companyName,
   edition, memberEmail, token, participationDays,
-  activities, advertisementKind, companyEmail, workshop, presentation, lunchTalk
+  activities, advertisementKind, companyEmail
 ) => {
   const contacts = companyEmail
     ? { company: companyEmail, member: memberEmail }
@@ -20,10 +20,7 @@ module.exports.create = async (
     valid: true,
     participationDays: participationDays,
     activities: activities,
-    advertisementKind: advertisementKind,
-    workshop: workshop,
-    presentation: presentation,
-    lunchTalk: lunchTalk
+    advertisementKind: advertisementKind
   })
 }
 

@@ -9,9 +9,23 @@
   </div>
   {{/each}}
 
-  <p><b>Issued:</b> {{reservation.issued}}</p>
+  <h2>Activities</h2>
+  {{#each reservation.activities}}
+  <div>
+    <span><b>Kind:</b> {{kind}}</span>
+    <span><b>Day:</b> {{day}}</span>
+    <span><b>Start:</b> {{start}}</span>
+    <span><b>End:</b> {{end}}</span>
+  </div>
+  {{/each}}
 
-  <p>Click <a href="https://corlief.sinfo.org/token/{{link.token}}">here</a> to go to company's page</p>
+  <h2>Info</h2>
+  <p><b>Issued:</b> {{reservation.issued}}</p>
+  <span>All times above are in GMT+0 time.</span>
+  <h4>Click <a href="https://corlief.sinfo.org/token/{{link.token}}">here</a> to go to company's page</h4>
+
+
+
 
   <b>PLEASE DO NOT REPLY TO THIS EMAIL</b>
 </div>

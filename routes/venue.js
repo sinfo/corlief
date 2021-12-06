@@ -279,11 +279,11 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: '/venue/workshop',
+    path: '/venue/activity',
     config: {
       auth: 'sinfo',
       tags: ['api'],
-      description: 'Adds a workshop to the venue corresponding to the latest edition',
+      description: 'Adds an activity to the venue corresponding to the latest edition',
       pre: [
         helpers.pre.edition
       ],
@@ -292,12 +292,13 @@ module.exports = [
           let start = request.payload.start
           let end = request.payload.end
           let day = request.payload.day
+          let kind = request.payload.kind
 
           if (start >= end) {
             return Boom.badData('Start date must be before end date')
           }
 
-          let venue = await request.server.methods.venue.addWorkshop(request.pre.edition, day, start, end)
+          let venue = await request.server.methods.venue.addActivity(request.pre.edition, day, start, end, kind)
           return venue === null
             ? Boom.badData('No venue associated with this event or with image')
             : venue.toJSON()
@@ -311,7 +312,7 @@ module.exports = [
           'Authorization': Joi.string()
         }).unknown(),
         payload: helpers.joi.activityPayload
-          .description('Workshop')
+          .description('activity')
       },
       response: {
         schema: helpers.joi.venue
@@ -320,7 +321,7 @@ module.exports = [
   },
   {
     method: 'DELETE',
-    path: '/venue/workshop/{id}',
+    path: '/venue/activity/{kind}/{id}',
     config: {
       auth: 'sinfo',
       tags: ['api'],
@@ -330,9 +331,9 @@ module.exports = [
       ],
       handler: async (request, h) => {
         try {
-          let venue = await request.server.methods.venue.removeWorkshop(request.pre.edition, request.params.id)
+          let venue = await request.server.methods.venue.removeActivity(request.pre.edition, request.params.id, request.params.kind)
           return venue === null
-            ? Boom.badData('No workshop with this id in the venue')
+            ? Boom.badData('No activity with this id in the venue')
             : venue.toJSON()
         } catch (err) {
           logger.error({ info: request.info, error: err })
@@ -344,6 +345,7 @@ module.exports = [
           'Authorization': Joi.string()
         }).unknown(),
         params: {
+          kind: Joi.string().required(),
           id: Joi.number().min(0)
         }
       },
@@ -354,25 +356,31 @@ module.exports = [
   },
   {
     method: 'PUT',
-    path: '/venue/workshop',
+    path: '/venue/activity/{kind}',
     config: {
       auth: 'sinfo',
       tags: ['api'],
-      description: 'Replaces all workshops on the venue corresponding to the latest edition',
+      description: 'Replaces all activities of {kind} on the venue corresponding to the latest edition',
       pre: [
         helpers.pre.edition
       ],
       handler: async (request, h) => {
         try {
-          let workshops = request.payload
+          let activities = request.payload
+          let kind = request.params.kind
 
-          for (let workshop of workshops) {
-            if (workshop.start >= workshop.end) {
+          for (let activity of activities) {
+            if (activity.start >= activity.end) {
+              logger.error('Start date must be before end date')
               return Boom.badData('Start date must be before end date')
+            }
+            if (activity.kind !== kind) {
+              logger.error(`Activity ${activity.id} has wrong kind`)
+              return Boom.badData(`Activity ${activity.id} has wrong kind`)
             }
           }
 
-          let venue = await request.server.methods.venue.replaceWorkshops(request.pre.edition, workshops)
+          let venue = await request.server.methods.venue.replaceActivitySlots(request.pre.edition, activities, kind)
 
           return venue === null
             ? Boom.badData('No venue associated with this event or with image')
@@ -387,239 +395,7 @@ module.exports = [
           'Authorization': Joi.string()
         }).unknown(),
         payload: helpers.joi.activitiesPayload
-          .description('Workshops')
-      },
-      response: {
-        schema: helpers.joi.venue
-      }
-    }
-  },
-  {
-    method: 'POST',
-    path: '/venue/presentation',
-    config: {
-      auth: 'sinfo',
-      tags: ['api'],
-      description: 'Adds a presentation to the venue corresponding to the latest edition',
-      pre: [
-        helpers.pre.edition
-      ],
-      handler: async (request, h) => {
-        try {
-          let start = request.payload.start
-          let end = request.payload.end
-
-          if (start >= end) {
-            return Boom.badData('Start date must be before end date')
-          }
-
-          let venue = await request.server.methods.venue.addPresentation(request.pre.edition, request.payload.day, start, end)
-          return venue === null
-            ? Boom.badData('No venue associated with this event or with image')
-            : venue.toJSON()
-        } catch (err) {
-          logger.error({ info: request.info, error: err })
-          return Boom.boomify(err)
-        }
-      },
-      validate: {
-        headers: Joi.object({
-          'Authorization': Joi.string()
-        }).unknown(),
-        payload: helpers.joi.activityPayload
-          .description('Presentation')
-      },
-      response: {
-        schema: helpers.joi.venue
-      }
-    }
-  },
-  {
-    method: 'DELETE',
-    path: '/venue/presentation/{id}',
-    config: {
-      auth: 'sinfo',
-      tags: ['api'],
-      description: 'Removes presentaion with id from the venue corresponding to the latest edition',
-      pre: [
-        helpers.pre.edition
-      ],
-      handler: async (request, h) => {
-        try {
-          let venue = await request.server.methods.venue.removePresentation(request.pre.edition, request.params.id)
-          return venue === null
-            ? Boom.badData('No presentation with this id in the venue')
-            : venue.toJSON()
-        } catch (err) {
-          logger.error({ info: request.info, error: err })
-          return Boom.boomify(err)
-        }
-      },
-      validate: {
-        headers: Joi.object({
-          'Authorization': Joi.string()
-        }).unknown(),
-        params: {
-          id: Joi.number().min(0)
-        }
-      },
-      response: {
-        schema: helpers.joi.venue
-      }
-    }
-  },
-  {
-    method: 'PUT',
-    path: '/venue/presentation',
-    config: {
-      auth: 'sinfo',
-      tags: ['api'],
-      description: 'Replaces all presentations on the venue corresponding to the latest edition',
-      pre: [
-        helpers.pre.edition
-      ],
-      handler: async (request, h) => {
-        try {
-          let presentations = request.payload
-
-          for (let presentation of presentations) {
-            if (presentation.start >= presentation.end) {
-              return Boom.badData('Start date must be before end date')
-            }
-          }
-
-          let venue = await request.server.methods.venue.replacePresentations(request.pre.edition, presentations)
-
-          return venue === null
-            ? Boom.badData('No venue associated with this event or with image')
-            : venue.toJSON()
-        } catch (err) {
-          logger.error({ info: request.info, error: err })
-          return Boom.boomify(err)
-        }
-      },
-      validate: {
-        headers: Joi.object({
-          'Authorization': Joi.string()
-        }).unknown(),
-        payload: helpers.joi.activitiesPayload
-          .description('Presentations')
-      },
-      response: {
-        schema: helpers.joi.venue
-      }
-    }
-  },
-  {
-    method: 'POST',
-    path: '/venue/lunchtalk',
-    config: {
-      auth: 'sinfo',
-      tags: ['api'],
-      description: 'Adds a lunch talk to the venue corresponding to the latest edition',
-      pre: [
-        helpers.pre.edition
-      ],
-      handler: async (request, h) => {
-        try {
-          let start = request.payload.start
-          let end = request.payload.end
-          let day = request.payload.day
-
-          if (start >= end) {
-            return Boom.badData('Start date must be before end date')
-          }
-          let venue = await request.server.methods.venue.addLunchTalk(request.pre.edition, day, start, end)
-          return venue === null
-            ? Boom.badData('No venue associated with this event or with image')
-            : venue.toJSON()
-        } catch (err) {
-          logger.error({ info: request.info, error: err })
-          return Boom.boomify(err)
-        }
-      },
-      validate: {
-        headers: Joi.object({
-          'Authorization': Joi.string()
-        }).unknown(),
-        payload: helpers.joi.activityPayload
-          .description('lunch talk')
-      },
-      response: {
-        schema: helpers.joi.venue
-      }
-    }
-  },
-  {
-    method: 'DELETE',
-    path: '/venue/lunchtalk/{id}',
-    config: {
-      auth: 'sinfo',
-      tags: ['api'],
-      description: 'Removes lunchtalk with id from the venue corresponding to the latest edition',
-      pre: [
-        helpers.pre.edition
-      ],
-      handler: async (request, h) => {
-        try {
-          let venue = await request.server.methods.venue.removeLunchTalk(request.pre.edition, request.params.id)
-          return venue === null
-            ? Boom.badData('No lunch talk with this id in the venue')
-            : venue.toJSON()
-        } catch (err) {
-          logger.error({ info: request.info, error: err })
-          return Boom.boomify(err)
-        }
-      },
-      validate: {
-        headers: Joi.object({
-          'Authorization': Joi.string()
-        }).unknown(),
-        params: {
-          id: Joi.number().min(0)
-        }
-      },
-      response: {
-        schema: helpers.joi.venue
-      }
-    }
-  },
-  {
-    method: 'PUT',
-    path: '/venue/lunchtalk',
-    config: {
-      auth: 'sinfo',
-      tags: ['api'],
-      description: 'Replaces all lunch talks on the venue corresponding to the latest edition',
-      pre: [
-        helpers.pre.edition
-      ],
-      handler: async (request, h) => {
-        try {
-          let lunchtalks = request.payload
-
-          for (let lunchtalk of lunchtalks) {
-            if (lunchtalk.start >= lunchtalk.end) {
-              return Boom.badData('Start date must be before end date')
-            }
-          }
-
-          let venue = await request.server.methods.venue.replaceLunchTalks(request.pre.edition, lunchtalks)
-
-          return venue === null
-            ? Boom.badData('No venue associated with this event or with image')
-            : venue.toJSON()
-        } catch (err) {
-          logger.error({ info: request.info, error: err })
-          return Boom.boomify(err)
-        }
-      },
-      validate: {
-        headers: Joi.object({
-          'Authorization': Joi.string()
-        }).unknown(),
-        payload: helpers.joi.activitiesPayload
-          .description('lunch talks')
+          .description('Activities')
       },
       response: {
         schema: helpers.joi.venue

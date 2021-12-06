@@ -107,18 +107,24 @@ async function replaceStands(edition, stands) {
   return venue.save()
 }
 
-async function addWorkshop(edition, day, start, end) {
+async function addActivity(edition, day, start, end, kind) {
   let venue = await find({ edition: edition })
 
   if (venue === null) {
     return null
   }
 
-  let wsId = venue.workshops.map(workshop => +workshop.id).sort((a, b) => a - b)
+  let activityKind = venue.activities.find(a => a.kind === kind)
+  if (!activityKind) {
+    activityKind = { kind: kind, slots: [] }
+    venue.activities.push(activityKind)
+  }
+
+  let ids = activityKind.slots.map(slot => +slot.id).sort((a, b) => a - b)
   let newId = 0
   let prevId = -1
 
-  for (let currId of wsId) {
+  for (let currId of ids) {
     newId = prevId + 1
     if (newId < currId) {
       break
@@ -127,205 +133,62 @@ async function addWorkshop(edition, day, start, end) {
     newId += 1
   }
 
-  venue.workshops.push({
+  let a = {
     id: newId,
     day: day,
     start: start,
     end: end
-  })
+  }
+
+  venue.activities.find(a => a.kind === kind).slots.push(a)
 
   return venue.save()
 }
 
-async function removeWorkshop(edition, id) {
+async function removeActivity(edition, id, kind) {
   let venue = await find({ edition: edition })
 
   if (venue === null) {
     return null
   }
 
-  // find stand with stand.id == id
-  let index = 0
-  let found = false
-  for (index = 0; !found && index < venue.workshops.length; index++) {
-    if (venue.workshops[index].id === id) {
-      found = true
-    }
+  const activityKind = venue.activities.find(a => a.kind === kind)
+  if (!activityKind) {
+    return null
   }
+
+  const index = activityKind.slots.findIndex(act => act.id === id)
+  let found = index !== -1
 
   if (!found) {
     return null
   }
 
   // remove element
-  venue.workshops.splice(index - 1, 1)
+  activityKind.slots.splice(index, 1)
 
   return venue.save()
 }
 
-async function replaceWorkshops(edition, workshops) {
+async function replaceActivitySlots(edition, slots, kind) {
   let venue = await find({ edition: edition })
 
   if (venue === null) {
     return null
   }
 
-  venue.workshops = []
+  const activityKind = venue.activities.find(a => a.kind === kind)
+  if (!activityKind) {
+    return null
+  }
+
+  activityKind.slots = []
   let id = 0
 
-  for (let ws of workshops) {
-    let wsWithId = Object.assign(ws, { id: id })
-    venue.workshops.push(wsWithId)
-    id += 1
-  }
-
-  return venue.save()
-}
-
-async function addPresentation(edition, day, start, end) {
-  let venue = await find({ edition: edition })
-
-  if (venue === null) {
-    return null
-  }
-
-  let presId = venue.presentations.map(pres => +pres.id).sort((a, b) => a - b)
-  let newId = 0
-  let prevId = -1
-
-  for (let currId of presId) {
-    newId = prevId + 1
-    if (newId < currId) {
-      break
-    }
-    prevId = currId
-    newId += 1
-  }
-
-  venue.presentations.push({
-    id: newId,
-    day: day,
-    start: start,
-    end: end
-  })
-
-  return venue.save()
-}
-
-async function removePresentation(edition, id) {
-  let venue = await find({ edition: edition })
-
-  if (venue === null) {
-    return null
-  }
-
-  // find presentation with presentation.id == id
-  let index = 0
-  let found = false
-  for (index = 0; !found && index < venue.presentations.length; index++) {
-    if (venue.presentations[index].id === id) {
-      found = true
-    }
-  }
-
-  if (!found) {
-    return null
-  }
-
-  // remove element
-  venue.presentations.splice(index - 1, 1)
-
-  return venue.save()
-}
-
-async function replacePresentations(edition, presentations) {
-  let venue = await find({ edition: edition })
-
-  if (venue === null) {
-    return null
-  }
-
-  venue.presentations = []
-  let id = 0
-
-  for (let pres of presentations) {
-    let presWithId = Object.assign(pres, { id: id })
-    venue.presentations.push(presWithId)
-    id += 1
-  }
-
-  return venue.save()
-}
-
-async function addLunchTalk(edition, day, start, end) {
-  let venue = await find({ edition: edition })
-
-  if (venue === null) {
-    return null
-  }
-
-  let ltId = venue.lunchTalks.map(lt => +lt.id).sort((a, b) => a - b)
-  let newId = 0
-  let prevId = -1
-
-  for (let currId of ltId) {
-    newId = prevId + 1
-    if (newId < currId) {
-      break
-    }
-    prevId = currId
-    newId += 1
-  }
-
-  venue.lunchTalks.push({
-    id: newId,
-    day: day,
-    start: start,
-    end: end
-  })
-
-  return venue.save()
-}
-
-async function removeLunchTalk(edition, id) {
-  let venue = await find({ edition: edition })
-
-  if (venue === null) {
-    return null
-  }
-
-  // find lunch talk with lunchTalk.id == id
-  let index = 0
-  let found = false
-  for (index = 0; !found && index < venue.lunchTalks.length; index++) {
-    if (venue.lunchTalks[index].id === id) {
-      found = true
-    }
-  }
-
-  if (!found) {
-    return null
-  }
-
-  // remove element
-  venue.lunchTalks.splice(index - 1, 1)
-
-  return venue.save()
-}
-
-async function replaceLunchTalks(edition, lunchTalks) {
-  let venue = await find({ edition: edition })
-
-  if (venue === null) {
-    return null
-  }
-
-  venue.lunchTalks = []
-  let id = 0
-
-  for (let lt of lunchTalks) {
-    let ltWithId = Object.assign(lt, { id: id })
-    venue.lunchTalks.push(ltWithId)
+  for (let slot of slots) {
+    let slotWithId = Object.assign(slot, { id: id })
+    delete slotWithId.kind
+    activityKind.slots.push(slotWithId)
     id += 1
   }
 
@@ -338,12 +201,6 @@ module.exports.updateImage = updateImage
 module.exports.addStand = addStand
 module.exports.removeStand = removeStand
 module.exports.replaceStands = replaceStands
-module.exports.addWorkshop = addWorkshop
-module.exports.removeWorkshop = removeWorkshop
-module.exports.replaceWorkshops = replaceWorkshops
-module.exports.addPresentation = addPresentation
-module.exports.removePresentation = removePresentation
-module.exports.replacePresentations = replacePresentations
-module.exports.addLunchTalk = addLunchTalk
-module.exports.removeLunchTalk = removeLunchTalk
-module.exports.replaceLunchTalks = replaceLunchTalks
+module.exports.addActivity = addActivity
+module.exports.removeActivity = removeActivity
+module.exports.replaceActivitySlots = replaceActivitySlots
