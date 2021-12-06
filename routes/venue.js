@@ -113,7 +113,7 @@ module.exports = [
             file.data,
             `venue${file.extension}`,
             edition)
-
+          logger.info(imageLocation)
           if (imageLocation === null) {
             return Boom.expectationFailed('Could not upload image')
           }
