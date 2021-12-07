@@ -134,7 +134,7 @@ let link = Joi.object().keys({
   created: Joi.date().required(),
   token: Joi.string().required(),
   valid: Joi.boolean().required(),
-  participationDays: Joi.number().min(1),
+  participationDays: Joi.number().min(0),
   activities: Joi.array()
     .items(Joi.string()
       .min(1).max(30)
@@ -155,7 +155,7 @@ let linkPayload = Joi.object().keys({
     .optional().min(1).max(50)
     .description('Email contact of the company\'s employer'),
   participationDays: Joi.number()
-    .required().min(1)
+    .required().min(0)
     .description('Amount of days company will participate in edition'),
   advertisementKind: Joi.string()
     .required().min(1).max(100)
