@@ -166,6 +166,12 @@ async function removeActivity(edition, id, kind) {
 
   // remove element
   activityKind.slots.splice(index, 1)
+  if (activityKind.slots.length === 0) {
+    let i = venue.activities.findIndex(a => a.kind === activityKind.kind)
+    if (i !== -1) {
+      venue.activities.splice(i, 1)
+    }
+  }
 
   return venue.save()
 }
