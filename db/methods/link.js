@@ -59,7 +59,7 @@ module.exports.setToken = async (query, token) => {
   )
 }
 
-module.exports.update = async (id, edition, pDays, adKind, companyContact, memberContact) => {
+module.exports.update = async (id, edition, pDays, adKind, companyContact, memberContact, activities) => {
   let changes = {}
 
   if (pDays) {
@@ -80,6 +80,9 @@ module.exports.update = async (id, edition, pDays, adKind, companyContact, membe
     if (memberContact) {
       changes.contacts.member = memberContact
     }
+  }
+  if (activities) {
+    changes.activities = activities
   }
 
   let update = Link.findOneAndUpdate(
