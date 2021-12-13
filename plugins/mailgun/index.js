@@ -28,7 +28,7 @@ fs.readFile(filename, { encoding: 'UTF-8' }, (err, data) => {
 })
 
 function send (receivers, templateData) {
-  // receivers.push(config.COORDINATION_EMAIL)
+  receivers.push(config.COORDINATION_EMAIL)
   const venue = templateData.venue
   templateData.reservation.stands.map(stand => { stand.standId++; return stand })
   templateData.reservation.activities.map(act => {
