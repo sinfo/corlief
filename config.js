@@ -22,7 +22,7 @@ const config = {
   },
 
   DECK: {
-    HOST: process.env.NODE_ENV === 'production' ? 'https://deck.sinfo.org' : 'https://deck-staging.sinfo.org',
+    HOST: process.env.CORLIEF_DECK_HOST || process.env.NODE_ENV === 'production' ? 'https://deck.sinfo.org' : 'https://deck-staging.sinfo.org',
     PORT: 443,
     USER: process.env.DECK_USER,
     TOKEN: process.env.DECK_TOKEN
