@@ -1,9 +1,7 @@
 const config = {
   HOST: process.env.CORLIEF_HOST || 'localhost',
   PORT: process.env.CORLIEF_PORT || 8888,
-  CORLIEF_PATH: process.env.NODE_ENV === 'production'
-    ? process.env.CORLIEF_PATH
-    : 'localhost:8888',
+  CORLIEF_PATH: process.env.CORLIEF_PATH || 'localhost:8888',
 
   MONGO: {
     DB: process.env.CORLIEF_MONGO_DB || 'corlief',
