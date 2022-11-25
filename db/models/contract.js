@@ -39,3 +39,5 @@ let contractSchema = mongoose.Schema({
 contractSchema.index({ companyId: 1, edition: 1 }, { unique: true })
 
 module.exports = mongoose.model('Contract', contractSchema)
+
+
