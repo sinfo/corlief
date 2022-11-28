@@ -195,6 +195,44 @@ module.exports = [
     }
   },
   {
+    method: 'POST',
+    path: '/company/contract',
+    config: {
+      auth: 'company',
+      tags: ['api'],
+      description: 'Submit signed contract',
+      pre: [
+        [
+          helpers.pre.edition,
+          helpers.pre.file
+        ]
+      ],
+      handler: async (request, h) => {
+        let companyId = request.auth.credentials.company
+        let edition = request.pre.edition
+        let file = request.pre.file
+
+        let contractLocation = await request.server.methods.files.contracts.upload(
+          file.data,
+          `contract_${companyId}_${edition}${file.extension}`,
+          edition,
+          companyId)
+
+        logger.info(contractLocation)
+        if (contractLocation === null) {
+          return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
+        }
+
+        const feedback = await request.server.methods.contract.isContractAccepted(companyId, edition);
+        if (!feedback.result) {
+          logger.error('Contract is pending review')
+          return Boom.locked(feedback.error);
+        }
+
+      }
+    }
+  },
+  {
     method: 'DELETE',
     path: '/company/reservation',
     config: {
