@@ -43,8 +43,8 @@ module.exports = {
     server.method('files.venue.download', download('venue'))
     server.method('files.venue.remove', remove('venue'))
 
-    server.method('files.contract.upload', upload('invoices', false))
-    server.method('files.contract.download', download('invoices'))
-    server.method('files.contract.remove', remove('invoices'))
+    server.method('files.contract.upload', upload('contracts', false))
+    server.method('files.contract.download', download('contracts'))
+    server.method('files.contract.remove', remove('contracts'))
   }
 }
