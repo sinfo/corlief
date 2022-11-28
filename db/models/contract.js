@@ -38,4 +38,38 @@ let contractSchema = mongoose.Schema({
 
 contractSchema.index({ companyId: 1, edition: 1 }, { unique: true })
 
+contractSchema.methods.confirm = async function (member) {
+  if (member) {
+    this.set({
+      feedback: {
+        status: 'CONFIRMED',
+        member: member
+      }
+    })
+  } else {
+    this.set({ feedback: { status: 'CONFIRMED' } })
+  }
+
+  return this.save()
+}
+
+contractSchema.methods.cancel = async function (member) {
+  if (this.feedback.status === 'CANCELLED') {
+    return null
+  }
+
+  if (member) {
+    this.set({
+      feedback: {
+        status: 'CANCELLED',
+        member: member
+      }
+    })
+  } else {
+    this.set({ feedback: { status: 'CANCELLED' } })
+  }
+
+  return this.save()
+}
+
 module.exports = mongoose.model('Contract', contractSchema)
