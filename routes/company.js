@@ -197,26 +197,24 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: '/company/initialinfo',
+    path: '/company/contract',
     config: {
       auth: 'company',
       tags: ['api'],
-      description: 'Submit signed contract and logo',
+      description: 'Submit signed contract',
       pre: [
         [
           helpers.pre.edition,
-          helpers.pre.contract,
-          helpers.pre.logo
+          helpers.pre.contract
         ]
       ],
       handler: async (request, h) => {
         const companyId = request.auth.credentials.company
         const edition = request.pre.edition
         const file = request.pre.contract
-        const logoFile = request.pre.logo 
 
         if (config.SUBMISSIONS.CONTRACTS) {
-          const feedback = await request.server.methods.contract.isContractAccepted(companyId, edition);
+          const feedback = await request.server.methods.contract.isContractAccepted(companyId, edition)
           if (feedback.result == null) {
             let contractLocation = await request.server.methods.files.contracts.upload(
               file.data,
@@ -230,10 +228,10 @@ module.exports = [
             }
           } else if (!feedback.result) {
             logger.error('Contract is pending review')
-            return Boom.locked(feedback.error);
+            return Boom.locked(feedback.error)
           } else {
             logger.info(`A contract was already submitted for ${companyId} for ${edition} edition`)
-            return Boom.locked(feedback.error);
+            return Boom.locked(feedback.error)
           }
         }
       }
