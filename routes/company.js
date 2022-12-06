@@ -212,23 +212,25 @@ module.exports = [
         let edition = request.pre.edition
         let file = request.pre.file
 
-        let contractLocation = await request.server.methods.files.contracts.upload(
-          file.data,
-          `contract_${companyId}_${edition}${file.extension}`,
-          edition,
-          companyId)
-
-        logger.info(contractLocation)
-        if (contractLocation === null) {
-          return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
-        }
-
         const feedback = await request.server.methods.contract.isContractAccepted(companyId, edition);
-        if (!feedback.result) {
+        if (feedback.result == null) {
+          let contractLocation = await request.server.methods.files.contracts.upload(
+            file.data,
+            `contract_${companyId}_${edition}${file.extension}`,
+            edition,
+            companyId)
+  
+          logger.info(contractLocation)
+          if (contractLocation === null) {
+            return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
+          }
+        } else if (!feedback.result) {
           logger.error('Contract is pending review')
           return Boom.locked(feedback.error);
+        } else {
+          logger.info(`A contract was already submitted for ${companyId} for ${edition} edition`)
+          return Boom.locked(feedback.error);
         }
-
       }
     }
   },

@@ -37,7 +37,7 @@ async function deleteContract(companyId, edition) {
 
 async function isContractAccepted(companyId, edition) {
   let response = {
-    result: false,
+    result: null,
     error: null
   }
 
