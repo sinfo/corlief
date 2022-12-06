@@ -3,6 +3,7 @@ const path = require('path')
 const helpers = require(path.join(__dirname, '..', 'helpers'))
 const Boom = require('boom')
 const logger = require('logger').getLogger()
+const config = require('../config')
 
 module.exports = [
   {
@@ -196,40 +197,44 @@ module.exports = [
   },
   {
     method: 'POST',
-    path: '/company/contract',
+    path: '/company/initialinfo',
     config: {
       auth: 'company',
       tags: ['api'],
-      description: 'Submit signed contract',
+      description: 'Submit signed contract and logo',
       pre: [
         [
           helpers.pre.edition,
-          helpers.pre.file
+          helpers.pre.contract,
+          helpers.pre.logo
         ]
       ],
       handler: async (request, h) => {
-        let companyId = request.auth.credentials.company
-        let edition = request.pre.edition
-        let file = request.pre.file
+        const companyId = request.auth.credentials.company
+        const edition = request.pre.edition
+        const file = request.pre.contract
+        const logoFile = request.pre.logo 
 
-        const feedback = await request.server.methods.contract.isContractAccepted(companyId, edition);
-        if (feedback.result == null) {
-          let contractLocation = await request.server.methods.files.contracts.upload(
-            file.data,
-            `contract_${companyId}_${edition}${file.extension}`,
-            edition,
-            companyId)
-  
-          logger.info(contractLocation)
-          if (contractLocation === null) {
-            return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
+        if (config.SUBMISSIONS.CONTRACTS) {
+          const feedback = await request.server.methods.contract.isContractAccepted(companyId, edition);
+          if (feedback.result == null) {
+            let contractLocation = await request.server.methods.files.contracts.upload(
+              file.data,
+              `contract_${companyId}_${edition}${file.extension}`,
+              edition,
+              companyId)
+    
+            logger.info(contractLocation)
+            if (contractLocation === null) {
+              return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
+            }
+          } else if (!feedback.result) {
+            logger.error('Contract is pending review')
+            return Boom.locked(feedback.error);
+          } else {
+            logger.info(`A contract was already submitted for ${companyId} for ${edition} edition`)
+            return Boom.locked(feedback.error);
           }
-        } else if (!feedback.result) {
-          logger.error('Contract is pending review')
-          return Boom.locked(feedback.error);
-        } else {
-          logger.info(`A contract was already submitted for ${companyId} for ${edition} edition`)
-          return Boom.locked(feedback.error);
         }
       }
     }
