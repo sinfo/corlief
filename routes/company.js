@@ -91,6 +91,53 @@ module.exports = [
   },
   {
     method: 'POST',
+    path: '/company/info',
+    config: {
+      auth: 'company',
+      tags: ['api'],
+      description: 'Submit company extra info',
+      pre: [
+        [
+          helpers.pre.edition
+        ]
+      ],
+      handler: async (request, h) => {
+        const companyId = request.auth.credentials.company
+        const edition = request.pre.edition
+        const info = request.payload.info
+        const titles = request.payload.titles
+
+        try {
+          const canSubmitInfo = await request.server.methods.info.canSubmitInfo(companyId, edition)
+          if (!canSubmitInfo.result) {
+            logger.error(`Company ${companyId} tried to submit info when not allowed`)
+            return Boom.forbidden(canSubmitInfo.error)
+          }
+
+          const validResult = await request.server.methods.info.isInfoValid(info, titles)
+          if (!validResult.valid) {
+            logger.error(`Invalid info submitted for company ${companyId}`)
+            return Boom.badData(validResult.error)
+          }
+
+          const submittedInfo = await request.server.methods.info.addInfo(
+            companyId,
+            edition,
+            info,
+            titles
+          )
+
+          // TODO: Send email
+
+          return info.toJSON()
+        } catch(err) {
+          Boom.boomify(err)
+        }        
+      }
+    }
+  },
+  {
+    method: 'POST',
     path: '/company/reservation',
     config: {
       auth: 'company',
