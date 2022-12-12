@@ -2,6 +2,10 @@
 let path = require('path')
 let Info = require(path.join(__dirname, '..', 'models', 'info'))
 
+async function find(edition) {
+    return Info.find(edition)
+}
+
 async function findOne(companyId, edition) {
     return Info.findOne({
       companyId: companyId,
@@ -87,9 +91,40 @@ async function canSubmitInfo(companyId, edition) {
     }
   
     return response
+}
+
+
+async function confirm(companyId, edition, member) {
+    let result = {
+      data: null,
+      error: null
+    }
+  
+    let info = await findOne(companyId, edition)
+  
+    if (info === null) {
+      result.error = 'No company info found'
+      return result
+    }
+  
+    result.data = await info.confirm(member)
+    return result
+}
+
+async function cancel(companyId, edition, member) {
+    let info = await findOne(companyId, edition)
+  
+    if (info === null) {
+      return null
+    }
+  
+    return info.cancel(member)
   }
 
-  module.exports.findOne = findOne
-  module.exports.addInfo = addInfo
-  module.exports.isInfoValid = isInfoValid
-  module.exports.canSubmitInfo = canSubmitInfo
+module.exports.find = find
+module.exports.findOne = findOne
+module.exports.addInfo = addInfo
+module.exports.isInfoValid = isInfoValid
+module.exports.canSubmitInfo = canSubmitInfo
+module.exports.confirm = confirm
+module.exports.cancel = cancel

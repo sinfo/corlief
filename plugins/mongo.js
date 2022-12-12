@@ -79,9 +79,12 @@ module.exports = {
     server.method('reservation.cancel', mongoMethods.reservation.cancel)
     server.method('reservation.remove', mongoMethods.reservation.remove)
 
+    server.method('info.find', mongoMethods.info.find)
     server.method('info.findOne', mongoMethods.info.findOne)
     server.method('info.addInfo', mongoMethods.info.addInfo)
     server.method('info.isInfoValid', mongoMethods.info.isInfoValid)
     server.method('info.canSubmitInfo', mongoMethods.info.canSubmitInfo)
+    server.method('info.confirm', mongoMethods.info.confirm)
+    server.method('info.cancel', mongoMethods.info.cancel)
   }
 }
