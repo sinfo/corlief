@@ -129,7 +129,7 @@ module.exports = [
 
           // TODO: Send email
 
-          return info.toJSON()
+          return submittedInfo.toJSON()
         } catch(err) {
           Boom.boomify(err)
         }        
