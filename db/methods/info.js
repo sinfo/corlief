@@ -58,7 +58,7 @@ async function isInfoValid(info, titles) {
     if (titles.presentation && titles.presentation.length > 30 || 
         titles.lunchTalk && titles.presentation.length > 30 ||
         titles.workshop && titles.workshop.length > 30) {
-            result.error = "Titles can only contain ONLY 30 characters!"
+            result.error = "Titles can only contain 30 characters!"
             return result
     }
 
@@ -93,7 +93,6 @@ async function canSubmitInfo(companyId, edition) {
     return response
 }
 
-
 async function confirm(companyId, edition, member) {
     let result = {
       data: null,
@@ -119,7 +118,7 @@ async function cancel(companyId, edition, member) {
     }
   
     return info.cancel(member)
-  }
+}
 
 module.exports.find = find
 module.exports.findOne = findOne
