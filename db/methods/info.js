@@ -1,4 +1,5 @@
 /* eslint-disable space-before-function-paren */
+const { logger } = require('handlebars')
 let path = require('path')
 let Info = require(path.join(__dirname, '..', 'models', 'info'))
 
@@ -25,7 +26,7 @@ async function addInfo(companyId, edition, info, titles) {
     return newInfo.save()
 }
 
-async function isInfoValid(info, titles) {
+function isInfoValid(info, titles) {
     let result = {
         error: null,
         valid: false
@@ -42,9 +43,9 @@ async function isInfoValid(info, titles) {
     }
 
     if (info.licensePlates) {
-        const regex = "/[A-Z1-9]/g"
+        const regex = "..-..-.."
 
-        info.licensePlates.array.forEach(element => {
+        info.licensePlates.forEach(element => {
             if (!element.match(regex)) {
                 result.error = "Invalid license plate provided"
             }

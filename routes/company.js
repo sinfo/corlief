@@ -114,7 +114,7 @@ module.exports = [
             return Boom.forbidden(canSubmitInfo.error)
           }
 
-          const validResult = await request.server.methods.info.isInfoValid(info, titles)
+          const validResult = request.server.methods.info.isInfoValid(info, titles)
           if (!validResult.valid) {
             logger.error(`Invalid info submitted for company ${companyId}`)
             return Boom.badData(validResult.error)
@@ -128,11 +128,19 @@ module.exports = [
           )
 
           // TODO: Send email
-
           return submittedInfo.toJSON()
         } catch(err) {
-          Boom.boomify(err)
+          logger.error({ error: err })
+          return Boom.boomify(err)
         }        
+      },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
+      response: {
+        schema: helpers.joi.companyInfo
       }
     }
   },

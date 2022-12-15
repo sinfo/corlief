@@ -279,3 +279,24 @@ let expirationDate = Joi.object().keys({
 })
 
 module.exports.expirationDate = expirationDate
+
+let companyInfo = Joi.object().keys({
+  companyId: Joi.string().required(),
+  info: Joi.object().keys({
+    numberOfPeople: Joi.number().min(0),
+    licensePlates: Joi.array().items(Joi.string()).min(0)
+  }),
+  edition: Joi.string(),
+  titles: Joi.object().keys({
+    presentation: Joi.string(),
+    lunchTalk: Joi.string(),
+    workshop: Joi.string()
+  }),
+  feedback: Joi.object().keys({
+    status: Joi.string().required(),
+    member: Joi.string().optional()
+  }),
+  created: Joi.date().required()
+})
+
+module.exports.companyInfo = companyInfo
