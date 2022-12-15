@@ -29,11 +29,11 @@ module.exports = [
       },
       handler: async (request, h) => {
         try {
-
-          
           const info = await request.server.methods.info.find(request.query)
 
-          return info === undefined ? Boom.badData(`No info found for ${companyId}`) : info.toJSON()
+          return info === undefined ? 
+          Boom.badData(`No info found for ${companyId}`) : 
+          request.server.methods.info.arrayToJSON(info)
         } catch (err) {
           logger.error(err)
           return Boom.boomify(err)

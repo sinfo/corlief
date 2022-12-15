@@ -1076,6 +1076,18 @@ describe('company', async function () {
       expect(response.statusCode).to.eql(200)
     })
 
+    it('should return extra info submitted by company', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/info?companyId=${mocks.LINK.companyId}&edition=${mocks.LINK.edition}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+      
+      expect(response.statusCode).to.eql(200)
+    })
+
     after('removing venue from db', async function () {
       try {
         await Reservation.collection.drop()

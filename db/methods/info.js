@@ -3,6 +3,10 @@ const { logger } = require('handlebars')
 let path = require('path')
 let Info = require(path.join(__dirname, '..', 'models', 'info'))
 
+function arrayToJSON(infos) {
+  return infos.map(info => info.toJSON())
+}
+
 async function find(edition) {
     return Info.find(edition)
 }
@@ -128,3 +132,4 @@ module.exports.isInfoValid = isInfoValid
 module.exports.canSubmitInfo = canSubmitInfo
 module.exports.confirm = confirm
 module.exports.cancel = cancel
+module.exports.arrayToJSON = arrayToJSON

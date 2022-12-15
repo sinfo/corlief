@@ -86,5 +86,6 @@ module.exports = {
     server.method('info.canSubmitInfo', mongoMethods.info.canSubmitInfo)
     server.method('info.confirm', mongoMethods.info.confirm)
     server.method('info.cancel', mongoMethods.info.cancel)
+    server.method('info.arrayToJSON', mongoMethods.info.arrayToJSON)
   }
 }
