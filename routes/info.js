@@ -74,6 +74,9 @@ module.exports = [
         } catch (err) {
           return Boom.boomify(err)
         }
+      },
+      response: {
+        schema: helpers.joi.companyInfo
       }
     }
   },

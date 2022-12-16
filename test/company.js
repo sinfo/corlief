@@ -13,8 +13,6 @@ const streamToPromise = require('stream-to-promise')
 const FormData = require('form-data')
 const fs = require('fs')
 const helpers = require('./helpers')
-const { info } = require('console')
-const { logger } = require('handlebars')
 
 let sinfoCredentials
 
@@ -1085,6 +1083,30 @@ describe('company', async function () {
         }
       })
       
+      expect(response.statusCode).to.eql(200)
+    })
+
+    it('should be able to confirm a company\'s info', async function () {
+      let response = await server.inject({
+        method: 'POST',
+        url: `/info/company/${mocks.LINK.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+      
+      expect(response.statusCode).to.eql(200)
+    })
+
+    it('should be able to cancel a company\'s info', async function () {
+      let response = await server.inject({
+        method: 'POST',
+        url: `/info/company/${mocks.LINK.companyId}/cancel`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
       expect(response.statusCode).to.eql(200)
     })
 
