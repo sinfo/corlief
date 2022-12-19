@@ -3,6 +3,7 @@ const path = require('path')
 const helpers = require(path.join(__dirname, '..', 'helpers'))
 const Boom = require('boom')
 const logger = require('logger').getLogger()
+const config = require('../config')
 
 module.exports = [
   {
@@ -74,6 +75,60 @@ module.exports = [
           let confirmedReservation = await request.server.methods.reservation.getConfirmedReservations(edition)
           let pendingReservation = await request.server.methods.reservation.getPendingReservations(edition)
           return venue.getStandsAvailability(confirmedReservation, pendingReservation, duration)
+        } catch (err) {
+          logger.error({ info: request.info, error: err })
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
+      response: {
+        schema: helpers.joi.venueAvailability
+      }
+    }
+  },
+  {
+    method: 'GET',
+    path: '/company/step',
+    config: {
+      auth: 'company',
+      tags: ['api'],
+      description: 'Get current company\'s step',
+      pre: [
+        [
+          helpers.pre.edition,
+        ]
+      ],
+      handler: async (request, h) => {
+        const companyId = request.auth.credentials.company
+        const edition = request.pre.edition
+
+        let step
+
+        try {
+          if (config.SUBMISSIONS.CONTRACTS) {
+            const contractStatus = await request.server.methods.contract.isContractAccepted(companyId, edition)
+            if (!contractStatus.result) {
+              step = 'CONTRACT'
+            }
+          }
+
+          const canMakeReservation = await request.server.methods.reservation.canMakeReservation(companyId, edition)
+          if (canMakeReservation.result) {
+            step = 'STANDS'
+          }
+
+          if (config.SUBMISSIONS.INFO && !canMakeReservation.result) {
+            const canSubmitInfo = await request.server.methods.info.canSubmitInfo(companyId, edition)
+            if (canSubmitInfo.result) {
+              step = 'INFO'
+            }
+          }
+
+          return { step: step }
         } catch (err) {
           logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
@@ -246,6 +301,52 @@ module.exports = [
       },
       response: {
         schema: helpers.joi.reservation
+      }
+    }
+  },
+  {
+    method: 'POST',
+    path: '/company/contract',
+    config: {
+      auth: 'company',
+      tags: ['api'],
+      description: 'Submit signed contract',
+      pre: [
+        [
+          helpers.pre.edition,
+          helpers.pre.contract
+        ]
+      ],
+      handler: async (request, h) => {
+        const companyId = request.auth.credentials.company
+        const edition = request.pre.edition
+        const file = request.pre.contract
+
+        if (config.SUBMISSIONS.CONTRACTS) {
+          if (file.extension !== '.pdf') {
+            logger.error(`${companyId} submitted a contract with an invalid extension: ${file.extension}`)
+            return Boom.badData('Contract submitted does not have correct extension. Correct extension: PDF.')
+          }
+
+          const feedback = await request.server.methods.contract.isContractAccepted(companyId, edition)
+          if (feedback.result == null) {
+            let contractLocation = await request.server.methods.files.contracts.upload(
+              file.data,
+              `contract_${companyId}_${edition}${file.extension}`,
+              edition,
+              companyId)
+    
+            if (contractLocation === null) {
+              return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
+            }
+          } else if (!feedback.result) {
+            logger.error('Contract is pending review')
+            return Boom.locked(feedback.error)
+          } else {
+            logger.info(`A contract was already submitted for ${companyId} for ${edition} edition`)
+            return Boom.locked(feedback.error)
+          }
+        }
       }
     }
   },

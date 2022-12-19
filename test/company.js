@@ -967,7 +967,7 @@ describe('company', async function () {
     })
   })
 
-  describe('get reservation', async function () {
+  describe('get reservations and submit extra info', async function () {
     let stands = [
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]

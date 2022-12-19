@@ -38,7 +38,12 @@ const config = {
 
   CORS: process.env.NODE_ENV === 'production'
     ? ['*sinfo.org']
-    : ['*']
+    : ['*'],
+
+  SUBMISSIONS: {
+    CONTRACTS: process.env.CORLIEF_SUBMISSIONS_CONTRACTS || false,
+    INFO: process.env.CORLIEF_SUBMISSIONS_INFO || false
+  }
 }
 
 const logger = process.env.CORLIEF_LOGENTRIES_TOKEN &&
