@@ -1070,7 +1070,7 @@ describe('company', async function () {
           titles: mocks.INFO1.titles
         }
       })
-      
+
       expect(response.statusCode).to.eql(200)
     })
 
@@ -1082,7 +1082,7 @@ describe('company', async function () {
           Authorization: sinfoCredentials.authenticator
         }
       })
-      
+
       expect(response.statusCode).to.eql(200)
     })
 
@@ -1094,7 +1094,7 @@ describe('company', async function () {
           Authorization: sinfoCredentials.authenticator
         }
       })
-      
+
       expect(response.statusCode).to.eql(200)
     })
 

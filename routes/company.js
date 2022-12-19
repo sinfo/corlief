@@ -129,10 +129,10 @@ module.exports = [
 
           // TODO: Send email
           return submittedInfo.toJSON()
-        } catch(err) {
+        } catch (err) {
           logger.error({ error: err })
           return Boom.boomify(err)
-        }        
+        }
       },
       validate: {
         headers: Joi.object({

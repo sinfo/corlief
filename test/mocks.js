@@ -293,12 +293,12 @@ module.exports = {
   INFO1: {
     info: {
       numberOfPeople: 25,
-      licensePlates: ["25-SF-45", "26-SF-46"]
+      licensePlates: ['25-SF-45', '26-SF-46']
     },
     titles: {
-      presentation: "This is an example title",
-      lunchTalk: "This one as well",
-      workshop: "Same here"
+      presentation: 'This is an example title',
+      lunchTalk: 'This one as well',
+      workshop: 'Same here'
     }
   }
 }

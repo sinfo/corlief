@@ -6,12 +6,12 @@ let infoSchema = mongoose.Schema({
   },
   info: {
     numberOfPeople: {
-        type: Number,
-        required: true
+      type: Number,
+      required: true
     },
     licensePlates: {
-        type: [String],
-        required: true
+      type: [String],
+      required: true
     }
   },
   edition: {
