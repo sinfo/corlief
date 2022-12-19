@@ -269,6 +269,11 @@ module.exports = [
         const file = request.pre.contract
 
         if (config.SUBMISSIONS.CONTRACTS) {
+          if (file.extension !== '.pdf') {
+            logger.error(`${companyId} submitted a contract with an invalid extension: ${file.extension}`)
+            return Boom.badData('Contract submitted does not have correct extension. Correct extension: PDF.')
+          }
+
           const feedback = await request.server.methods.contract.isContractAccepted(companyId, edition)
           if (feedback.result == null) {
             let contractLocation = await request.server.methods.files.contracts.upload(
