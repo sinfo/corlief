@@ -91,6 +91,60 @@ module.exports = [
     }
   },
   {
+    method: 'GET',
+    path: '/company/step',
+    config: {
+      auth: 'company',
+      tags: ['api'],
+      description: 'Get current company\'s step',
+      pre: [
+        [
+          helpers.pre.edition,
+        ]
+      ],
+      handler: async (request, h) => {
+        const companyId = request.auth.credentials.company
+        const edition = request.pre.edition
+
+        let step
+
+        try {
+          if (config.SUBMISSIONS.CONTRACTS) {
+            const contractStatus = await request.server.methods.contract.isContractAccepted(companyId, edition)
+            if (!contractStatus.result) {
+              step = 'CONTRACT'
+            }
+          }
+
+          const canMakeReservation = await request.server.methods.reservation.canMakeReservation(companyId, edition)
+          if (canMakeReservation.result) {
+            step = 'STANDS'
+          }
+
+          if (config.SUBMISSIONS.INFO && !canMakeReservation.result) {
+            const canSubmitInfo = await request.server.methods.info.canSubmitInfo(companyId, edition)
+            if (canSubmitInfo.result) {
+              step = 'INFO'
+            }
+          }
+
+          return { step: step }
+        } catch (err) {
+          logger.error({ info: request.info, error: err })
+          return Boom.boomify(err)
+        }
+      },
+      validate: {
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      },
+      response: {
+        schema: helpers.joi.venueAvailability
+      }
+    }
+  },
+  {
     method: 'POST',
     path: '/company/info',
     config: {

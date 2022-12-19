@@ -41,7 +41,8 @@ const config = {
     : ['*'],
 
   SUBMISSIONS: {
-    CONTRACTS: process.env.CORLIEF_SUBMISSIONS_CONTRACTS || true
+    CONTRACTS: process.env.CORLIEF_SUBMISSIONS_CONTRACTS || false,
+    INFO: process.env.CORLIEF_SUBMISSIONS_INFO || false
   }
 }
 
