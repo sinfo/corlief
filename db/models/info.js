@@ -19,13 +19,13 @@ let infoSchema = mongoose.Schema({
   },
   titles: {
     presentation: {
-        type: String
+      type: String
     },
     lunchTalk: {
-        type: String
+      type: String
     },
     workshop: {
-        type: String
+      type: String
     }
   },
   created: Date,

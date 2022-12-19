@@ -19,11 +19,11 @@ async function findOne(companyId, edition) {
 
 async function addInfo(companyId, edition, info, titles) {
   let newInfo = new Info({
-      companyId: companyId,
-      edition: edition,
-      info: info,
-      titles: titles,
-      created: new Date()
+    companyId: companyId,
+    edition: edition,
+    info: info,
+    titles: titles,
+    created: new Date()
   })
 
   return newInfo.save()
@@ -31,39 +31,39 @@ async function addInfo(companyId, edition, info, titles) {
 
 function isInfoValid(info, titles) {
   let result = {
-      error: null,
-      valid: false
+    error: null,
+    valid: false
   }
 
   if (info.numberOfPeople === null) {
-      result.error = "A number of people must be specified"
-      return result
+    result.error = 'A number of people must be specified'
+    return result
   }
-  
+
   if (info.numberOfPeople <= 0) {
-      result.error = "The number of people must be higher or equal to 1"
-      return result
+    result.error = 'The number of people must be higher or equal to 1'
+    return result
   }
 
   if (info.licensePlates) {
-      const regex = "..-..-.."
+    const regex = '..-..-..'
 
-      info.licensePlates.forEach(element => {
-          if (!element.match(regex)) {
-              result.error = "Invalid license plate provided"
-          }
-      })
-
-      if (result.error) {
-          return result
+    info.licensePlates.forEach(element => {
+      if (!element.match(regex)) {
+        result.error = 'Invalid license plate provided'
       }
+    })
+
+    if (result.error) {
+      return result
+    }
   }
 
-  if (titles.presentation && titles.presentation.length > 30 || 
-      titles.lunchTalk && titles.presentation.length > 30 ||
-      titles.workshop && titles.workshop.length > 30) {
-          result.error = "Titles can only contain 30 characters!"
-          return result
+  if ((titles.presentation && titles.presentation.length > 30) ||
+      (titles.lunchTalk && titles.presentation.length > 30) ||
+      (titles.workshop && titles.workshop.length > 30)) {
+    result.error = 'Titles can only contain 30 characters!'
+    return result
   }
 
   result.valid = true
