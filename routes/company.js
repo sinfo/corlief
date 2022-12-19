@@ -336,7 +336,6 @@ module.exports = [
               edition,
               companyId)
     
-            logger.info(contractLocation)
             if (contractLocation === null) {
               return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
             }
