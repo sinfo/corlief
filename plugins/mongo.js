@@ -79,6 +79,16 @@ module.exports = {
     server.method('reservation.cancel', mongoMethods.reservation.cancel)
     server.method('reservation.remove', mongoMethods.reservation.remove)
 
+    server.method('contract.arrayToJSON', mongoMethods.contract.arrayToJSON)
+    server.method('contract.find', mongoMethods.contract.find)
+    server.method('contract.findOne', mongoMethods.contract.findOne)
+    server.method('contract.submitContract', mongoMethods.contract.submitContract)
+    server.method('contract.deleteContract', mongoMethods.contract.deleteContract)
+    server.method('contract.isContractAccepted', mongoMethods.contract.isContractAccepted)
+    server.method('contract.submitContract', mongoMethods.contract.submitContract)
+    server.method('contract.confirm', mongoMethods.contract.confirm)
+    server.method('contract.cancel', mongoMethods.contract.cancel)
+    
     server.method('info.find', mongoMethods.info.find)
     server.method('info.findOne', mongoMethods.info.findOne)
     server.method('info.addInfo', mongoMethods.info.addInfo)
