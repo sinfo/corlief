@@ -314,13 +314,13 @@ module.exports = [
       pre: [
         [
           helpers.pre.edition,
-          helpers.pre.contract
+          helpers.pre.file
         ]
       ],
       handler: async (request, h) => {
         const companyId = request.auth.credentials.company
         const edition = request.pre.edition
-        const file = request.pre.contract
+        const file = request.pre.file
 
         if (config.SUBMISSIONS.CONTRACTS) {
           if (file.extension !== '.pdf') {
