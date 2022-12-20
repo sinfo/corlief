@@ -336,6 +336,7 @@ module.exports = [
               edition,
               companyId)
     
+            // TODO: Send email
             if (contractLocation === null) {
               return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
             }
