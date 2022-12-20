@@ -18,14 +18,14 @@ async function findOne(companyId, edition) {
 }
 
 async function submitContract(companyId, edition, fileName) {
-    let newContract = new Contract({
-      companyId: companyId,
-      edition: edition,
-      created: new Date(),
-      fileName: fileName
-    });
+  let newContract = new Contract({
+    companyId: companyId,
+    edition: edition,
+    created: new Date(),
+    fileName: fileName
+  })
 
-    return newContract.save();
+  return newContract.save()
 }
 
 async function deleteContract(companyId, edition) {
@@ -41,7 +41,7 @@ async function isContractAccepted(companyId, edition) {
     error: null
   }
 
-  let contract = await findOne(companyId, edition);
+  let contract = await findOne(companyId, edition)
 
   if (contract === null) {
     return response
@@ -88,7 +88,6 @@ async function cancel(companyId, edition, member) {
 
   return contract.cancel(member)
 }
-
 
 module.exports.arrayToJSON = arrayToJSON
 module.exports.find = find

@@ -99,7 +99,7 @@ module.exports = [
       description: 'Get current company\'s step',
       pre: [
         [
-          helpers.pre.edition,
+          helpers.pre.edition
         ]
       ],
       handler: async (request, h) => {
@@ -335,7 +335,7 @@ module.exports = [
               `contract_${companyId}_${edition}${file.extension}`,
               edition,
               companyId)
-    
+
             // TODO: Send email
             if (contractLocation === null) {
               return Boom.expectationFailed('Could not upload signed contract for ' + companyId)
