@@ -153,7 +153,8 @@ module.exports = [
       description: 'Submit company extra info',
       pre: [
         [
-          helpers.pre.edition
+          helpers.pre.edition,
+          helpers.pre.link
         ]
       ],
       handler: async (request, h) => {
@@ -161,6 +162,7 @@ module.exports = [
         const edition = request.pre.edition
         const info = request.payload.info
         const titles = request.payload.titles
+        const link = request.pre.link
 
         try {
           const canSubmitInfo = await request.server.methods.info.canSubmitInfo(companyId, edition)
@@ -182,7 +184,11 @@ module.exports = [
             titles
           )
 
-          // TODO: Send email
+          const receivers = link.contacts.company
+          ? [link.contacts.member, link.contacts.company]
+          : [link.contacts.member]
+
+          request.server.methods.mailgun.sendNewInfoSubmission(receivers, submittedInfo, link)
           return submittedInfo.toJSON()
         } catch (err) {
           logger.error({ error: err })
