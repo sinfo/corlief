@@ -21,6 +21,7 @@ jobs:
       name: Build and PushBackend Image
       id: docker_build
       with:
+        file: ./Dockerfile_staging
         push: true
         tags: orgsinfo/corlief:latest
     
