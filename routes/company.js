@@ -106,7 +106,7 @@ module.exports = [
         const companyId = request.auth.credentials.company
         const edition = request.pre.edition
 
-        let step
+        let step = 'FINISHED'
 
         try {
           if (config.SUBMISSIONS.CONTRACTS) {
