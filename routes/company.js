@@ -106,7 +106,7 @@ module.exports = [
         const companyId = request.auth.credentials.company
         const edition = request.pre.edition
 
-        let step = 'FINISHED'
+        let step
 
         try {
           if (config.SUBMISSIONS.CONTRACTS) {
@@ -117,18 +117,18 @@ module.exports = [
           }
 
           const canMakeReservation = await request.server.methods.reservation.canMakeReservation(companyId, edition)
-          if (canMakeReservation.result) {
+          if (!step && canMakeReservation.result) {
             step = 'STANDS'
           }
 
-          if (config.SUBMISSIONS.INFO && !canMakeReservation.result) {
+          if (config.SUBMISSIONS.INFO && !step) {
             const canSubmitInfo = await request.server.methods.info.canSubmitInfo(companyId, edition)
             if (canSubmitInfo.result) {
               step = 'INFO'
             }
           }
 
-          return { step: step }
+          return { step: step ? step : 'FINISHED' }
         } catch (err) {
           logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
