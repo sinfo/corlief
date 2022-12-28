@@ -117,7 +117,7 @@ module.exports = [
           }
 
           const canMakeReservation = await request.server.methods.reservation.canMakeReservation(companyId, edition)
-          if (!step && canMakeReservation.result) {
+          if (!step && (canMakeReservation.result || !canMakeReservation.confirmed)) {
             step = 'STANDS'
           }
 
@@ -138,9 +138,6 @@ module.exports = [
         headers: Joi.object({
           'Authorization': Joi.string()
         }).unknown()
-      },
-      response: {
-        schema: helpers.joi.venueAvailability
       }
     }
   },
