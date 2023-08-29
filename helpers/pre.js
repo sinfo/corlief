@@ -34,7 +34,10 @@ module.exports.edition = {
 module.exports.duration = {
   method: async (request, h) => {
     const edition = await request.server.methods.deck.getLatestEdition()
-    return new Date(edition.duration).getUTCDate()
+    const beginDate = new Date(edition.begin).getTime()
+    const endDate = new Date(edition.end).getTime()
+
+    return new Date(endDate - beginDate).getUTCDate()
   },
   assign: 'duration'
 }
