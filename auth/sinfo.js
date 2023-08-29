@@ -39,7 +39,7 @@ module.exports = server => {
     allowQueryToken: true,
     allowMultipleHeaders: true,
     accessTokenName: 'access_token',
-    validate: auth.bearer
+    validate: jwt.verify
   })
 
   server.method('auth.google', googleAuth)

@@ -40,3 +40,6 @@ module.exports = {
     server.method('jwt.verify', verify)
   }
 }
+
+module.exports.generate = generate
+module.exports.verify = verify

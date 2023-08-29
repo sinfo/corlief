@@ -5,7 +5,6 @@ const Inert = require('inert')
 const Vision = require('vision')
 const HapiSwagger = require('hapi-swagger')
 const Pack = require('./package')
-const HapiBearer = require('hapi-auth-bearer-token')
 
 // Create a server with a host and port
 const server = Hapi.server({
@@ -30,7 +29,6 @@ async function register () {
     },
     Inert,
     Vision,
-    HapiBearer,
     {
       plugin: HapiSwagger,
       options: {

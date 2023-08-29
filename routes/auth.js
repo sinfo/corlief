@@ -28,7 +28,7 @@ module.exports = [
     path: '/auth/google',
     config: {
       auth: {
-        strategies: ['default'],
+        strategies: ['sinfo'],
         mode: 'try'
       },
       validate: {
