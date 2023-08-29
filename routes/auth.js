@@ -22,5 +22,30 @@ module.exports = [
         schema: helpers.joi.sinfoCredentials
       }
     }
+  },
+  {
+    method: 'POST',
+    path: '/auth/google',
+    config: {
+      auth: {
+        strategies: ['default'],
+        mode: 'try'
+      },
+      validate: {
+        payload: Joi.object({
+          id: Joi.string().required().description('google id of the member'),
+          token: Joi.string().required().description('google token of the member')
+        })
+      },
+      description: 'Google login'
+    },
+    handler: async function (request, h) {
+      try {
+        let member = await request.server.methods.auth.google(request.payload.token);
+        return h.response(member)
+      } catch (err) {
+        throw Boom.unauthorized(`User "${request.payload.id}" could not login with google.`)
+      }
+    }
   }
 ]

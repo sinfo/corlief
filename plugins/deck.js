@@ -9,25 +9,6 @@ const config = require(path.join(__dirname, '..', 'config'))
 
 const URL = `${config.DECK.HOST}:${config.DECK.PORT}/api/public`
 
-async function validateToken (user, token) {
-  try {
-    await request({
-      method: 'GET',
-      uri: `${URL}/auth/login/${user}/${token}`,
-      json: true,
-      jar: true
-    })
-
-    return true
-  } catch (err) {
-    if (err.statusCode === 404 || err.statusCode === 401) {
-      return false
-    }
-
-    throw err
-  }
-}
-
 async function getLatestEdition () {
   const event = await request({
     method: 'GET',
@@ -103,6 +84,7 @@ async function getMember (memberId) {
     json: true,
     jar: true
   })
+  
   return member
 }
 
@@ -110,7 +92,6 @@ module.exports = {
   name: 'deck',
   version: '1.0.0',
   register: async (server, options) => {
-    server.method('deck.validateToken', validateToken)
     server.method('deck.validateCompanyId', validateCompanyId)
     server.method('deck.getLatestEdition', getLatestEdition)
     server.method('deck.getCompanies', getCompanies)

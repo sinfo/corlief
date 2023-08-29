@@ -43,6 +43,16 @@ const config = {
   SUBMISSIONS: {
     CONTRACTS: process.env.CORLIEF_SUBMISSIONS_CONTRACTS || false,
     INFO: process.env.CORLIEF_SUBMISSIONS_INFO || false
+  },
+
+  AUTH: {
+    TOKEN_ISSUER: process.env.CORLIEF_TOKEN_ISSUER || 'corlief',
+    TOKEN_ALGORITHM: process.env.CORLIEF_TOKEN_ALGORITHM || 'RS256',
+    TOKEN_EXPIRY_DATE: process.env.CORLIEF_TOKEN_EXPIRY_DATE || '1d',
+    GOOGLE: {
+      CLIENT_ID: process.env.CORLIEF_GOOGLE_APP_ID || 'YOUR APP ID',
+      CLIENT_SECRET: process.env.CORLIEF_GOOGLE_CLIENT_SECRET || 'YOUR CLIENT SECRET'
+    }
   }
 }
 
