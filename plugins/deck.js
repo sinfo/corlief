@@ -51,7 +51,6 @@ async function getCompanies (edition) {
       return false
     }
 
-    const participation = company.participation[0]
     return company.partner
   })
 
@@ -84,7 +83,7 @@ async function getMember (memberId) {
     json: true,
     jar: true
   })
-  
+
   return member
 }
 
