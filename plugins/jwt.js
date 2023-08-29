@@ -8,13 +8,9 @@ const PUBLIC_KEY_PATH = path.join(__dirname, '..', 'keys', 'jwtRS256.key.pub')
 const privateKey = fs.readFileSync(PRIVATE_KEY_PATH) // eslint-disable-line security/detect-non-literal-fs-filename
 const publicKey = fs.readFileSync(PUBLIC_KEY_PATH) // eslint-disable-line security/detect-non-literal-fs-filename
 
-async function generate (edition, company, expirationDate) {
+async function generate (data) {
   return jwt.sign(
-    {
-      exp: Math.floor(expirationDate / 1000),
-      edition: edition,
-      company: company
-    },
+    data,
     privateKey,
     {
       algorithm: 'RS256'

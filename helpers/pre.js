@@ -56,7 +56,11 @@ module.exports.token = {
     const companyId = request.payload.companyId
     const expirationDate = request.payload.expirationDate
 
-    return request.server.methods.jwt.generate(edition, companyId, expirationDate)
+    return request.server.methods.jwt.generate({
+      exp: Math.floor(expirationDate / 1000),
+      edition: edition,
+      company: companyId
+    })
   },
   assign: 'token'
 }
