@@ -34,7 +34,10 @@ module.exports.edition = {
 module.exports.duration = {
   method: async (request, h) => {
     const edition = await request.server.methods.deck.getLatestEdition()
-    return new Date(edition.duration).getUTCDate()
+    const beginDate = new Date(edition.begin).getTime()
+    const endDate = new Date(edition.end).getTime()
+
+    return new Date(endDate - beginDate).getUTCDate()
   },
   assign: 'duration'
 }
@@ -53,7 +56,11 @@ module.exports.token = {
     const companyId = request.payload.companyId
     const expirationDate = request.payload.expirationDate
 
-    return request.server.methods.jwt.generate(edition, companyId, expirationDate)
+    return request.server.methods.jwt.generate({
+      exp: Math.floor(expirationDate / 1000),
+      edition: edition,
+      company: companyId
+    })
   },
   assign: 'token'
 }

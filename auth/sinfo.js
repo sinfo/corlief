@@ -1,40 +1,46 @@
 const Boom = require('boom')
 const logger = require('logger').getLogger()
+const config = require('../config')
+const { OAuth2Client } = require('google-auth-library')
+const jwt = require('../plugins/jwt')
 
-module.exports = server => {
-  server.auth.scheme('custom-sinfo', function (server, options) {
-    return {
-      authenticate: async function (request, h) {
-        try {
-          const authorization = request.headers.authorization
-
-          if (!authorization) {
-            throw Boom.unauthorized(null, 'custom-sinfo')
-          }
-
-          const parsed = authorization.split(' ')
-
-          if (parsed.length < 2) {
-            throw Boom.unauthorized(null, 'custom-sinfo')
-          }
-
-          const user = parsed[0]
-          const token = parsed[1]
-
-          let isValid = await request.server.methods.deck.validateToken(user, token)
-
-          if (!isValid) {
-            throw Boom.unauthorized(null, 'custom-sinfo')
-          }
-
-          return h.authenticated({ credentials: { user: user, token: token } })
-        } catch (err) {
-          logger.error({ info: request.info, error: err })
-          throw Boom.unauthorized(null, 'custom-sinfo')
-        }
-      }
+async function googleAuth(googleUserToken) {
+  log.info('[Google Auth] Verifying Google token.')
+  const oAuth2Client = new OAuth2Client(config.AUTH.GOOGLE.CLIENT_ID, config.AUTH.GOOGLE.CLIENT_SECRET)
+  let login = await oAuth2Client.verifyIdToken({
+    idToken: googleUserToken,
+    audience: config.AUTH.GOOGLE.CLIENT_SECRET
+  }).catch((err) => {
+    if (err) {
+      log.warn(err)
+      throw Boom.boomify(err)
     }
   })
+  
+  // If verified we can trust in the login.payload
+  log.info('[Google Auth] Verification complete.')
+  return authenticate(login.payload)
+}
 
-  server.auth.strategy('sinfo', 'custom-sinfo')
+function authenticate(user) {
+  log.info('[Corlief Auth] Authenticating user...')
+  const newToken = jwt.generate({
+    user: user.email
+  }, {
+    expiresIn: config.AUTH.TOKEN_EXPIRY_DATE
+  })
+
+  log.info('[Corlief Auth] Authenticated user ', user.email )
+  return newToken
+}
+
+module.exports = server => {
+  server.auth.strategy('sinfo', 'bearer-access-token', {
+    allowQueryToken: true,
+    allowMultipleHeaders: true,
+    accessTokenName: 'access_token',
+    validate: jwt.verify
+  })
+
+  server.method('auth.google', googleAuth)
 }

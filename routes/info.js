@@ -1,4 +1,3 @@
-
 const logger = require('logger').getLogger()
 const Boom = require('boom')
 const Joi = require('joi')
