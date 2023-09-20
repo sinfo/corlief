@@ -52,7 +52,7 @@
     "aws-sdk": "^2.814.0",
     "boom": "^7.2.0",
     "email-validator": "^2.0.4",
-    "google-auth-library": "^9.0.0",
+    "google-auth-library": "7.0.0",
     "handlebars": "^4.7.7",
     "hapi": "^17.5.2",
     "hapi-auth-bearer-token": "^6.2.1",
