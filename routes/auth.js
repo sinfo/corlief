@@ -33,7 +33,7 @@ module.exports = [
       },
       validate: {
         payload: Joi.object({
-          id: Joi.string().required().description('google id of the member'),
+          user: Joi.string().required().description('google id of the member'),
           token: Joi.string().required().description('google token of the member')
         })
       },
