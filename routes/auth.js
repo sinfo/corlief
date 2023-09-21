@@ -1,3 +1,4 @@
+const Boom = require('boom')
 const path = require('path')
 const helpers = require(path.join(__dirname, '..', 'helpers'))
 const Joi = require('joi')
