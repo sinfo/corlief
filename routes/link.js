@@ -284,7 +284,6 @@ module.exports = [
         ],
         [
           helpers.pre.company,
-          helpers.pre.member,
           helpers.pre.token
         ]
       ],
@@ -295,6 +294,7 @@ module.exports = [
         payload: helpers.joi.linkPayload
       },
       handler: async (request, h) => {
+        // TODO: Add member id to company participation
         try {
           const { companyId, companyEmail, participationDays, advertisementKind, activities, workshop, presentation, lunchTalk } = request.payload
           const { edition, isCompanyValid, token, company, member } = request.pre
@@ -305,10 +305,6 @@ module.exports = [
 
           if (!validator.validate(companyEmail)) {
             return Boom.badData('Invalid email')
-          }
-
-          if (member.mails.main === undefined) {
-            return Boom.badData('The member (SINFO Organizer) doesn\'t have his/her main email setup. This email should be something like john.doe@sinfo.org')
           }
 
           let link = await request.server.methods.link.create(

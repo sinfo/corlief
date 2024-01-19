@@ -2,6 +2,7 @@ const Boom = require('boom')
 const path = require('path')
 const helpers = require(path.join(__dirname, '..', 'helpers'))
 const Joi = require('joi')
+const logger = require('logger').getLogger()
 
 module.exports = [
   {
@@ -43,9 +44,10 @@ module.exports = [
     handler: async function (request, h) {
       try {
         let member = await request.server.methods.auth.google(request.payload.token);
-        return h.response(member)
+        logger.info(member)
+        return h.response({ token: member })
       } catch (err) {
-        throw Boom.unauthorized(`User "${request.payload.id}" could not login with google.`)
+        throw Boom.unauthorized(`User "${request.payload.user}" could not login with google: ${err}`)
       }
     }
   }

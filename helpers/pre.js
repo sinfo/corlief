@@ -109,9 +109,7 @@ module.exports.venue = {
 module.exports.companies = {
   method: async (request, h) => {
     const edition = request.pre.edition
-    const user = request.auth.credentials.user
-    const token = request.auth.credentials.token
-    let companies = await request.server.methods.deck.getCompanies(edition, user, token)
+    let companies = await request.server.methods.deck.getCompanies(edition)
     let result = []
 
     for (let company of companies) {
@@ -135,9 +133,7 @@ module.exports.company = {
     if (valid !== undefined && !valid) { return null }
 
     const companyId = request.payload.companyId
-    const user = request.auth.credentials.user
-    const token = request.auth.credentials.token
-    let company = await request.server.methods.deck.getCompany(companyId, user, token)
+    let company = await request.server.methods.deck.getCompany(companyId)
     return company
   },
   assign: 'company'

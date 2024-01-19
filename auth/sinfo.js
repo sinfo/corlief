@@ -30,16 +30,21 @@ function authenticate(user) {
     expiresIn: config.AUTH.TOKEN_EXPIRY_DATE
   })
 
-  logger.info('[Corlief Auth] Authenticated user ', user.email )
+  const email = user.email.split('@')
+  if (email[1] !== 'sinfo.org') {
+    logger.info(`[Corlief Auth] User ${user.email} tried to authenticate and failed.`)
+    throw Boom.unauthorized('User is not part of SINFO.')
+  }
+
+  logger.info('[Corlief Auth] Authenticated user ', user.email)
   return newToken
 }
 
 module.exports = server => {
   server.auth.strategy('sinfo', 'bearer-access-token', {
-    allowQueryToken: true,
-    allowMultipleHeaders: true,
-    accessTokenName: 'access_token',
-    validate: jwt.verify
+    validate: async (request, token, h) => {
+      return jwt.verify(token)
+    }
   })
 
   server.method('auth.google', googleAuth)

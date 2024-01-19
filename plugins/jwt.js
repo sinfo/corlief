@@ -1,7 +1,9 @@
+const Boom = require('boom')
 const jwt = require('jsonwebtoken')
 const fs = require('fs')
 const path = require('path')
 const config = require('../config')
+const logger = require('logger').getLogger()
 
 const PRIVATE_KEY_PATH = path.join(__dirname, '..', 'keys', 'jwtRS256.key')
 const PUBLIC_KEY_PATH = path.join(__dirname, '..', 'keys', 'jwtRS256.key.pub')
@@ -26,9 +28,12 @@ async function generate (data, options) {
 
 async function verify (token) {
   try {
-    return jwt.verify(token, publicKey)
+    const decoded = jwt.verify(token, publicKey)
+    return decoded
+          ? { isValid: true, credentials: decoded, artifacts: token }
+          : { isValid: false, credentials: token, artifacts: token }
   } catch (err) {
-    return null
+    throw Boom.unauthorized(err)
   }
 }
 

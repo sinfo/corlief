@@ -15,7 +15,6 @@ async function getLatestEdition () {
     uri: `${URL}/events/latest`,
     json: true
   })
-
   return event
 }
 
