@@ -1,7 +1,10 @@
-FROM node:10
+FROM node:10.24.1-alpine
 
 WORKDIR /app
 COPY . .
+
+# we have python dependencies
+RUN apk add --update openssl openssh git && rm -rf /var/cache/apk/*
 
 RUN npm install
 RUN npm run gen-keys
