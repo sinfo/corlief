@@ -42,6 +42,10 @@ async function register () {
       }
     }
   ])
+
+  server.state("g_state", {
+    ignoreErrors: true
+  })
 }
 
 // Start the server
