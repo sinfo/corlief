@@ -43,7 +43,7 @@
     "form-data": "^2.3.2",
     "mocha": "^5.2.0",
     "mongodb": "^3.6.3",
-    "nodemon": "^1.18.1",
+    "nodemon": "^3.0.3",
     "pre-commit": "^1.2.2",
     "stream-to-promise": "^2.2.0"
   },
