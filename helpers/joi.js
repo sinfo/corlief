@@ -198,7 +198,7 @@ let credentials = Joi.object().keys({
   exp: Joi.number().required(),
   company: Joi.string().required(),
   companyName: Joi.string(),
-  edition: Joi.string().required(),
+  edition: Joi.number().required(),
   iat: Joi.number(),
   iss: Joi.string(),
   participationDays: Joi.number().required(),
