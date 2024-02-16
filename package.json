@@ -60,7 +60,7 @@
     "hapi-swagger": "^9.1.1",
     "inert": "^5.1.0",
     "joi": "^13.4.0",
-    "jsonwebtoken": "^8.3.0",
+    "jsonwebtoken": "^9.0.0",
     "logger": "git+https://github.com/sinfo/logger.git",
     "mailgun-js": "^0.21.0",
     "mime-types": "^2.1.19",
