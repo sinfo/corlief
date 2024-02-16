@@ -15,7 +15,7 @@ module.exports = [
       description: 'Check token validation',
       handler: async (request, h) => {
         try {
-          const credentials = request.auth.credentials
+          const credentials = request.auth.credentials.credentials
 
           const link = await request.server.methods.link.find({
             companyId: credentials.company,
@@ -74,7 +74,7 @@ module.exports = [
 
           let confirmedReservation = await request.server.methods.reservation.getConfirmedReservations(edition)
           let pendingReservation = await request.server.methods.reservation.getPendingReservations(edition)
-          return venue.getStandsAvailability(confirmedReservation, pendingReservation, duration)
+          return venue.getStandsAvailability(confirmedReservation, pendingReservation, duration)  
         } catch (err) {
           logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
@@ -103,7 +103,7 @@ module.exports = [
         ]
       ],
       handler: async (request, h) => {
-        const companyId = request.auth.credentials.company
+        const companyId = request.auth.credentials.credentials.company
         const edition = request.pre.edition
 
         let step
@@ -155,7 +155,7 @@ module.exports = [
         ]
       ],
       handler: async (request, h) => {
-        const companyId = request.auth.credentials.company
+        const companyId = request.auth.credentials.credentials.company
         const edition = request.pre.edition
         const info = request.payload.info
         const titles = request.payload.titles
@@ -219,7 +219,7 @@ module.exports = [
         ]
       ],
       handler: async (request, h) => {
-        let companyId = request.auth.credentials.company
+        let companyId = request.auth.credentials.credentials.company
         let stands = request.payload.stands
         let edition = request.pre.edition
         let link = request.pre.link
@@ -290,6 +290,8 @@ module.exports = [
 
           request.server.methods.mailgun.sendNewReservation(receivers, reservation, link, venue)
 
+          logger.info(reservation)
+
           return reservation.toJSON()
         } catch (err) {
           logger.error({ info: request.info, error: err })
@@ -321,7 +323,7 @@ module.exports = [
         ]
       ],
       handler: async (request, h) => {
-        const companyId = request.auth.credentials.company
+        const companyId = request.auth.credentials.credentials.company
         const edition = request.pre.edition
         const file = request.pre.file
 
@@ -372,7 +374,7 @@ module.exports = [
         ]
       ],
       handler: async (request, h) => {
-        let companyId = request.auth.credentials.company
+        let companyId = request.auth.credentials.credentials.company
         let edition = request.pre.edition
         let venue = request.pre.venue
 
@@ -410,7 +412,7 @@ module.exports = [
       ],
       handler: async (request, h) => {
         try {
-          const companyId = request.auth.credentials.company
+          const companyId = request.auth.credentials.credentials.company
           const edition = request.pre.edition
           const latest = request.query.latest
 

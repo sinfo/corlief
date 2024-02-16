@@ -127,14 +127,14 @@ module.exports = [
 
           const token = await request.server.methods.jwt.verify(link[0].token)
 
-          if (token && token.exp * 1000 - new Date().getTime() <= 0) {
+          if (token && token.credentials.exp * 1000 - new Date().getTime() <= 0) {
             await request.server.methods.link.revoke(companyId, edition)
             return Boom.resourceGone('Token expired')
           }
 
           return token === null
             ? Boom.resourceGone('Token expired')
-            : { expirationDate: new Date(token.exp * 1000).toJSON() }
+            : { expirationDate: new Date(token.credentials.exp * 1000).toJSON() }
         } catch (err) {
           logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
@@ -309,7 +309,7 @@ module.exports = [
 
           let link = await request.server.methods.link.create(
             companyId, company.name, edition,
-            member.mails.main, token, participationDays,
+            request.auth.credentials.user, token, participationDays,
             activities, advertisementKind, companyEmail, workshop, presentation, lunchTalk
           )
 
@@ -391,7 +391,11 @@ module.exports = [
         const { expirationDate } = request.payload
 
         try {
-          const token = await request.server.methods.jwt.generate(edition, companyId, expirationDate)
+          const token = await request.server.methods.jwt.generate({ 
+            edition: edition, 
+            company: companyId,
+            exp: Math.floor(expirationDate / 1000) 
+          })
           const link = await request.server.methods.link.setToken(request.params, token)
           return (link) ? link.toJSON() : Boom.badData('No link associated')
         } catch (err) {

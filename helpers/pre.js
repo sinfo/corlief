@@ -37,7 +37,7 @@ module.exports.duration = {
     const beginDate = new Date(edition.begin).getTime()
     const endDate = new Date(edition.end).getTime()
 
-    return new Date(endDate - beginDate).getUTCDate()
+    return new Date(endDate - beginDate).getUTCDate() - 1
   },
   assign: 'duration'
 }
