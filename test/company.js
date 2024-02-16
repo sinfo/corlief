@@ -6,6 +6,7 @@ const { expect } = require('chai')
 const Link = require(path.join('..', 'db', 'models', 'link'))
 const Venue = require(path.join('..', 'db', 'models', 'venue'))
 const Reservation = require(path.join('..', 'db', 'models', 'reservation'))
+const Info = require(path.join('..', 'db', 'models', 'info'))
 const mocks = require('./mocks')
 const server = require(path.join(__dirname, '..', 'app')).server
 const streamToPromise = require('stream-to-promise')
@@ -966,7 +967,7 @@ describe('company', async function () {
     })
   })
 
-  describe('get reservation', async function () {
+  describe('get reservations and submit extra info', async function () {
     let stands = [
       mocks.STAND1, mocks.STAND2, mocks.STAND3, mocks.STAND4
     ]
@@ -1057,6 +1058,58 @@ describe('company', async function () {
       expect(response.result).to.eql([])
     })
 
+    it('should be able to receive extra info', async function () {
+      let response = await server.inject({
+        method: 'POST',
+        url: '/company/info',
+        headers: {
+          Authorization: `bearer ${token1}`
+        },
+        payload: {
+          info: mocks.INFO1.info,
+          titles: mocks.INFO1.titles
+        }
+      })
+
+      expect(response.statusCode).to.eql(200)
+    })
+
+    it('should return extra info submitted by company', async function () {
+      let response = await server.inject({
+        method: 'GET',
+        url: `/info?companyId=${mocks.LINK.companyId}&edition=${mocks.LINK.edition}`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      expect(response.statusCode).to.eql(200)
+    })
+
+    it('should be able to confirm a company\'s info', async function () {
+      let response = await server.inject({
+        method: 'POST',
+        url: `/info/company/${mocks.LINK.companyId}/confirm`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      expect(response.statusCode).to.eql(200)
+    })
+
+    it('should be able to cancel a company\'s info', async function () {
+      let response = await server.inject({
+        method: 'POST',
+        url: `/info/company/${mocks.LINK.companyId}/cancel`,
+        headers: {
+          Authorization: sinfoCredentials.authenticator
+        }
+      })
+
+      expect(response.statusCode).to.eql(200)
+    })
+
     after('removing venue from db', async function () {
       try {
         await Reservation.collection.drop()
@@ -1070,6 +1123,14 @@ describe('company', async function () {
   after('removing links from db', async function () {
     try {
       await Link.collection.drop()
+    } catch (err) {
+      // do nothing
+    }
+  })
+
+  after('removing infos from db', async function () {
+    try {
+      await Info.collection.drop()
     } catch (err) {
       // do nothing
     }

@@ -1,9 +1,7 @@
 const config = {
   HOST: process.env.CORLIEF_HOST || 'localhost',
   PORT: process.env.CORLIEF_PORT || 8888,
-  CORLIEF_PATH: process.env.NODE_ENV === 'production'
-    ? process.env.CORLIEF_PATH
-    : 'localhost:8888',
+  CORLIEF_PATH: process.env.CORLIEF_PATH || 'localhost:8888',
 
   MONGO: {
     DB: process.env.CORLIEF_MONGO_DB || 'corlief',
@@ -24,7 +22,7 @@ const config = {
   },
 
   DECK: {
-    HOST: process.env.NODE_ENV === 'production' ? 'https://deck-old.sinfo.org' : 'https://deck-staging.sinfo.org',
+    HOST: process.env.CORLIEF_DECK_HOST || process.env.NODE_ENV === 'production' ? 'https://deck.sinfo.org' : 'https://deck2.sinfo.org',
     PORT: 443,
     USER: process.env.DECK_USER,
     TOKEN: process.env.DECK_TOKEN
@@ -40,7 +38,22 @@ const config = {
 
   CORS: process.env.NODE_ENV === 'production'
     ? ['*sinfo.org']
-    : ['*']
+    : ['*'],
+
+  SUBMISSIONS: {
+    CONTRACTS: process.env.CORLIEF_SUBMISSIONS_CONTRACTS || false,
+    INFO: process.env.CORLIEF_SUBMISSIONS_INFO || false
+  },
+
+  AUTH: {
+    TOKEN_ISSUER: process.env.CORLIEF_TOKEN_ISSUER || 'corlief',
+    TOKEN_ALGORITHM: process.env.CORLIEF_TOKEN_ALGORITHM || 'RS256',
+    TOKEN_EXPIRY_DATE: process.env.CORLIEF_TOKEN_EXPIRY_DATE || '1d',
+    GOOGLE: {
+      CLIENT_ID: process.env.CORLIEF_GOOGLE_APP_ID || 'YOUR APP ID',
+      CLIENT_SECRET: process.env.CORLIEF_GOOGLE_CLIENT_SECRET || 'YOUR CLIENT SECRET'
+    }
+  }
 }
 
 const logger = process.env.CORLIEF_LOGENTRIES_TOKEN &&

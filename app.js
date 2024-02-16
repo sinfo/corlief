@@ -42,6 +42,10 @@ async function register () {
       }
     }
   ])
+
+  server.state("g_state", {
+    ignoreErrors: true
+  })
 }
 
 // Start the server
@@ -59,3 +63,4 @@ async function start () {
 module.exports.start = start
 module.exports.register = register
 module.exports.server = server
+

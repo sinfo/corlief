@@ -1,0 +1,37 @@
+<div>
+    <h1>Information submitted for {{link.companyName}}: <b>{{state}}</b></h1>
+  
+    <h2>Logistics</h2>
+    <div>
+      <span><b>Number of company staff:</b> {{info.info.numberOfPeople}}</span><br>
+      <span><b>License Plates:</b></span>
+      <ul>
+        {{#each info.info.licensePlates}}
+        <li>{{ this }}</li>
+        {{/each}}
+      </ul>
+    </div>
+  
+    <h2>Titles</h2>
+    <div>
+        {{#if info.titles.presentation}}
+        <span><b>Presentation Title:</b> {{info.titles.presentation}}</span><br>
+        {{/if}}
+        {{#if info.titles.lunchTalk}}
+        <span><b>Lunch Talk Title:</b> {{info.titles.lunchTalk}}</span><br>
+        {{/if}}
+        {{#if info.titles.workshop}}
+        <span><b>Workshop Title:</b> {{info.titles.workshop}}</span>
+        {{/if}}
+    </div>
+  
+    <h2>Info</h2>
+    <p><b>Issued:</b> {{info.created}}</p>
+    <span>All times above are in GMT+0 time.</span>
+    <h4>Click <a href="https://corlief.sinfo.org/token/{{link.token}}">here</a> to go to company's page</h4>
+  
+  
+  
+  
+    <b>PLEASE DO NOT REPLY TO THIS EMAIL</b>
+  </div>

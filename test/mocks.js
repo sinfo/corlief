@@ -289,5 +289,16 @@ module.exports = {
     day: 5,
     start: new Date(),
     end: new Date(new Date().setDate(new Date().getDate() + 1))
+  },
+  INFO1: {
+    info: {
+      numberOfPeople: 25,
+      licensePlates: ['25-SF-45', '26-SF-46']
+    },
+    titles: {
+      presentation: 'This is an example title',
+      lunchTalk: 'This one as well',
+      workshop: 'Same here'
+    }
   }
 }

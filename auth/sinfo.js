@@ -1,40 +1,51 @@
 const Boom = require('boom')
 const logger = require('logger').getLogger()
+const config = require('../config')
+const { OAuth2Client } = require('google-auth-library')
+const jwt = require('../plugins/jwt')
+
+async function googleAuth(googleUserToken) {
+  logger.info('[Google Auth] Verifying Google token.')
+  const oAuth2Client = new OAuth2Client(config.AUTH.GOOGLE.CLIENT_ID, config.AUTH.GOOGLE.CLIENT_SECRET)
+  let login = await oAuth2Client.verifyIdToken({
+    idToken: googleUserToken,
+    audience: config.AUTH.GOOGLE.CLIENT_ID
+  }).catch((err) => {
+    if (err) {
+      logger.warn(err)
+      throw Boom.boomify(err)
+    }
+  })
+  
+  // If verified we can trust in the login.payload
+  logger.info('[Google Auth] Verification complete.')
+  return authenticate(login.payload)
+}
+
+function authenticate(user) {
+  logger.info('[Corlief Auth] Authenticating user...')
+  const newToken = jwt.generate({
+    user: user.email
+  }, {
+    expiresIn: config.AUTH.TOKEN_EXPIRY_DATE
+  })
+
+  const email = user.email.split('@')
+  if (email[1] !== 'sinfo.org') {
+    logger.info(`[Corlief Auth] User ${user.email} tried to authenticate and failed.`)
+    throw Boom.unauthorized('User is not part of SINFO.')
+  }
+
+  logger.info('[Corlief Auth] Authenticated user ', user.email)
+  return newToken
+}
 
 module.exports = server => {
-  server.auth.scheme('custom-sinfo', function (server, options) {
-    return {
-      authenticate: async function (request, h) {
-        try {
-          const authorization = request.headers.authorization
-
-          if (!authorization) {
-            throw Boom.unauthorized(null, 'custom-sinfo')
-          }
-
-          const parsed = authorization.split(' ')
-
-          if (parsed.length < 2) {
-            throw Boom.unauthorized(null, 'custom-sinfo')
-          }
-
-          const user = parsed[0]
-          const token = parsed[1]
-
-          let isValid = await request.server.methods.deck.validateToken(user, token)
-
-          if (!isValid) {
-            throw Boom.unauthorized(null, 'custom-sinfo')
-          }
-
-          return h.authenticated({ credentials: { user: user, token: token } })
-        } catch (err) {
-          logger.error({ info: request.info, error: err })
-          throw Boom.unauthorized(null, 'custom-sinfo')
-        }
-      }
+  server.auth.strategy('sinfo', 'bearer-access-token', {
+    validate: async (request, token, h) => {
+      return jwt.verify(token)
     }
   })
 
-  server.auth.strategy('sinfo', 'custom-sinfo')
+  server.method('auth.google', googleAuth)
 }

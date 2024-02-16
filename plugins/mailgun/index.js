@@ -15,7 +15,9 @@ const mailgun = require('mailgun-js')({
 })
 
 let template
+let infoTemplate
 const filename = path.join(__dirname, 'email.html')
+const infoFilename = path.join(__dirname, 'infoEmail.html')
 
 // eslint-disable-next-line security/detect-non-literal-fs-filename
 fs.readFile(filename, { encoding: 'UTF-8' }, (err, data) => {
@@ -25,6 +27,16 @@ fs.readFile(filename, { encoding: 'UTF-8' }, (err, data) => {
   }
 
   template = handlebars.compile(data)
+})
+
+// eslint-disable-next-line security/detect-non-literal-fs-filename
+fs.readFile(infoFilename, { encoding: 'UTF-8' }, (err, data) => {
+  if (err) {
+    logger.error(err)
+    process.exit(1)
+  }
+
+  infoTemplate = handlebars.compile(data)
 })
 
 function send (receivers, templateData) {
@@ -101,6 +113,35 @@ function sendNewReservation (receivers, reservation, link, venue) {
   send(receivers, data)
 }
 
+function sendNewInfoSubmission(receivers, info, link) {
+  //if (process.env.NODE_ENV !== 'production') { return }
+
+  //receivers.push(config.COORDINATION_EMAIL)
+
+  receivers = ["pedro.maximino@sinfo.org"]
+
+  let templateData = {
+    state: 'PENDING',
+    info: info.toJSON(),
+    link: link.toJSON()
+  }
+
+  templateData.info.created = new Date(templateData.info.created).toUTCString()
+  receivers.forEach(receiver => {
+    let data = {
+      from: 'Mailgun <mailgun@sinfo.org>',
+      to: receiver,
+      subject: `[SINFO] ${templateData.link.companyName} information submission update`,
+      html: infoTemplate(templateData)
+    }
+
+    mailgun.messages().send(data, function (error, body) {
+      logger.error(body)
+      if (error) { logger.error(error) }
+    })
+  })
+}
+
 module.exports = {
   name: 'mailgun',
   version: '1.0.0',
@@ -108,5 +149,6 @@ module.exports = {
     server.method('mailgun.sendConfirmation', sendConfirmation)
     server.method('mailgun.sendCancellation', sendCancellation)
     server.method('mailgun.sendNewReservation', sendNewReservation)
+    server.method('mailgun.sendNewInfoSubmission', sendNewInfoSubmission)
   }
 }

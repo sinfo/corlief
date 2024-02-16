@@ -127,14 +127,14 @@ module.exports = [
 
           const token = await request.server.methods.jwt.verify(link[0].token)
 
-          if (token && token.exp * 1000 - new Date().getTime() <= 0) {
+          if (token && token.credentials.exp * 1000 - new Date().getTime() <= 0) {
             await request.server.methods.link.revoke(companyId, edition)
             return Boom.resourceGone('Token expired')
           }
 
           return token === null
             ? Boom.resourceGone('Token expired')
-            : { expirationDate: new Date(token.exp * 1000).toJSON() }
+            : { expirationDate: new Date(token.credentials.exp * 1000).toJSON() }
         } catch (err) {
           logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
@@ -284,7 +284,6 @@ module.exports = [
         ],
         [
           helpers.pre.company,
-          helpers.pre.member,
           helpers.pre.token
         ]
       ],
@@ -295,6 +294,7 @@ module.exports = [
         payload: helpers.joi.linkPayload
       },
       handler: async (request, h) => {
+        // TODO: Add member id to company participation
         try {
           const { companyId, companyEmail, participationDays, advertisementKind, activities, workshop, presentation, lunchTalk } = request.payload
           const { edition, isCompanyValid, token, company, member } = request.pre
@@ -307,13 +307,9 @@ module.exports = [
             return Boom.badData('Invalid email')
           }
 
-          if (member.mails.main === undefined) {
-            return Boom.badData('The member (SINFO Organizer) doesn\'t have his/her main email setup. This email should be something like john.doe@sinfo.org')
-          }
-
           let link = await request.server.methods.link.create(
             companyId, company.name, edition,
-            member.mails.main, token, participationDays,
+            request.auth.credentials.user, token, participationDays,
             activities, advertisementKind, companyEmail, workshop, presentation, lunchTalk
           )
 
@@ -395,7 +391,11 @@ module.exports = [
         const { expirationDate } = request.payload
 
         try {
-          const token = await request.server.methods.jwt.generate(edition, companyId, expirationDate)
+          const token = await request.server.methods.jwt.generate({ 
+            edition: edition, 
+            company: companyId,
+            exp: Math.floor(expirationDate / 1000) 
+          })
           const link = await request.server.methods.link.setToken(request.params, token)
           return (link) ? link.toJSON() : Boom.badData('No link associated')
         } catch (err) {

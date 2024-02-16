@@ -34,7 +34,10 @@ module.exports.edition = {
 module.exports.duration = {
   method: async (request, h) => {
     const edition = await request.server.methods.deck.getLatestEdition()
-    return new Date(edition.duration).getUTCDate()
+    const beginDate = new Date(edition.begin).getTime()
+    const endDate = new Date(edition.end).getTime()
+
+    return new Date(endDate - beginDate).getUTCDate() - 1
   },
   assign: 'duration'
 }
@@ -53,7 +56,11 @@ module.exports.token = {
     const companyId = request.payload.companyId
     const expirationDate = request.payload.expirationDate
 
-    return request.server.methods.jwt.generate(edition, companyId, expirationDate)
+    return request.server.methods.jwt.generate({
+      exp: Math.floor(expirationDate / 1000),
+      edition: edition,
+      company: companyId
+    })
   },
   assign: 'token'
 }
@@ -102,9 +109,7 @@ module.exports.venue = {
 module.exports.companies = {
   method: async (request, h) => {
     const edition = request.pre.edition
-    const user = request.auth.credentials.user
-    const token = request.auth.credentials.token
-    let companies = await request.server.methods.deck.getCompanies(edition, user, token)
+    let companies = await request.server.methods.deck.getCompanies(edition)
     let result = []
 
     for (let company of companies) {
@@ -128,9 +133,7 @@ module.exports.company = {
     if (valid !== undefined && !valid) { return null }
 
     const companyId = request.payload.companyId
-    const user = request.auth.credentials.user
-    const token = request.auth.credentials.token
-    let company = await request.server.methods.deck.getCompany(companyId, user, token)
+    let company = await request.server.methods.deck.getCompany(companyId)
     return company
   },
   assign: 'company'

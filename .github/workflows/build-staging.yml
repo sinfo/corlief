@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - "staging"
-      - "master"
 
 jobs:
   docker:
@@ -22,6 +21,7 @@ jobs:
       name: Build and PushBackend Image
       id: docker_build
       with:
+        file: ./Dockerfile_staging
         push: true
         tags: orgsinfo/corlief:latest
     
@@ -38,4 +38,4 @@ jobs:
       uses: nickgronow/kubectl@master
       with:
         config_data: ${{ secrets.KUBE_CONFIG_DATA }}
-        args: delete pod --selector="app=corlief-prod-app" --namespace=production     
+        args: delete pod --selector="app=corlief-staging-app" --namespace=staging     

@@ -24,6 +24,7 @@ jobs:
       name: Build and Push the Docker Image
       id: docker_build
       with:
+        file: ./Dockerfile
         push: true
         tags: orgsinfo/corlief:${{ steps.vars.outputs.tag }}
     

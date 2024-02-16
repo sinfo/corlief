@@ -46,6 +46,7 @@ async function addStands(companyId, edition, stands, activities) {
 async function canMakeReservation(companyId, edition) {
   let response = {
     result: true,
+    confirmed: false,
     error: null
   }
 
@@ -57,6 +58,7 @@ async function canMakeReservation(companyId, edition) {
 
   if (latest.feedback.status === 'CONFIRMED') {
     response.result = false
+    response.confirmed = true
     response.error = 'Reservation confirmed'
     return response
   }
