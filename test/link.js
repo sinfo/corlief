@@ -592,8 +592,8 @@ describe('link', async function () {
       expect(response.statusCode).to.eql(200)
 
       // check if response token is correct (exp is in seconds)
-      const token = await server.methods.jwt.verify(response.result.token)
-      expect(token.exp).to.eql(Math.floor(expirationDate / 1000))
+      const decoded = await server.methods.jwt.verify(response.result.token)
+      expect(decoded.exp).to.eql(Math.floor(expirationDate / 1000))
 
       // apart from the token link should remain the same (but now valid)
       Object.keys(response.result).forEach(key => {
