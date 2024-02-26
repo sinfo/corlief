@@ -28,12 +28,9 @@ async function generate (data, options) {
 
 async function verify (token) {
   try {
-    const decoded = jwt.verify(token, publicKey)
-    return decoded
-          ? { isValid: true, credentials: decoded, artifacts: token }
-          : { isValid: false, credentials: token, artifacts: token }
+    return jwt.verify(token, publicKey)
   } catch (err) {
-    throw Boom.unauthorized(err)
+    return null
   }
 }
 
