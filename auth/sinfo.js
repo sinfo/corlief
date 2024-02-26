@@ -42,8 +42,10 @@ function authenticate(user) {
 
 module.exports = server => {
   server.auth.strategy('sinfo', 'bearer-access-token', {
-    validate: async (request, token, h) => {
-      return jwt.verify(token)
+    validate: async (request, token) => {
+      const decoded = await jwt.verify(token)
+      if (!decoded) throw Boom.unauthorized('Invalid token')
+      return { isValid: true, credentials: decoded, artifacts: token }
     }
   })
 

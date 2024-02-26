@@ -69,11 +69,8 @@ module.exports = [
           const links = await request.server.methods.link.find({ valid: true })
 
           for (const link of links) {
-            const token = await request.server.methods.jwt.verify(link.token)
-
-            if (token === null || token.exp * 1000 - new Date().getTime() <= 0) {
-              await request.server.methods.link.revoke(link.companyId, link.edition)
-            }
+            const decoded = await request.server.methods.jwt.verify(link.token)
+            if (!decoded) await request.server.methods.link.revoke(link.companyId, link.edition)
           }
 
           const result = await request.server.methods.link.find({ edition: edition })
@@ -125,16 +122,13 @@ module.exports = [
             return Boom.resourceGone('Link not valid')
           }
 
-          const token = await request.server.methods.jwt.verify(link[0].token)
-
-          if (token && token.credentials.exp * 1000 - new Date().getTime() <= 0) {
+          const decoded = await request.server.methods.jwt.verify(link[0].token)
+          if (!decoded)  {
             await request.server.methods.link.revoke(companyId, edition)
             return Boom.resourceGone('Token expired')
           }
 
-          return token === null
-            ? Boom.resourceGone('Token expired')
-            : { expirationDate: new Date(token.credentials.exp * 1000).toJSON() }
+          return { expirationDate: new Date(decoded.exp * 1000).toJSON() }
         } catch (err) {
           logger.error({ info: request.info, error: err })
           return Boom.boomify(err)
